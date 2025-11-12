@@ -1,6 +1,6 @@
 {
     "name": "ore-ui-types",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Type definitions for Minecraft Bedrock Edition's Ore UI scripting environment.",
     "keywords": [
         "Ore UI",

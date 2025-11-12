@@ -16,12 +16,6 @@ import type {
 
 declare global {
     namespace globalThis {
-        /**
-         * A function to be put into the react renderer to collect facet accessors.
-         *
-         * @param {{}} [param0] Ignore this.
-         * @returns {null} Returns `null`.
-         */
         //#region Ore UI Native
 
         // copyTextToClipboardAsync(Object.entries(__commands__).map(v=>`${v[0]}: {${Object.keys(v[1]).map(v2=>`${v2}: {
@@ -284,7 +278,7 @@ declare global {
             };
         };
 
-        var engine: {
+        interface Engine {
             /**
              * Adds an event listener.
              *
@@ -566,7 +560,8 @@ declare global {
             _Initialized: boolean;
             // TODO: Fill in the rest of the engine properties.
             [otherProperties: PropertyKey]: unknown;
-        };
+        }
+        var engine: Engine;
 
         type EngineEventID = LooseAutocomplete<
             | "facet:request"
@@ -622,9 +617,9 @@ declare global {
             : T extends "core:gui:resize-hack"
             ? []
             : T extends `query:subscribed/${infer _QueryID extends number}`
-            ? [...args: unknown[]] // TODO: Figure out the type of this.
+            ? [...args: any[]] // TODO: Figure out the type of this.
             : T extends `query:updated/${infer _QueryID extends number}`
-            ? [...args: unknown[]] // TODO: Figure out the type of this.
+            ? [...args: any[]] // TODO: Figure out the type of this.
             : T extends `query:subscribe/${infer QueryName}`
             ? [
                   queryID: number,
