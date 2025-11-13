@@ -1,3 +1,9 @@
+# v1.0.2
+
+## Performance
+
+-   Fixed a few engine methods that could cause slowdowns when `EngineEventID` was passed as their `T` type parameter.
+
 # v1.0.1
 
 ## Changes

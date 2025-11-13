@@ -300,7 +300,7 @@ declare global {
              */
             on<T extends EngineEventID>(
                 name: T,
-                callback: (...args: EngineEvent<T>) => void,
+                callback: (...args: EngineEvent<EngineEventID extends T ? undefined : T>) => void,
                 context?: unknown
             ): {
                 clear(): void;
@@ -340,7 +340,7 @@ declare global {
              * }
              * ```
              */
-            off<T extends EngineEventID>(name: T, handler: (...args: EngineEvent<T>) => void, context?: unknown): void;
+            off<T extends EngineEventID>(name: T, handler: (...args: EngineEvent<EngineEventID extends T ? undefined : T>) => void, context?: unknown): void;
             /**
              * Triggers an event.
              *
@@ -355,7 +355,7 @@ declare global {
              * }
              * ```
              */
-            trigger<T extends EngineEventID>(name: T, ...args: EngineEvent<T>): void;
+            trigger<T extends EngineEventID>(name: T, ...args: EngineEvent<EngineEventID extends T ? undefined : T>): void;
             TriggerEvent(...args: unknown[]): unknown;
             SendMessage(...args: [unknown, requestId: number, ...unknown[]]): unknown;
             BindingsReady(...args: unknown[]): unknown;
@@ -586,7 +586,7 @@ declare global {
             | "core:telemetry:firstContentfulPaint"
             | "Ready"
         >;
-        type EngineEvent<T extends EngineEventID> = T extends "facet:request" | "facet:discard"
+        type EngineEvent<T extends EngineEventID | undefined> = T extends "facet:request" | "facet:discard"
             ? [facetName: FacetList[number]]
             : T extends `facet:updated:${infer Facet}`
             ? Facet extends FacetList[number]
