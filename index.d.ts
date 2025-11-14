@@ -587,7 +587,7 @@ declare global {
             | "Ready"
         >;
         type EngineEvent<T extends EngineEventID | undefined> = T extends "facet:request" | "facet:discard"
-            ? [facetName: FacetList[number]]
+            ? [facetName: FacetList[number], options?: Record<PropertyKey, any>]
             : T extends `facet:updated:${infer Facet}`
             ? Facet extends FacetList[number]
                 ? [facetValue: FacetTypeMap[Facet]]
