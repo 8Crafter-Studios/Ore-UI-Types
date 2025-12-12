@@ -1,3 +1,29 @@
+# v1.1.0
+
+## Additions
+
+-   Added definitions for the following:
+    -   `__commands__.coreTranslateCommandGroup.getHowLongAgoAsString`
+    -   `__commands__.coreTranslateCommandGroup.formatDate`
+    -   `__commands__.vanillaCoreDataStoreSetCommandGroup`
+    -   `__commands__.vanillaGameInviteCommandGroup`
+    -   `__commands__.coreScreenReaderCommandGroup`
+-   Added typings for the following methods (before they had `unknown` as placeholders):
+    -   `__commands__.coreTranslateCommandGroup.translate.callable`
+    -   `FacetTypeMap["core.locale"].formatDate`
+    -   `FacetTypeMap["core.locale"].translate`
+    -   `FacetTypeMap["core.locale"].translateWithParameters`
+-   Added definitions for the following query types:
+    -   `vanillaCoreDataDrivenUIDefinitionQuery`
+    -   `vanillaCoreDataDrivenUIScreenIdQuery`
+    -   `vanillaCoreDataStoreNumberQuery`
+    -   `vanillaCoreDataStoreStringQuery`
+    -   `vanillaCoreDataStoreBoolQuery`
+
+## Fixes
+
+-   Fixed the parameters for the `facet:request` event.
+
 # v1.0.2
 
 ## Performance
