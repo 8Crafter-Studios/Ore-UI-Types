@@ -13,7 +13,6 @@ import type {
     VanillaGameplayContainerItemType,
     VanillaGameplayUIProfile,
 } from "@ore-ui-types/enums";
-
 declare global {
     namespace globalThis {
         //#region Ore UI Native
@@ -90,12 +89,20 @@ declare global {
                 };
             };
             coreTranslateCommandGroup: {
-                translate: {
+                getHowLongAgoAsString: {
                     id: number;
                     /**
                      * @todo Figure out the types for this method.
                      */
-                    callable(...args: [unknown, ...unknown[]]): unknown;
+                    callable(...args: unknown[]): string;
+                };
+                formatDate: {
+                    id: number;
+                    callable(timestampInSeconds: number): string;
+                };
+                translate: {
+                    id: number;
+                    callable(key: string, parameters: string[]): string;
                 };
             };
             routerCommandGroup: {
@@ -269,6 +276,68 @@ declare global {
                     callable(isOpen: boolean): void;
                 };
             };
+            vanillaCoreDataStoreSetCommandGroup: {
+                dataStoreButtonPress: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(datastore: unknown, property: unknown, hbuiRoute: string): unknown;
+                };
+                setDataStorePathBool: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(datastore: unknown, property: unknown, hbuiRoute: string, args_3: unknown): unknown;
+                };
+                setDataStorePathNumber: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(datastore: unknown, property: unknown, hbuiRoute: string, args_3: unknown): unknown;
+                };
+                setDataStorePathString: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(datastore: unknown, property: unknown, hbuiRoute: string, args_3: unknown): unknown;
+                };
+            };
+            vanillaGameInviteCommandGroup: {
+                invitePlatformPlayers: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                inviteXboxPlayers: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            coreScreenReaderCommandGroup: {
+                read: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                clear: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
         } & {
             [commandGroup: string]: {
                 [command: string]: {
@@ -301,6 +370,34 @@ declare global {
             on<T extends EngineEventID>(
                 name: T,
                 callback: (...args: EngineEvent<EngineEventID extends T ? undefined : T>) => void,
+                context?: unknown
+            ): {
+                clear(): void;
+            };
+            /**
+             * Adds an event listener.
+             *
+             * @param name The name of the event.
+             * @param callback The callback function.
+             * @param context The context to bind the callback to.
+             * @returns An object with a clear method that can be used to remove the event listener.
+             *
+             * @deprecated You are using deprecated parameter types for the specified event.
+             *
+             * @description
+             * This is the code of the function:
+             * ```ts
+             * if (!callback) {
+             *     console.error("No handler specified for engine.on");
+             *     return { clear: function() {} };
+             * }
+             * engine.AddOrRemoveOnHandler(name, callback, context || engine);
+             * return { clear: this._createClear(this, name, callback, context) };
+            ```
+             */
+            on<T extends EngineEventID<true>>(
+                name: T,
+                callback: (...args: EngineEvent<EngineEventID<true> extends T ? undefined : T, true>) => void,
                 context?: unknown
             ): {
                 clear(): void;
@@ -342,6 +439,48 @@ declare global {
              */
             off<T extends EngineEventID>(name: T, handler: (...args: EngineEvent<EngineEventID extends T ? undefined : T>) => void, context?: unknown): void;
             /**
+             * Removes an event listener.
+             *
+             * @param name The name of the event.
+             * @param handler The callback function.
+             * @param context The context to bind the callback to.
+             *
+             * @deprecated You are using deprecated parameter types for the specified event.
+             *
+             * @description
+             * This is the code of the function:
+             * ```ts
+             * var handlers = this.events[name];
+
+             * if (handlers !== undefined) {
+             *     context = context || this;
+
+             *     var index;
+             *     var length = handlers.length;
+             *     for (index = 0; index < length; ++index) {
+             *         var reg = handlers[index];
+             *         if (reg.code == handler && reg.context == context) {
+             *             break;
+             *         }
+             *     }
+             *     if (index < length) {
+             *         handlers.splice(index, 1);
+             *         if (handlers.length === 0) {
+             *             delete this.events[name];
+             *         }
+             *     }
+             * }
+             * else {
+             *     engine.RemoveOnHandler(name, handler, context || this);
+             * }
+             * ```
+             */
+            off<T extends EngineEventID<true>>(
+                name: T,
+                handler: (...args: EngineEvent<EngineEventID<true> extends T ? undefined : T, true>) => void,
+                context?: unknown
+            ): void;
+            /**
              * Triggers an event.
              *
              * @param name The name of the event.
@@ -356,6 +495,23 @@ declare global {
              * ```
              */
             trigger<T extends EngineEventID>(name: T, ...args: EngineEvent<EngineEventID extends T ? undefined : T>): void;
+            /**
+             * Triggers an event.
+             *
+             * @param name The name of the event.
+             * @param args The arguments to pass to the event.
+             *
+             * @deprecated You are using deprecated parameter types for the specified event.
+             *
+             * @description
+             * This is the code of the function:
+             * ```ts
+             * if (!this._trigger.apply(this, arguments)) {
+             *     this.TriggerEvent.apply(this, arguments);
+             * }
+             * ```
+             */
+            trigger<T extends EngineEventID<true>>(name: T, ...args: EngineEvent<EngineEventID<true> extends T ? undefined : T, true>): void;
             TriggerEvent(...args: unknown[]): unknown;
             SendMessage(...args: [unknown, requestId: number, ...unknown[]]): unknown;
             BindingsReady(...args: unknown[]): unknown;
@@ -563,7 +719,7 @@ declare global {
         }
         var engine: Engine;
 
-        type EngineEventID = LooseAutocomplete<
+        type EngineEventID<IncludeDeprecatredSignatures extends boolean = false> = LooseAutocomplete<
             | "facet:request"
             | `facet:updated:${FacetList[number]}`
             | `facet:error:${FacetList[number]}`
@@ -578,7 +734,9 @@ declare global {
             | "core:gui:resize-hack"
             | `query:subscribed/${number}`
             | `query:updated/${number}`
-            | `query:subscribe/${keyof EngineQuerySubscribeEventParamsMap}`
+            | `query:subscribe/${IncludeDeprecatredSignatures extends true
+                  ? keyof EngineQuerySubscribeEventParamsMap | keyof EngineQuerySubscribeEventDeprecatedParamsMap
+                  : keyof EngineQuerySubscribeEventParamsMap}`
             | "query:unsubscribe"
             | "core:routing:not-found"
             | "core:telemetry:eventfulNavigation"
@@ -586,8 +744,17 @@ declare global {
             | "core:telemetry:firstContentfulPaint"
             | "Ready"
         >;
-        type EngineEvent<T extends EngineEventID | undefined> = T extends "facet:request" | "facet:discard"
-            ? [facetName: FacetList[number], options?: Record<PropertyKey, any>]
+        /**
+         * @template T The event ID.
+         * @template IncludeDeprecatredSignatures Whether to include deprecated signatures in the type (does not exclude deprecated events, only parameter types that have been replaced in newer versions).
+         */
+        type EngineEvent<
+            T extends EngineEventID<IncludeDeprecatredSignatures> | undefined,
+            IncludeDeprecatredSignatures extends boolean = false
+        > = T extends "facet:request"
+            ? [facetName: FacetList[number], facetName: FacetList[number], options: Record<PropertyKey, any>]
+            : T extends "facet:discard"
+            ? [facetName: FacetList[number]]
             : T extends `facet:updated:${infer Facet}`
             ? Facet extends FacetList[number]
                 ? [facetValue: FacetTypeMap[Facet]]
@@ -623,13 +790,25 @@ declare global {
             : T extends `query:subscribe/${infer QueryName}`
             ? [
                   queryID: number,
-                  ...queryParams: QueryName extends keyof EngineQuerySubscribeEventParamsMap ? EngineQuerySubscribeEventParamsMap[QueryName] : unknown[]
+                  ...queryParams: QueryName extends keyof EngineQuerySubscribeEventParamsMap
+                      ? EngineQuerySubscribeEventParamsMap[QueryName] &
+                            (IncludeDeprecatredSignatures extends true
+                                ? QueryName extends keyof EngineQuerySubscribeEventDeprecatedParamsMap
+                                    ? Exclude<EngineQuerySubscribeEventDeprecatedParamsMap[QueryName], undefined>
+                                    : unknown
+                                : unknown)
+                      : IncludeDeprecatredSignatures extends true
+                      ? QueryName extends keyof EngineQuerySubscribeEventDeprecatedParamsMap
+                          ? EngineQuerySubscribeEventDeprecatedParamsMap[QueryName]
+                          : unknown[]
+                      : unknown[]
               ]
             : T extends "query:unsubscribe"
             ? [queryName: unknown] // TODO: Figure out the type of this.
             : T extends "core:telemetry:eventfulNavigation" | "core:telemetry:firstMeaningfulPaint" | "core:telemetry:firstContentfulPaint" | "Ready"
             ? []
             : [...args: unknown[]];
+        interface EngineQuerySubscribeEventDeprecatedParamsMap {}
         interface EngineQuerySubscribeEventParamsMap {
             "vanilla.core.dataDrivenUICompositionQuery": [
                 screenID: LooseAutocomplete<
@@ -641,6 +820,32 @@ declare global {
                 >
             ];
             "vanilla.gameplay.furnace": [];
+            /**
+             * @todo Figure out what `unknownArg1` is.
+             */
+            vanillaCoreDataDrivenUIDefinitionQuery: [
+                unknownArg1: number | bigint,
+                screenID: LooseAutocomplete<
+                    | "minecraft:default_chest_screen"
+                    | "minecraft:chest_screen"
+                    | "minecraft:barrel_screen"
+                    | "minecraft:ender_chest_screen"
+                    | "minecraft:shulker_box_screen"
+                >
+            ];
+            vanillaCoreDataDrivenUIScreenIdQuery: [];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            vanillaCoreDataStoreNumberQuery: [...args: unknown[]];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            vanillaCoreDataStoreStringQuery: [...args: unknown[]];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            vanillaCoreDataStoreBoolQuery: [...args: unknown[]];
             /**
              * @todo Figure out the purposes for the parameters of this query event.
              */
@@ -672,6 +877,20 @@ declare global {
                 litProgress: number;
                 burnProgress: number;
             };
+            vanillaCoreDataDrivenUIDefinitionQuery: {
+                __Type: `vanillaCoreDataDrivenUIDefinitionQuery$_$${number}`;
+                /**
+                 * The data of this UI definition.
+                 */
+                children: Record<string, any>;
+            };
+            vanillaCoreDataDrivenUIScreenIdQuery: {
+                __Type: `vanillaCoreDataDrivenUIScreenIdQuery$_$${number}`;
+                screenId: null | string;
+            };
+            vanillaCoreDataStoreNumberQuery: unknown; // TODO
+            vanillaCoreDataStoreStringQuery: unknown; // TODO
+            vanillaCoreDataStoreBoolQuery: unknown; // TODO
             vanillaGameplayContainerSizeQuery: {
                 /**
                  * The type of this query.
@@ -1023,10 +1242,10 @@ declare global {
             };
             "core.locale": {
                 locale: string;
-                formatDate(...args: unknown[]): unknown;
+                formatDate(timestampInSeconds: number): unknown;
                 getHowLongAgoAsString(...args: unknown[]): unknown;
-                translate(...args: unknown[]): unknown;
-                translateWithParameters(...args: unknown[]): unknown;
+                translate(key: string): string;
+                translateWithParameters(key: string, parameters: string[]): unknown;
             };
             /**
              * NOTE: Not present in 1.21.120.4 (may exist in dev builds).
