@@ -375,34 +375,6 @@ declare global {
                 clear(): void;
             };
             /**
-             * Adds an event listener.
-             *
-             * @param name The name of the event.
-             * @param callback The callback function.
-             * @param context The context to bind the callback to.
-             * @returns An object with a clear method that can be used to remove the event listener.
-             *
-             * @deprecated You are using deprecated parameter types for the specified event.
-             *
-             * @description
-             * This is the code of the function:
-             * ```ts
-             * if (!callback) {
-             *     console.error("No handler specified for engine.on");
-             *     return { clear: function() {} };
-             * }
-             * engine.AddOrRemoveOnHandler(name, callback, context || engine);
-             * return { clear: this._createClear(this, name, callback, context) };
-            ```
-             */
-            on<T extends EngineEventID<true>>(
-                name: T,
-                callback: (...args: EngineEvent<EngineEventID<true> extends T ? undefined : T, true>) => void,
-                context?: unknown
-            ): {
-                clear(): void;
-            };
-            /**
              * Removes an event listener.
              *
              * @param name The name of the event.
@@ -439,48 +411,6 @@ declare global {
              */
             off<T extends EngineEventID>(name: T, handler: (...args: EngineEvent<EngineEventID extends T ? undefined : T>) => void, context?: unknown): void;
             /**
-             * Removes an event listener.
-             *
-             * @param name The name of the event.
-             * @param handler The callback function.
-             * @param context The context to bind the callback to.
-             *
-             * @deprecated You are using deprecated parameter types for the specified event.
-             *
-             * @description
-             * This is the code of the function:
-             * ```ts
-             * var handlers = this.events[name];
-
-             * if (handlers !== undefined) {
-             *     context = context || this;
-
-             *     var index;
-             *     var length = handlers.length;
-             *     for (index = 0; index < length; ++index) {
-             *         var reg = handlers[index];
-             *         if (reg.code == handler && reg.context == context) {
-             *             break;
-             *         }
-             *     }
-             *     if (index < length) {
-             *         handlers.splice(index, 1);
-             *         if (handlers.length === 0) {
-             *             delete this.events[name];
-             *         }
-             *     }
-             * }
-             * else {
-             *     engine.RemoveOnHandler(name, handler, context || this);
-             * }
-             * ```
-             */
-            off<T extends EngineEventID<true>>(
-                name: T,
-                handler: (...args: EngineEvent<EngineEventID<true> extends T ? undefined : T, true>) => void,
-                context?: unknown
-            ): void;
-            /**
              * Triggers an event.
              *
              * @param name The name of the event.
@@ -495,23 +425,6 @@ declare global {
              * ```
              */
             trigger<T extends EngineEventID>(name: T, ...args: EngineEvent<EngineEventID extends T ? undefined : T>): void;
-            /**
-             * Triggers an event.
-             *
-             * @param name The name of the event.
-             * @param args The arguments to pass to the event.
-             *
-             * @deprecated You are using deprecated parameter types for the specified event.
-             *
-             * @description
-             * This is the code of the function:
-             * ```ts
-             * if (!this._trigger.apply(this, arguments)) {
-             *     this.TriggerEvent.apply(this, arguments);
-             * }
-             * ```
-             */
-            trigger<T extends EngineEventID<true>>(name: T, ...args: EngineEvent<EngineEventID<true> extends T ? undefined : T, true>): void;
             TriggerEvent(...args: unknown[]): unknown;
             SendMessage(...args: [unknown, requestId: number, ...unknown[]]): unknown;
             BindingsReady(...args: unknown[]): unknown;
@@ -719,7 +632,7 @@ declare global {
         }
         var engine: Engine;
 
-        type EngineEventID<IncludeDeprecatredSignatures extends boolean = false> = LooseAutocomplete<
+        type EngineEventID = LooseAutocomplete<
             | "facet:request"
             | `facet:updated:${FacetList[number]}`
             | `facet:error:${FacetList[number]}`
@@ -734,9 +647,7 @@ declare global {
             | "core:gui:resize-hack"
             | `query:subscribed/${number}`
             | `query:updated/${number}`
-            | `query:subscribe/${IncludeDeprecatredSignatures extends true
-                  ? keyof EngineQuerySubscribeEventParamsMap | keyof EngineQuerySubscribeEventDeprecatedParamsMap
-                  : keyof EngineQuerySubscribeEventParamsMap}`
+            | `query:subscribe/${keyof EngineQuerySubscribeEventParamsMap}`
             | "query:unsubscribe"
             | "core:routing:not-found"
             | "core:telemetry:eventfulNavigation"
@@ -744,14 +655,7 @@ declare global {
             | "core:telemetry:firstContentfulPaint"
             | "Ready"
         >;
-        /**
-         * @template T The event ID.
-         * @template IncludeDeprecatredSignatures Whether to include deprecated signatures in the type (does not exclude deprecated events, only parameter types that have been replaced in newer versions).
-         */
-        type EngineEvent<
-            T extends EngineEventID<IncludeDeprecatredSignatures> | undefined,
-            IncludeDeprecatredSignatures extends boolean = false
-        > = T extends "facet:request"
+        type EngineEvent<T extends EngineEventID | undefined> = T extends "facet:request"
             ? [facetName: FacetList[number], facetName: FacetList[number], options: Record<PropertyKey, any>]
             : T extends "facet:discard"
             ? [facetName: FacetList[number]]
@@ -790,18 +694,7 @@ declare global {
             : T extends `query:subscribe/${infer QueryName}`
             ? [
                   queryID: number,
-                  ...queryParams: QueryName extends keyof EngineQuerySubscribeEventParamsMap
-                      ? EngineQuerySubscribeEventParamsMap[QueryName] &
-                            (IncludeDeprecatredSignatures extends true
-                                ? QueryName extends keyof EngineQuerySubscribeEventDeprecatedParamsMap
-                                    ? Exclude<EngineQuerySubscribeEventDeprecatedParamsMap[QueryName], undefined>
-                                    : unknown
-                                : unknown)
-                      : IncludeDeprecatredSignatures extends true
-                      ? QueryName extends keyof EngineQuerySubscribeEventDeprecatedParamsMap
-                          ? EngineQuerySubscribeEventDeprecatedParamsMap[QueryName]
-                          : unknown[]
-                      : unknown[]
+                  ...queryParams: QueryName extends keyof EngineQuerySubscribeEventParamsMap ? EngineQuerySubscribeEventParamsMap[QueryName] : unknown[]
               ]
             : T extends "query:unsubscribe"
             ? [queryName: unknown] // TODO: Figure out the type of this.
