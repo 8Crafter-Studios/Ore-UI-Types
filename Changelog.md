@@ -1,3 +1,17 @@
+# v1.1.1
+
+## Additions
+
+-   Added return types for the following methods (before they had `unknown` as placeholders):
+    -   `FacetTypeMap["core.locale"].formatDate`
+    -   `FacetTypeMap["core.locale"].getHowLongAgoAsString`
+    -   `FacetTypeMap["core.locale"].translateWithParameters`
+
+## Changes
+
+-   A lot of the `TODO` comments have been converted to JSDoc `@todo` tags so that they show up in the documentation.
+-   The types now have `exactOptionalPropertyTypes` enabled.
+
 # v1.1.0
 
 ## Additions

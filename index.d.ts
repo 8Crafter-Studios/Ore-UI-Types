@@ -838,7 +838,10 @@ declare global {
                 shouldCrossOutIconBeVisible: boolean;
                 previewItemName: string;
                 hasInputItem: boolean;
-                damageState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                damageState: number;
             };
             vanillaGameplayTradeOverviewQuery: {
                 __Type: `vanillaGameplayTradeOverviewQuery$_$${number}`;
@@ -1135,15 +1138,22 @@ declare global {
             };
             "core.locale": {
                 locale: string;
-                formatDate(timestampInSeconds: number): unknown;
-                getHowLongAgoAsString(...args: unknown[]): unknown;
+                formatDate(timestampInSeconds: number): string;
+                getHowLongAgoAsString(...args: unknown[]): string;
                 translate(key: string): string;
-                translateWithParameters(key: string, parameters: string[]): unknown;
+                translateWithParameters(key: string, parameters: string[]): string;
             };
             /**
              * NOTE: Not present in 1.21.120.4 (may exist in dev builds).
+             *
+             * @todo Get the type for this facet.
              */
-            "core.performanceFacet": unknown; // TODO: Get the type for this facet.
+            "core.performanceFacet": unknown;
+            /**
+             * The router facet.
+             *
+             * This is used for navigating between routes in the UI.
+             */
             "core.router": {
                 /**
                  * The history object.
@@ -1172,9 +1182,9 @@ declare global {
                     /**
                      * Moves a specific distance on the history stack.
                      *
-                     * @param {number} distance The distance to move. Negative numbers go back, positive numbers go forward.
+                     * @param distance The distance to move. Negative numbers go back, positive numbers go forward.
                      */
-                    go(distance?: number): void;
+                    go(distance?: number | undefined): void;
                     /**
                      * The current route.
                      */
@@ -1220,8 +1230,10 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "core.social": unknown; // TODO: Get the type for this facet.
+            "core.social": unknown;
             "core.sound": {
                 /**
                  * Plays a sound.
@@ -1250,15 +1262,22 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "core.user": unknown; // TODO: Get the type for this facet.
+            "core.user": unknown;
             /**
              * @deprecated This has been removed.
+             *
+             * @todo Get the type for this facet.
              */
-            "core.vrMode": unknown; // TODO: Get the type for this facet. // Found in dev build file.
+            "core.vrMode": unknown; // Found in dev build file.
             "vanilla.achievements": {
                 data: PlayerAchievementData;
-                status: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                status: number;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -1266,8 +1285,10 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.achievementsReward": unknown; // TODO: Get the type for this facet.
+            "vanilla.achievementsReward": unknown;
             "vanilla.buildSettings": {
                 currentGameVersion: {
                     isBeta: boolean;
@@ -1291,7 +1312,10 @@ declare global {
                 copyToClipboard(text: string): undefined | null;
             };
             "vanilla.createNewWorld": {
-                applyTemplateTaskState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                applyTemplateTaskState: number;
                 consumeResetFlag: boolean;
                 inWorldCreation: boolean;
                 showedAchievementWarning: boolean;
@@ -1303,7 +1327,10 @@ declare global {
                     betaFeatures: CoherentArrayProxy<{
                         isEnabled: boolean;
                         isTogglePermanentlyDisabled: boolean;
-                        category: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        category: number;
                         description: string;
                         title: string;
                         id: string;
@@ -1318,7 +1345,10 @@ declare global {
                         mobGriefing: boolean;
                         mobSpawning: boolean;
                         keepInventory: boolean;
-                        daylightCycle: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        daylightCycle: number;
                         cheatsEnabled: boolean;
                     };
                     scriptingCoding?: {
@@ -1329,14 +1359,26 @@ declare global {
                         locatorBarEnabled: boolean;
                         friendlyFire: boolean;
                         visibleToLanPlayers: boolean;
-                        playerPermissions: number; // TODO: MAKE ENUM
-                        playerAccess: number; // TODO: MAKE ENUM
-                        generalWarningState: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        playerPermissions: number;
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        playerAccess: number;
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        generalWarningState: number;
                         platformPlayerFriendsOfFriendsAccessSupported: boolean;
                         platformPlayerInviteAccessSupported: boolean;
                         platformPlayerAccessEnabled: boolean;
                         platformPlayerAccessSupported: boolean;
-                        platformPlayerAccess: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        platformPlayerAccess: number;
                         multiplayerGame: boolean;
                         multiplayerSupported: boolean;
                     };
@@ -1360,20 +1402,35 @@ declare global {
                         bonusChest: boolean;
                         startWithMap: boolean;
                         simulationDistance: number;
-                        generatorType: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        generatorType: number;
                         useFlatWorld: boolean;
                     };
                     general: {
-                        difficulty: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        difficulty: number;
                         playerHasDied: boolean;
                         isHardcore: boolean;
-                        gameMode: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        gameMode: number;
                         worldName: string;
                     };
                 };
                 worldPreviewImagePath: string;
-                createOnRealmsError: null | number; // TODO: MAKE ENUM
-                createWorldError: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                createOnRealmsError: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                createWorldError: null | number;
                 isCreatingWorld: boolean;
                 isEditorWorld: boolean;
                 isRandomSeedAllowed: boolean;
@@ -1413,8 +1470,14 @@ declare global {
                 checkIfUserHasChangedSettings(...args: unknown[]): unknown;
             };
             "vanilla.createPreviewRealmFacet": {
-                createPreviewRealmFromSubscriptionResult: null | number; // TODO: MAKE ENUM
-                createPreviewRealmFromSubscriptionTaskState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                createPreviewRealmFromSubscriptionResult: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                createPreviewRealmFromSubscriptionTaskState: number;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -1452,7 +1515,10 @@ declare global {
              */
             "vanilla.editor": {
                 canShowModeShortcutToast: boolean;
-                editorMode: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                editorMode: number;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -1487,12 +1553,16 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.editorInput": unknown; // TODO: Get the type for this facet.
+            "vanilla.editorInput": unknown;
             /**
              * @warning THIS CRASHES THE GAME WHEN NOT IN EDITOR MODE!
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.editorLogging": unknown; // TODO: Get the type for this facet.
+            "vanilla.editorLogging": unknown;
             "vanilla.editorScripting": {
                 /**
                  * @todo Figure out the types for this method.
@@ -1521,8 +1591,10 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.editorSelectionFacet": unknown; // TODO: Get the type for this facet.
+            "vanilla.editorSelectionFacet": unknown;
             "vanilla.editorSettings": {
                 selectedOperator: number;
                 selectedTool: string;
@@ -1712,8 +1784,10 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.friendsManagerFacet": unknown; // TODO: Get the type for this facet.
+            "vanilla.friendsManagerFacet": unknown;
             "vanilla.gameplay.activeLevelHardcoreMode": {
                 isHardcoreMode: null | boolean;
             };
@@ -1721,7 +1795,10 @@ declare global {
                 canChangeSleepSettings: boolean;
                 isAbleToSleep: boolean;
                 remotePlayersCount: number;
-                chatAvailability: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                chatAvailability: number;
                 requiredSleepingPlayerCount: number;
                 sleepingPlayerCount: number;
                 /**
@@ -1733,31 +1810,41 @@ declare global {
              * @see {@link __commands__.vanillaGameplayContainerCommandGroup.closeContainer | \_\_commands\_\_.vanillaGameplayContainerCommandGroup.closeContainer}
              *
              * @deprecated This has been removed in 1.21.120.4 and replaced with the new commands system.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.gameplay.closeContainerCommand": unknown; // TODO: Get the type for this facet.
+            "vanilla.gameplay.closeContainerCommand": unknown;
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.gameplay.containerBlockActorType": unknown; // TODO: Get the type for this facet.
+            "vanilla.gameplay.containerBlockActorType": unknown;
             /**
              * @see {@link EngineQuerySubscribeEventParamsMap.vanillaGameplayContainerItemQuery}
              * @see {@link EngineQueryNonFacetResultMap.vanillaGameplayContainerItemQuery}
              *
              * @deprecated This has been removed in 1.21.120.4 and replaced with the new query system.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.gameplay.containerItemQuery": unknown; // TODO: Get the type for this facet.
+            "vanilla.gameplay.containerItemQuery": unknown;
             /**
              * @see {@link EngineQuerySubscribeEventParamsMap.vanillaGameplayContainerSizeQuery}
              * @see {@link EngineQueryNonFacetResultMap.vanillaGameplayContainerSizeQuery}
              *
              * @deprecated This has been removed in 1.21.120.4 and replaced with the new query system.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.gameplay.containerSizeQuery": unknown; // TODO: Get the type for this facet.
+            "vanilla.gameplay.containerSizeQuery": unknown;
             /**
              * @see {@link EngineQuerySubscribeEventParamsMap | EngineQuerySubscribeEventParamsMap["vanilla.gameplay.furnace"]}
              * @see {@link EngineQueryNonFacetResultMap | EngineQueryNonFacetResultMap["vanilla.gameplay.furnace"]}
              *
              * @deprecated This has been removed in 1.21.120.4 and replaced with the new query system.
+             *
+             * @todo Get the type for this facet.
              */
             "vanilla.gameplay.furnace": {
                 litProgress: number;
@@ -1784,8 +1871,10 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.gameplay.playerPositionHudElement": unknown; // TODO: Get the type for this facet.
+            "vanilla.gameplay.playerPositionHudElement": unknown;
             "vanilla.gameplay.playerRespawn": {
                 isAlive: boolean;
                 /**
@@ -1833,7 +1922,10 @@ declare global {
                 }>;
                 realmsSubscriber: boolean;
                 inboxMessages: CoherentArrayProxy<{
-                    style: number; // TODO: MAKE ENUM
+                    /**
+                     * @todo Make the type an enum.
+                     */
+                    style: number;
                     /**
                      * @default null
                      */
@@ -1880,7 +1972,10 @@ declare global {
                     template: string;
                     worldId: string;
                     instanceId: string;
-                    invStatus: number; // TODO: MAKE ENUM
+                    /**
+                     * @todo Make the type an enum.
+                     */
+                    invStatus: number;
                     /**
                      * @default null
                      */
@@ -1982,7 +2077,10 @@ declare global {
                 };
             };
             "vanilla.marketplacePassWorldTemplateList": {
-                refreshTaskState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                refreshTaskState: number;
                 seeMoreMarketplacePassRouteData: {
                     /**
                      * @example "MultiItemPage_0182b00f-3b8f-411a-9e40-69d904408f90%7cPagedList_af5d5474-a360-e5f6-2de7-08514e8f12a8"
@@ -1994,7 +2092,10 @@ declare global {
                     title: string;
                 };
                 marketplacePassWorldTemplates: CoherentArrayProxy<{
-                    storeCatalogCategory: number; // TODO: MAKE ENUM
+                    /**
+                     * @todo Make the type an enum.
+                     */
+                    storeCatalogCategory: number;
                     isUpdateAvailable: boolean;
                     isInstalled: boolean;
                     packId: string;
@@ -2045,16 +2146,46 @@ declare global {
                 loadNetworkWorldDetails(id: `${number | bigint}`, type: 0 | 1 | 2 | 3): undefined | null;
             };
             "vanilla.networkWorldJoiner": {
-                joinLANServerTaskState: number; // TODO: MAKE ENUM
-                joinLANServerResult: null | number; // TODO: MAKE ENUM
-                joinFriendServerTaskState: number; // TODO: MAKE ENUM
-                joinFriendServerResult: null | number; // TODO: MAKE ENUM
-                joinRealmTaskState: number; // TODO: MAKE ENUM
-                joinRealmResult: null | number; // TODO: MAKE ENUM
-                joinExternalServerTaskState: number; // TODO: MAKE ENUM
-                joinExternalServerResult: null | number; // TODO: MAKE ENUM
-                joinThirdPartyServerTaskState: number; // TODO: MAKE ENUM
-                joinThirdPartyServerResult: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                joinLANServerTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                joinLANServerResult: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                joinFriendServerTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                joinFriendServerResult: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                joinRealmTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                joinRealmResult: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                joinExternalServerTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                joinExternalServerResult: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                joinThirdPartyServerTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                joinThirdPartyServerResult: null | number;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -2140,7 +2271,10 @@ declare global {
                 playVideoInTouchControlSelectionScreen: boolean;
                 useMobileDataOnce: boolean;
                 showTouchControlSelectionScreen: boolean;
-                touchControlScheme: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                touchControlScheme: number;
                 showRenderDistanceWarningModal: boolean;
                 maxRenderDistance: number;
                 defaultRenderDistance: number;
@@ -2148,11 +2282,16 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.party": unknown; // TODO: Get the type for this facet. // Found in dev build file.
+            "vanilla.party": unknown;
             "vanilla.playerAchievements": {
                 data: PlayerAchievementData;
-                status: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                status: number;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -2181,8 +2320,10 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.playerLinkedPlatformProfile": unknown; // TODO: Get the type for this facet. // Found in dev build file.
+            "vanilla.playerLinkedPlatformProfile": unknown; // Found in dev build file.
             "vanilla.playermessagingservice": {
                 data: {
                     messages: CoherentArrayProxy<{
@@ -2219,7 +2360,10 @@ declare global {
                     }>;
                     messageCount: number;
                 };
-                status: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                status: number;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -2230,7 +2374,10 @@ declare global {
                 reportDismiss(...args: unknown[]): unknown;
             };
             "vanilla.playerPermissions": {
-                kickCommandState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                kickCommandState: number;
                 operatorCommandsRevokedFlag: boolean;
                 selectedPlayerPermissionsChangedFlag: boolean;
                 selectedPlayerLeftFlag: boolean;
@@ -2244,7 +2391,7 @@ declare global {
                     isEnabled: boolean;
                     abilityIndex: number;
                 }>;
-                playerPermissionLevel: null | PlayerPermissionLevel<"values">; // TODO: MAKE ENUM
+                playerPermissionLevel: null | PlayerPermissionLevel<"values">;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -2349,8 +2496,14 @@ declare global {
                 platformId: string;
                 xuid: string;
                 reportMessage: string;
-                reportReason: number; // TODO: MAKE ENUM
-                reportArea: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                reportReason: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                reportArea: number;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -2445,9 +2598,18 @@ declare global {
             };
             "vanilla.realmsListFacet": {
                 realms: CoherentArrayProxy<RealmDataType>;
-                error: number; // TODO: MAKE ENUM
-                state: number; // TODO: MAKE ENUM
-                compatibility: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                error: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                state: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                compatibility: number;
             };
             "vanilla.realmSlots": {
                 realmSlots: [slot0: RealmSlot, slot1: RealmSlot, slot2: RealmSlot];
@@ -2479,7 +2641,10 @@ declare global {
                  */
                 joinRealmError: null | JoinRealmsServerError<"values">;
                 joinRealmProgress: number;
-                fetchRealmError: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                fetchRealmError: null | number;
                 fetchRealmResult: null | {
                     onlinePlayers: CoherentArrayProxy<PlayerData>;
                     players: CoherentArrayProxy<PlayerData>;
@@ -2668,12 +2833,20 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.realmsStories.localScreenshots": unknown; // TODO: Get the type for this facet.
+            "vanilla.realmsStories.localScreenshots": unknown;
             "vanilla.realmsStories.persistentData": {
                 newPostAvailable: boolean;
-                currentMemberSortOption: number; // TODO: MAKE ENUM
-                currentMemberFilterOption: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                currentMemberSortOption: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                currentMemberFilterOption: number;
                 currentMemberSearchText: string;
                 storyScreenshotSelectionFilePath: string;
                 commentInProgressBody: string;
@@ -2681,8 +2854,14 @@ declare global {
                 currentStoryId: string;
             };
             "vanilla.realmsStories.players": {
-                fetchOnlineMembersStatus: number; // TODO: MAKE ENUM
-                fetchMembersStatus: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                fetchOnlineMembersStatus: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                fetchMembersStatus: number;
                 /**
                  * @todo Figure out the types for this array.
                  */
@@ -2699,8 +2878,14 @@ declare global {
             };
             "vanilla.realmsStories.settings": {
                 newPostAvailable: boolean;
-                currentMemberSortOption: number; // TODO: MAKE ENUM
-                currentMemberFilterOption: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                currentMemberSortOption: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                currentMemberFilterOption: number;
                 currentMemberSearchText: string;
                 storyScreenshotSelectionFilePath: string;
                 commentInProgressBody: string;
@@ -2712,9 +2897,15 @@ declare global {
                 pageLength: number;
                 unreadStoryCount: number;
                 totalStories: number;
-                postStoryStatus: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                postStoryStatus: number;
                 storiesFirstPageReady: boolean;
-                storiesStatus: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                storiesStatus: number;
                 /**
                  * @todo Figure out the types for this array.
                  */
@@ -2726,8 +2917,14 @@ declare global {
             "vanilla.RealmWorldUploaderFacet": {
                 choosePreviewRealm: boolean;
                 uploadedRealmWorldId: number;
-                uploadWorldToRealmError: null | number; // TODO: MAKE ENUM
-                uploadWorldToRealmTaskState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                uploadWorldToRealmError: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                uploadWorldToRealmTaskState: number;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -2742,7 +2939,10 @@ declare global {
                 clearUploadWorldToRealmTaskState(...args: unknown[]): unknown;
             };
             "vanilla.recentlyPlayedWithList": {
-                xboxAPICallResult: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                xboxAPICallResult: number;
                 playerList: CoherentArrayProxy<{
                     description: string;
                     isFollowedByMe: boolean;
@@ -2755,7 +2955,10 @@ declare global {
                 isLoading: boolean;
             };
             "vanilla.recommendedFriendsList": {
-                xboxAPICallResult: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                xboxAPICallResult: number;
                 playerList: CoherentArrayProxy<{
                     description: string;
                     isFollowedByMe: boolean;
@@ -2915,7 +3118,10 @@ declare global {
                 resourcePackToDownload: { body: string; title: string };
                 realmsSubscriber: boolean;
                 realmsPlusSupported: boolean;
-                status: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                status: number;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -2943,11 +3149,16 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.screenshotGalleryList": unknown; // TODO: Get the type for this facet.
+            "vanilla.screenshotGalleryList": unknown;
             "vanilla.screenSpecificOptions": {
                 devPlayScreenHideLanWorlds: boolean;
-                playScreenWorldLayoutMode: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                playScreenWorldLayoutMode: number;
             };
             "vanilla.screenTechStack": {
                 /**
@@ -3048,10 +3259,19 @@ declare global {
                 forceFetchUnpairedRealmsList(...args: unknown[]): unknown;
             };
             "vanilla.userAccount": {
-                signInPlatformNetworkTaskResult: null | number; // TODO: MAKE ENUM
-                signInPlatformNetworkTaskState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                signInPlatformNetworkTaskResult: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                signInPlatformNetworkTaskState: number;
                 isSignedInPlatformNetwork: boolean;
-                accountUnlinkState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                accountUnlinkState: number;
                 currentXuid: string;
                 currentPlatformId: string;
                 isMarketplacePassSubscriptionActive: boolean;
@@ -3131,8 +3351,14 @@ declare global {
                 openLinkWithParams(...args: unknown[]): unknown;
             };
             "vanilla.worldCloudSyncFacet": {
-                syncWorldTaskState: number; // TODO: MAKE ENUM
-                syncWorldResult: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                syncWorldTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                syncWorldResult: null | number;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -3143,12 +3369,30 @@ declare global {
                 clearSyncWorldTaskState(...args: unknown[]): unknown;
             };
             "vanilla.worldEditor": {
-                loadWorldTaskState: number; // TODO: MAKE ENUM
-                loadWorldError: null | number; // TODO: MAKE ENUM
-                saveRealmsWorldTaskState: number; // TODO: MAKE ENUM
-                saveRealmsWorldError: null | number; // TODO: MAKE ENUM
-                saveLocalWorldTaskState: number; // TODO: MAKE ENUM
-                saveLocalWorldError: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                loadWorldTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                loadWorldError: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                saveRealmsWorldTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                saveRealmsWorldError: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                saveLocalWorldTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                saveLocalWorldError: null | number;
                 worldHasBeenModified: boolean;
                 worldIsInitialized: boolean;
                 currentWorldId: string;
@@ -3163,7 +3407,10 @@ declare global {
                     betaFeatures: CoherentArrayProxy<{
                         isEnabled: boolean;
                         isTogglePermanentlyDisabled: boolean;
-                        category: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        category: number;
                         description: string;
                         title: string;
                         id: string;
@@ -3178,7 +3425,10 @@ declare global {
                         mobGriefing: boolean;
                         mobSpawning: boolean;
                         keepInventory: boolean;
-                        daylightCycle: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        daylightCycle: number;
                         cheatsEnabled: boolean;
                     };
                     scriptingCoding?: {
@@ -3189,14 +3439,26 @@ declare global {
                         locatorBarEnabled: boolean;
                         friendlyFire: boolean;
                         visibleToLanPlayers: boolean;
-                        playerPermissions: number; // TODO: MAKE ENUM
-                        playerAccess: number; // TODO: MAKE ENUM
-                        generalWarningState: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        playerPermissions: number;
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        playerAccess: number;
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        generalWarningState: number;
                         platformPlayerFriendsOfFriendsAccessSupported: boolean;
                         platformPlayerInviteAccessSupported: boolean;
                         platformPlayerAccessEnabled: boolean;
                         platformPlayerAccessSupported: boolean;
-                        platformPlayerAccess: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        platformPlayerAccess: number;
                         multiplayerGame: boolean;
                         multiplayerSupported: boolean;
                     };
@@ -3220,14 +3482,23 @@ declare global {
                         bonusChest: boolean;
                         startWithMap: boolean;
                         simulationDistance: number;
-                        generatorType: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        generatorType: number;
                         useFlatWorld: boolean;
                     };
                     general: {
-                        difficulty: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        difficulty: number;
                         playerHasDied: boolean;
                         isHardcore: boolean;
-                        gameMode: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        gameMode: number;
                         worldName: string;
                     };
                 };
@@ -3265,15 +3536,39 @@ declare global {
                 reloadWorld(...args: unknown[]): unknown;
             };
             "vanilla.worldOperations": {
-                clearPlayerDataTaskState: number; // TODO: MAKE ENUM
-                startClearPlayerDataError: null | number; // TODO: MAKE ENUM
-                exportWorldStatus: number; // TODO: MAKE ENUM
-                exportWorldResult: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                clearPlayerDataTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                startClearPlayerDataError: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                exportWorldStatus: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                exportWorldResult: null | number;
                 makeWorldInfiniteProgress: number;
-                makeWorldInfiniteState: number; // TODO: MAKE ENUM
-                makeWorldInfiniteError: null | number; // TODO: MAKE ENUM
-                duplicateWorldTaskState: number; // TODO: MAKE ENUM
-                duplicateWorldError: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                makeWorldInfiniteState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                makeWorldInfiniteError: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                duplicateWorldTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                duplicateWorldError: null | number;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -3325,8 +3620,14 @@ declare global {
             };
             "vanilla.worldPackages": {
                 lastConsultedPackSizes: string;
-                lastConsultedPackSizesTaskState: number; // TODO: MAKE ENUM
-                lastConsultedPackSizesError: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                lastConsultedPackSizesTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                lastConsultedPackSizesError: null | number;
                 packDownloadErrorData: {
                     /**
                      * @todo Figure out the types for this array.
@@ -3334,11 +3635,20 @@ declare global {
                     packTitles: CoherentArrayProxy<unknown>;
                     storageSpaceNeeded: string;
                 };
-                packDownloadStatus: number; // TODO: MAKE ENUM
-                packDownloadTaskState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                packDownloadStatus: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                packDownloadTaskState: number;
                 packDownloadProgress: number;
                 packDownloadName: string;
-                packDownloadError: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                packDownloadError: null | number;
                 worldPacksData: {
                     /**
                      * @todo Figure out the types for this array.
@@ -3467,9 +3777,18 @@ declare global {
             };
             "vanilla.worldStartup": {
                 backupThenStartLocalWorld: {
-                    progress: null | number; // TODO: MAKE ENUM
-                    state: number; // TODO: MAKE ENUM
-                    result: null | number; // TODO: MAKE ENUM
+                    /**
+                     * @todo Make the type an enum.
+                     */
+                    progress: null | number;
+                    /**
+                     * @todo Make the type an enum.
+                     */
+                    state: number;
+                    /**
+                     * @todo Make the type an enum.
+                     */
+                    result: null | number;
                     /**
                      * @todo Figure out the types for this method.
                      */
@@ -3494,8 +3813,14 @@ declare global {
                 missingPacksToStart: CoherentArrayProxy<unknown>;
                 missingTemplateToStart: string;
                 hasMissingResources: boolean;
-                startLocalWorldTaskState: number; // TODO: MAKE ENUM
-                startLocalWorldResult: null; // TODO: Figure out the non-null type of this.
+                /**
+                 * @todo Make the type an enum.
+                 */
+                startLocalWorldTaskState: number;
+                /**
+                 * @todo Figure out the non-null type of this.
+                 */
+                startLocalWorldResult: null;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -3521,14 +3846,26 @@ declare global {
             };
             "vanilla.worldTransfer": {
                 backupWorldProgress: number;
-                backupWorldResult: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                backupWorldResult: null | number;
                 importWorldProgress: number;
                 importWorldProgressPercentage: number;
-                importWorldResult: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                importWorldResult: null | number;
                 importWorld: {
                     progress: null | number;
-                    state: number; // TODO: MAKE ENUM
-                    result: null | number; // TODO: MAKE ENUM
+                    /**
+                     * @todo Make the type an enum.
+                     */
+                    state: number;
+                    /**
+                     * @todo Make the type an enum.
+                     */
+                    result: null | number;
                     run(): void;
                     cancel(): void;
                     clear(): void;
@@ -3612,8 +3949,10 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "debug.worldTransfer": unknown; // TODO: Get the type for this facet.
+            "debug.worldTransfer": unknown;
             "vanilla.flatWorldPresets": {
                 /**
                  * The flat world presets.
@@ -3677,8 +4016,10 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.realmsPurchase": unknown; // TODO: Get the type for this facet.
+            "vanilla.realmsPurchase": unknown;
             "vanilla.realmsSubscriptionsData": {
                 /**
                  * An array of realm subscriptions.
@@ -3699,7 +4040,10 @@ declare global {
                 }>;
                 canBuyPlusRealm: boolean;
                 canBuyCoreRealm: boolean;
-                state: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                state: number;
             };
             "vanilla.realmsSubscriptionsMethods": {
                 /**
@@ -3775,10 +4119,16 @@ declare global {
                  * @default ""
                  */
                 realmName: string;
-                state: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                state: number;
             };
             "vanilla.realmsStories.sessions": {
-                fetchSessionStatus: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                fetchSessionStatus: number;
                 /**
                  * @todo Figure out the types for this array.
                  */
@@ -3798,20 +4148,32 @@ declare global {
                 isRealmsPreproductionEnvironment: boolean;
             };
             "vanilla.realmsStories.comments": {
-                postCommentStatus: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                postCommentStatus: number;
                 /**
                  * @todo Figure out the types for this array.
                  */
                 comments: CoherentArrayProxy<unknown>;
             };
             "vanilla.screenshotGallery": {
-                deleteScreenshotsError: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                deleteScreenshotsError: number;
                 isDeleteScreenshotsInProgress: boolean;
-                modifyShowcaseGalleryError: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                modifyShowcaseGalleryError: number;
                 isModifyShowcaseGalleryInProgress: boolean;
                 isAddShowcasedImageInProgress: boolean;
                 isAddFeaturedImageInProgress: boolean;
-                loadGalleryError: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                loadGalleryError: number;
                 isLoadGalleryInProgress: boolean;
                 isLoadingCount: boolean;
                 isLoadingFeaturedScreenshot: boolean;
@@ -3895,17 +4257,26 @@ declare global {
                 loadFeaturedScreenshot(...args: unknown[]): unknown;
             };
             "vanilla.trialMode": {
-                purchaseGameError: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                purchaseGameError: null | number;
                 /**
                  * @todo Figure out the types for this method.
                  */
                 purchaseGame(...args: unknown[]): unknown;
             };
             "vanilla.featuredWorldTemplateList": {
-                refreshTaskState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                refreshTaskState: number;
                 seeMoreFeaturedRouteData: { pageId: string; title: string };
                 featuredWorldTemplates: CoherentArrayProxy<{
-                    storeCatalogCategory: number; // TODO: MAKE ENUM
+                    /**
+                     * @todo Make the type an enum.
+                     */
+                    storeCatalogCategory: number;
                     isUpdateAvailable: boolean;
                     isInstalled: boolean;
                     packId: string;
@@ -3944,11 +4315,26 @@ declare global {
                 isTemplateScreenAvailable: boolean;
                 canDownloadBeCancelled: boolean;
                 importedPackName: string;
-                importingTaskResult: null | number; // TODO: MAKE ENUM
-                importingTaskState: number; // TODO: MAKE ENUM
-                downloadingTaskResult: null | number; // TODO: MAKE ENUM
-                downloadingTaskState: number; // TODO: MAKE ENUM
-                downloadingStatus: null | number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                importingTaskResult: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                importingTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                downloadingTaskResult: null | number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                downloadingTaskState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                downloadingStatus: null | number;
                 downloadTotalBytes: string;
                 downloadingProgressBytes: string;
                 downloadingProgressPercent: number;
@@ -3975,32 +4361,46 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "test.vector": unknown; // TODO: Get the type for this facet.
+            "test.vector": unknown;
             /**
              * @warning THIS CRASHES THE GAME WHEN NOT IN EDITOR MODE!
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.editorBlockPalette": unknown; // TODO: Get the type for this facet.
+            "vanilla.editorBlockPalette": unknown;
             /**
              * @warning THIS CRASHES THE GAME WHEN NOT IN EDITOR MODE!
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.editorInputBinding": unknown; // TODO: Get the type for this facet.
+            "vanilla.editorInputBinding": unknown;
             /**
              * @warning THIS CRASHES THE GAME WHEN NOT IN EDITOR MODE!
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.editorInputState": unknown; // TODO: Get the type for this facet.
+            "vanilla.editorInputState": unknown;
             /**
              * @warning THIS CRASHES THE GAME WHEN NOT IN EDITOR MODE!
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.editorProjectConstants": unknown; // TODO: Get the type for this facet.
+            "vanilla.editorProjectConstants": unknown;
             /**
              * @warning THIS CRASHES THE GAME WHEN NOT IN EDITOR MODE!
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.editorStructure": unknown; // TODO: Get the type for this facet.
+            "vanilla.editorStructure": unknown;
             /**
              * @warning THIS CRASHES THE GAME WHEN NOT IN EDITOR MODE!
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.editorTutorial": unknown; // TODO: Get the type for this facet.
+            "vanilla.editorTutorial": unknown;
             "vanilla.gameplay.localPlayerWeatherLightningFacet": {
                 isLightning: null | boolean;
             };
@@ -4099,8 +4499,10 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.worldRealmEditor": unknown; // TODO: Get the type for this facet. // Found in dev build file.
+            "vanilla.worldRealmEditor": unknown; // Found in dev build file.
             "vanilla.worldRealmEditorCommands": {
                 /**
                  * @todo Figure out the types for this method.
@@ -4120,8 +4522,14 @@ declare global {
                 setUseRealmWorldBackend(...args: unknown[]): unknown;
             };
             "vanilla.worldRealmEditorQueries": {
-                realmWorldEditorStateStatus: number; // TODO: MAKE ENUM
-                realmWorldEditorState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                realmWorldEditorStateStatus: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                realmWorldEditorState: number;
                 useRealmsWorldBackend: boolean;
                 realmWorldHasBeenModified: boolean;
                 realmWorldData: {
@@ -4154,14 +4562,26 @@ declare global {
                         locatorBarEnabled: boolean;
                         friendlyFire: boolean;
                         visibleToLanPlayers: boolean;
-                        playerPermissions: number; // TODO: MAKE ENUM
-                        playerAccess: number; // TODO: MAKE ENUM
-                        generalWarningState: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        playerPermissions: number;
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        playerAccess: number;
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        generalWarningState: number;
                         platformPlayerFriendsOfFriendsAccessSupported: boolean;
                         platformPlayerInviteAccessSupported: boolean;
                         platformPlayerAccessEnabled: boolean;
                         platformPlayerAccessSupported: boolean;
-                        platformPlayerAccess: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        platformPlayerAccess: number;
                         multiplayerGame: boolean;
                         multiplayerSupported: boolean;
                     };
@@ -4185,14 +4605,23 @@ declare global {
                         bonusChest: boolean;
                         startWithMap: boolean;
                         simulationDistance: number;
-                        generatorType: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        generatorType: number;
                         useFlatWorld: boolean;
                     };
                     general: {
-                        difficulty: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        difficulty: number;
                         playerHasDied: boolean;
                         isHardcore: boolean;
-                        gameMode: number; // TODO: MAKE ENUM
+                        /**
+                         * @todo Make the type an enum.
+                         */
+                        gameMode: number;
                         worldName: string;
                     };
                 };
@@ -4208,7 +4637,10 @@ declare global {
                 clearRealmBackupsState(...args: unknown[]): unknown;
             };
             "vanilla.realmBackupsQueries": {
-                realmBackupsState: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                realmBackupsState: number;
                 realmWorldSummary: {
                     lastSaved: string;
                     fileSize: string;
@@ -4254,17 +4686,27 @@ declare global {
                 prepareAppStoreForReconciliation(...args: unknown[]): unknown;
             };
             "vanilla.realmsPurchaseReconcilerQueries": {
-                failureReason: number; // TODO: MAKE ENUM
-                state: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                failureReason: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                state: number;
             };
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.character-selector": unknown; // TODO: Get the type for this facet.
+            "vanilla.character-selector": unknown;
             /**
              * NOTE: Not present in 1.21.120.4.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.progressTracker": unknown; // TODO: Get the type for this facet.
+            "vanilla.progressTracker": unknown;
 
             "vanilla.realmsWorldEditorGameRulesCommands": {
                 /**
@@ -4339,7 +4781,10 @@ declare global {
                 simulationDistance: number;
                 bonusChest: boolean;
                 startWithMap: boolean;
-                generatorType: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                generatorType: number;
                 flatWorldPreset: string;
                 useFlatWorld: boolean;
                 worldSeed: string;
@@ -4347,15 +4792,21 @@ declare global {
             /**
              * NOTE: Not present in 1.21.120.4.
              */
-            "vanilla.realmsCommitCommandsFacet": unknown; // TODO: Get the type for this facet.
+            "vanilla.realmsCommitCommandsFacet": unknown;
             /**
              * NOTE: Not present in 1.21.120.4.
              */
-            "vanilla.realmsCommitQueriesFacet": unknown; // TODO: Get the type for this facet.
+            "vanilla.realmsCommitQueriesFacet": unknown;
             "vanilla.realmsPurchaseQueries": {
                 purchaseDisabledDueToStoreVersion: boolean;
-                failureReason: number; // TODO: MAKE ENUM
-                state: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                failureReason: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                state: number;
             };
 
             "vanilla.connectionErrorInfoFacet": {
@@ -4390,7 +4841,10 @@ declare global {
                 hasDeleted: number;
                 pageLength: number;
                 totalStories: number;
-                storiesStatus: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                storiesStatus: number;
                 /**
                  * @todo Figure out the types for this array.
                  */
@@ -4454,12 +4908,16 @@ declare global {
             };
             /**
              * NOTE: Not present in 1.21.120.4 (however, it is referenced by the vanilla files there for some reason).
+             *
+             * @todo Get the type for this facet.
              */
-            "dev.realmsCommitCommandsFacet": unknown; // TODO: Get the type for this facet.
+            "dev.realmsCommitCommandsFacet": unknown;
             /**
              * NOTE: Not present in 1.21.120.4 (however, it is referenced by the vanilla files there for some reason).
+             *
+             * @todo Get the type for this facet.
              */
-            "dev.realmsCommitQueriesFacet": unknown; // TODO: Get the type for this facet.
+            "dev.realmsCommitQueriesFacet": unknown;
             "vanilla.newPlayerChoices": {
                 selectedCharacterId: string;
                 selectableCharacters: CoherentArrayProxy<{
@@ -4482,20 +4940,28 @@ declare global {
 
             /**
              * @since Somewhere between 1.21.130.20 Preview and 1.21.130.26 Preview.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.realmsRolesAndPermissionsQueries": unknown; // TODO: Get the type for this facet.
+            "vanilla.realmsRolesAndPermissionsQueries": unknown;
             /**
              * @since Somewhere between 1.21.130.20 Preview and 1.21.130.26 Preview.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.realmsRolesAndPermissionsCommands": unknown; // TODO: Get the type for this facet.
+            "vanilla.realmsRolesAndPermissionsCommands": unknown;
             /**
              * @since Somewhere between 1.21.130.20 Preview and 1.21.130.26 Preview.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.realmsPlayerListQueries": unknown; // TODO: Get the type for this facet.
+            "vanilla.realmsPlayerListQueries": unknown;
             /**
              * @since Somewhere between 1.21.130.20 Preview and 1.21.130.26 Preview.
+             *
+             * @todo Get the type for this facet.
              */
-            "vanilla.realmsPlayerListCommands": unknown; // TODO: Get the type for this facet.
+            "vanilla.realmsPlayerListCommands": unknown;
         }
         /**
          * A shared facet.
@@ -4620,7 +5086,10 @@ declare global {
                 description: string;
                 isInitialized: boolean;
                 isHardcore: boolean;
-                gameMode: number; // TODO: MAKE ENUM
+                /**
+                 * @todo Make the type an enum.
+                 */
+                gameMode: number;
                 expired: boolean;
                 daysLeft: number;
                 full: boolean;
@@ -4662,9 +5131,11 @@ declare global {
             /**
              * The rarity of the reward associated with this achievement.
              *
+             * @todo Make the type an enum.
+             *
              * @default 0
              */
-            rewardRarity: number; // TODO: MAKE ENUM
+            rewardRarity: number;
             /**
              * The image associated with the reward associated with this achievement.
              *
@@ -4691,12 +5162,20 @@ declare global {
              * @example "id://193"
              */
             image: string;
-            trackedByUser: number; // TODO: MAKE ENUM
-            progressTarget: number; // TODO: MAKE ENUM
+            /**
+             * @todo Make the type an enum.
+             */
+            trackedByUser: number;
+            /**
+             * @todo Make the type an enum.
+             */
+            progressTarget: number;
             /**
              * The progress of this achievement.
+             *
+             * @todo Figure out if this type should be an enum.
              */
-            progress: number; // TODO: MAKE ENUM
+            progress: number;
             /**
              * Whether or not this achievement is secret.
              */
@@ -4767,7 +5246,7 @@ declare global {
             includes: Array<T>["includes"];
             lastIndexOf: Array<T>["lastIndexOf"];
             entries(): ArrayIterator<[number, T]>;
-            join(separator?: string): string;
+            join(separator?: string | undefined): string;
             keys(): ArrayIterator<number>;
             values(): ArrayIterator<T>;
             toString(): string;
