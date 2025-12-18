@@ -1,3 +1,14 @@
+# v1.2.0
+
+## Changes
+
+-   The `package.json` file now uses an `exports` field.
+-   The package now requires `v1.1.0` or newer of [`@ore-ui-types/enums`](https://www.npmjs.com/package/@ore-ui-types/enums) instead of `v1.0.0`
+
+## Removals
+
+-   The `package.json` file no longer has a `main` or `types` field field.
+
 # v1.1.1
 
 ## Additions
