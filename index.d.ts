@@ -1,22 +1,26 @@
 import type {
     ARVRPlatform,
     FriendFavoriteStatus,
+    FriendPresence,
     InputMethod,
     JoinRealmsServerError,
     KeyboardType,
     LeaveRealmsServerError,
     Platform,
+    PlayerPartyPresence,
     PlayerPermissionLevel,
     PlayerRelation,
+    PlayerTitleHistory,
     StorageType,
     VanillaGameplayContainerChestType,
     VanillaGameplayContainerItemType,
     VanillaGameplayUIProfile,
-} from "@ore-ui-types/enums";
+    WebBrowserFacetLinkType,
+    WorldPlayerInfoBindingsConnectionType,
+    WorldPlayerInfoBindingsPlatform,
+} from "@ore-ui-types/enums/ts";
 declare global {
     namespace globalThis {
-        //#region Ore UI Native
-
         // copyTextToClipboardAsync(Object.entries(__commands__).map(v=>`${v[0]}: {${Object.keys(v[1]).map(v2=>`${v2}: {
         //     id: number;
         //     callable(...args: unknown[]): unknown;
@@ -347,13 +351,97 @@ declare global {
             };
         };
 
+        /**
+         * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+         */
+        interface Engine_SingleArgumentCallback<T> {
+            (result: T): any;
+        }
+        /**
+         * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+         */
+        interface Engine_ArbitraryCallback {
+            (...args: any[]): any;
+        }
+        /**
+         * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+         */
+        interface Engine_EventHandle {
+            /**
+             * Detach this handler from the event
+             **/
+            clear(): void;
+        }
+        /**
+         * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+         */
+        interface Engine_VirtualList {
+            /**
+             * Index from which the data-bind-for will start generating DOM elements. The default value is 0.
+             **/
+            startIndex: number;
+
+            /**
+             * The maximum number of elements that will be generated from the data-bind-for.
+             **/
+            pageSize: number;
+        }
+        /**
+         * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+         */
+        interface Engine_AttributeHandler {
+            /**
+             * This will be executed only once per element when the attribute attached to it is bound with a model.
+             * Set up any initial state, event handlers, etc. here.
+             * @param element The DOM element to which the handler is attached
+             * @param value The result from the evaluation of the attribute's expression in the HTML
+             **/
+            init(element: Element, value: any): void;
+
+            /**
+             * This will be executed only once per element when the element is detached from the DOM.
+             * Cleanup state, event handlers, etc. here.
+             * @param element The DOM element to which the handler is attached
+             **/
+            deinit(element: Element): void;
+
+            /**
+             * This will be executed every time when the model on which the attribute is attached is synchronized.
+             * @param element The DOM element to which the handler is attached
+             * @param value The result from the evaluation of the attribute's expression in the HTML
+             **/
+            update(element: Element, value: any): void;
+        }
+        /**
+         * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+         */
+        interface Engine_AttributeHandlerConstructor {
+            new (): Engine_AttributeHandler;
+        }
+        /**
+         * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+         */
+        interface Engine_Deferred<T> extends Promise<T> {
+            /**
+             * Resolve the promise with the specified value. All success handlers will be called with value
+             * @param value The success value of the promise
+             **/
+            resolve(value: T): void;
+
+            /**
+             * Reject the promise with the specified value. All failure handlers will be called with value
+             * @param value The failure value of the promise
+             **/
+            reject(value: T): void;
+        }
+
         interface Engine {
             /**
              * Adds an event listener.
              *
              * @param name The name of the event.
              * @param callback The callback function.
-             * @param context The context to bind the callback to.
+             * @param context The context to bind the callback to. Defaults to {@link engine}.
              * @returns An object with a clear method that can be used to remove the event listener.
              *
              * @description
@@ -367,10 +455,10 @@ declare global {
              * return { clear: this._createClear(this, name, callback, context) };
             ```
              */
-            on<T extends EngineEventID>(
+            on<T extends EngineEventID, Context extends unknown = Engine>(
                 name: T,
-                callback: (...args: EngineEvent<EngineEventID extends T ? undefined : T>) => void,
-                context?: unknown
+                callback: (this: Context, ...args: EngineEvent<EngineEventID extends T ? undefined : T>) => void,
+                context?: Context
             ): {
                 clear(): void;
             };
@@ -379,7 +467,8 @@ declare global {
              *
              * @param name The name of the event.
              * @param handler The callback function.
-             * @param context The context to bind the callback to.
+             * @param context context *this* context for the function, by default all removes all callbacks, regardless of context. Defaults to {@link engine}.
+             * @warning Removing all handlers for `engine` will remove some *Coherent UI* internal events, breaking some functionality.
              *
              * @description
              * This is the code of the function:
@@ -409,7 +498,11 @@ declare global {
              * }
              * ```
              */
-            off<T extends EngineEventID>(name: T, handler: (...args: EngineEvent<EngineEventID extends T ? undefined : T>) => void, context?: unknown): void;
+            off<T extends EngineEventID, Context extends unknown = Engine>(
+                name: T,
+                handler: (this: Context, ...args: EngineEvent<EngineEventID extends T ? undefined : T>) => void,
+                context?: Context
+            ): void;
             /**
              * Triggers an event.
              *
@@ -425,50 +518,252 @@ declare global {
              * ```
              */
             trigger<T extends EngineEventID>(name: T, ...args: EngineEvent<EngineEventID extends T ? undefined : T>): void;
-            TriggerEvent(...args: unknown[]): unknown;
-            SendMessage(...args: [unknown, requestId: number, ...unknown[]]): unknown;
-            BindingsReady(...args: unknown[]): unknown;
-            AddOrRemoveOnHandler(...args: unknown[]): unknown;
-            RemoveOnHandler(...args: unknown[]): unknown;
-            enableImmediateLayout(...args: unknown[]): unknown;
-            isImmediateLayoutEnabled(...args: unknown[]): unknown;
-            executeImmediateLayoutSync(...args: unknown[]): unknown;
-            createJSModel(...args: unknown[]): unknown;
-            unregisterModel(...args: unknown[]): unknown;
-            updateWholeModel(...args: unknown[]): unknown;
-            synchronizeModels(...args: unknown[]): unknown;
-            createVirtualList(...args: unknown[]): unknown;
-            registerBindingAttribute(...args: unknown[]): unknown;
+            /**
+             * Tries to invoke handlers for an event.
+             *
+             * It will invoke any handler registered in C++ or the only handler registered in JavaScript.
+             * {@link engine._trigger} will handle the case where more than one event handler is registered in JavaScript
+             * or there are handlers from C++ and JavaScript at the same time.
+             *
+             * @param name name of the event to be fired
+             * @param args any extra parameters to be passed to event handlers
+             * @returns `true` if any event handlers have been registered in C++ or exactly one in JavaScript. Always returns `true` in Cohtml (Ore UI).
+             *
+             * @deprecated This does nothing in Ore UI. It just always returns `true`.
+             *
+             * @note this mock-mode version will return true if there is any event handler in JavaScript
+             *
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L222C3-L222C38}
+             */
+            TriggerEvent<T extends EngineEventID>(name: T, ...args: EngineEvent<EngineEventID extends T ? undefined : T>): boolean;
+            /**
+             * @deprecated This does nothing in Ore UI.
+             *
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L196}
+             */
+            SendMessage(mockName: unknown, requestId: number, ...args: unknown[]): void;
+            /**
+             * Called once the engine is initialized.
+             *
+             * @param _version The version of the engine.
+             *
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L236}
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L460}
+             */
+            BindingsReady(..._version: [number, number, number, number] | []): void;
+            /**
+             * Adds or removes an event listener.
+             *
+             * @param name The name of the event.
+             * @param callback The callback function.
+             * @param context The context to bind the callback to. Normally this is {@link engine}.
+             */
+            AddOrRemoveOnHandler<T extends EngineEventID, Context extends unknown = Engine>(
+                name: T,
+                callback: (this: Context, ...args: EngineEvent<EngineEventID extends T ? undefined : T>) => void,
+                context: Context
+            ): void;
+            /**
+             * Removes an event listener.
+             *
+             * @param name The name of the event.
+             * @param handler The callback function.
+             * @param context The context to bind the callback to. Normally this is {@link engine}.
+             */
+            RemoveOnHandler<T extends EngineEventID, Context extends unknown = Engine>(
+                name: T,
+                handler: (this: Context, ...args: EngineEvent<EngineEventID extends T ? undefined : T>) => void,
+                context: Context
+            ): void;
+            /**
+             * Enables or disables immediate layout. Disabled by default.
+             * @param isEnabled Whether to enable immediate layout
+             *
+             * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+             **/
+            enableImmediateLayout(isEnabled: boolean): void;
+            /**
+             * Returns whether or not immediate layout is enabled.
+             * @return boolean
+             *
+             * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+             **/
+            isImmediateLayoutEnabled(): boolean;
+            /**
+             * Performs Immediate Layout sync
+             *
+             * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+             **/
+            executeImmediateLayoutSync(): void;
+            /**
+             * Registers a JavaScript data binding model
+             *
+             * @param name The name of the model
+             * @param model The model's definition
+             *
+             * @see {@link https://github.com/CitiesSkylinesModding/StockModTemplatesDiffer/blob/247be33865ffadfe86213cb5680b508198073b96/ui/types/cohtml.d.ts#L116C19-L116C46}
+             */
+            createJSModel(name: string, model: object): void;
+            /**
+             * Unregisters a model and removes the global variable that is associated with it.
+             *
+             * @param model The model to be removed
+             *
+             * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+             **/
+            unregisterModel(model: object): void;
+            /**
+             * Marks a model as dirty. Properties will be synchronized using the synchronizeModels call.
+             *
+             * @param model The model to be marked as dirty
+             *
+             * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+             **/
+            updateWholeModel(model: object): void;
+            /**
+             * Applies the changes accumulated by updateWholeModel to the corresponding JavaScript objects.
+             *
+             * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+             **/
+            synchronizeModels(): void;
+            /**
+             * Creates a virtual list object to be used for pagination in data-bind-for
+             *
+             * @returns VirtualList object for configuring the pagination options
+             *
+             * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+             **/
+            createVirtualList(): Engine_VirtualList;
+            /**
+             * Registers a custom handler for a given data-bind attribute name
+             *
+             * @param attributeName The name for the custom data-bind attribute, excluding the "data-bind-" prefix
+             * @param attributeHandler The AttributeHandler for the data-bind attribute
+             *
+             * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+             **/
+            registerBindingAttribute(attributeName: string, attributeHandler: Engine_AttributeHandlerConstructor): void;
             addDataBindEventListner(...args: unknown[]): unknown;
             removeDataBindEventListner(...args: unknown[]): unknown;
-            translate(...args: unknown[]): unknown;
-            reloadLocalization(...args: unknown[]): unknown;
-            setInspectorInitatorsUpperBound(...args: unknown[]): unknown;
+            /**
+             * Registers a JavaScript data binding model
+             *
+             * @param id The id that will be requested in the localization manager
+             * @returns The translated text from the localization manager
+             *
+             * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+             **/
+            translate(id: string): string;
+            /**
+             * Updates all localized elements having `data-l10n-id`. Useful after changing the locale.
+             *
+             * @see {@link https://github.com/krzychu124/Traffic/blob/cb50cdb5b67bc932c1978452e4839f4ea979f66d/UI/types/cohtml.d.ts}
+             **/
+            reloadLocalization(): void;
+            /**
+             * Used to specify the number of maximum initiators shown for a single Recalculate Styles and Layout event.
+             *
+             * This is for the official Gameface DevTools fork.
+             *
+             * @param count The number of maximum initiators shown for a single Recalculate Styles and Layout event.
+             *
+             * @see {@link https://docs.coherent-labs.com/unity-gameface/content_development/devtools_js/#:~:text=Tracking%20of%20different,can%20be%20analyzed.}
+             */
+            setInspectorInitatorsUpperBound(count: number): void;
+            /**
+             * Indicates whether the script is currently running inside Cohtml (Ore UI).
+             *
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L144}
+             */
             isAttached: boolean;
             events: Record<PropertyKey, unknown>;
-            _createClear<T extends EngineEventID>(
+            _createClear<T extends EngineEventID, Context extends unknown = Engine>(
                 object: Pick<typeof engine, "events">,
                 name: T,
-                handler?: (...args: EngineEvent<T>) => void,
-                context?: unknown
+                handler?: (this: Context, ...args: EngineEvent<T>) => void,
+                context?: Context
             ): () => void;
-            whenReady: Promise<unknown>;
-            _trigger<T extends EngineEventID>(name: T): boolean;
-            mock(...args: unknown[]): unknown;
+            whenReady: Promise<undefined>;
+            /**
+             * Trigger an event
+             *
+             * This function will trigger any C++ handler registered for this event with `View::RegisterForEvent`
+             *
+             * @param {String} name name of the event
+             * @param args any extra arguments to be passed to the event handlers
+             */
+            _trigger<T extends EngineEventID>(name: T, ...args: EngineEvent<EngineEventID extends T ? undefined : T>): boolean;
+            /**
+             * Mocks a C++ function call with the specified function.
+             *
+             * Only works in the browser. Attempts to use it in Coherent UI (Ore UI) will do nothing.
+             *
+             * @param name name of the event
+             * @param mock a function to be called in-place of your native binding
+             * @param isEvent whether you are mocking an event or function call
+             *
+             * @deprecated This does nothing in Ore UI.
+             *
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L312}
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L258}
+             *
+             * @description
+             * This is the code of this function in Coherent UI (Ore UI):
+             * ```js
+             * if (engine.isAttached) {
+             * 	   engine.mock = function () {};
+             * }
+             * ```
+             * This is the code of this function in the browser:
+             * ```js
+             * engine.mock = function (name, mock, isEvent) {
+             * 	   this._mockImpl(name, mock, true, isEvent);
+             * };
+             * ```
+             */
+            mock(name: string, mock: (...args: unknown[]) => unknown, isEvent?: boolean | undefined): void;
+            /**
+             * Whether {@link engine} has been fully initialized.
+             *
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L315}
+             */
             _BindingsReady: boolean;
+            /**
+             * Whether the window is loaded.
+             *
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L316}
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L395}
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L401}
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L412}
+             */
             _WindowLoaded: boolean;
+            /**
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L317}
+             */
             _RequestId: 0;
+            /**
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L318}
+             */
             _ActiveRequests: {
                 [id: number]: {
                     resolve: (value: unknown) => void;
                     reject: (reason?: any) => void;
                 };
             };
+            /**
+             * Call asynchronously a C++ handler and retrieve the result
+             *
+             * The C++ handler must have been registered with `View::BindCall`
+             *
+             * @param {String} name name of the C++ handler to be called
+             * @param args any extra parameters to be passed to the C++ handler
+             * @returns ECMAScript 6 promise
+             *
+             * @see {@link https://github.com/CoherentLabs/StarterGuide/blob/f533a0c505a787a7f348ea3464f60992c09509cb/files/chapter_11/cohtml.js#L326}
+             **/
             call(
-                ...args: [
-                    Parameters<NonNullable<(typeof engine)["SendMessage"]>>[0],
-                    ...RemoveFirstNElements<Parameters<NonNullable<(typeof engine)["SendMessage"]>>, 2>
-                ]
+                name: Parameters<NonNullable<(typeof engine)["SendMessage"]>>[0],
+                ...args: RemoveFirstNElements<Parameters<NonNullable<(typeof engine)["SendMessage"]>>, 2>
             ): Promise<unknown>;
             _Result(requestId: number, ...resultArguments: Parameters<NonNullable<typeof engine._ActiveRequests>[number]["resolve"]>): void;
             _Reject(requestId: number): void;
@@ -632,6 +927,182 @@ declare global {
         }
         var engine: Engine;
 
+        type FacetErrorCode =
+            | "activate-facet-not-found"
+            | "deactivate-facet-not-found"
+            | "facet-is-already-active"
+            | "facet-is-already-deactivated"
+            | "facet-initialization-failed";
+
+        type EngineCallErrorCode = "No handler registered";
+
+        type SupportedURIProtocol =
+            // Standard:
+            | "profile-img"
+            | "qr"
+            | "id"
+            | "pack"
+            | "ui"
+            // Editor Mode Exclusive:
+            | "structure"
+            | "block";
+        // NOTE: `api://` and `ws://` may also exist.
+
+        // engine.on("facet:updated:core.router", (v)=>console.info(JSONB.stringify(v)))
+
+        type SpecialFunctionalityRoute =
+            // JSON UI Screens:
+            | "/tabbed-upsell" // Unlock Full Game modal.
+            | "/win10-trial-conversion" // Unlock Full Game collection selection screen.
+            | "/update-version" // Cannot access marketplace due to outdated version modal.
+            | "/world-pre-loading-screen" // World loading screen.
+            | "/project-pre-loading-screen" // Editor mode world loading screen.
+            | "/marketplace" // Marketplace
+            | "/marketplace/realms-2p-subscription" // Marketplace
+            | "/marketplace/inventory" // Marketplace
+            | "/marketplace/store" // Marketplace
+            | "/marketplace?productId=-1" // Marketplace error L-404 screen.
+            | "/marketplace?productId=" // Marketplace error L-400 screen.
+            | `/marketplace?productId=${string}` // Marketplace product screen.
+            | "/marketplace?pageId=-1" // Marketplace error L-404 screen.
+            | "/marketplace?pageId=" // Marketplace error L-400 screen.
+            | `/marketplace?pageId=${string}` // Marketplace page screen.
+            | "/credits" // End credits screen. (not the end poem, but the credits)
+            | "/credits/end-poem" // End credits screen. (not the end poem, but the credits)
+            | "/persona" // Dressing room screen.
+            | "/realms-stories-timeline-information" // Minecraft Encyclopedia: Realms Stories
+            | "/settings/members/manage" // Settings (No section selected)
+            | "/settings/world/saves" // Settings
+            | "/csb-pdp?tab=default" // Marketplace Pass info screen.
+            | "/safezone" // Safezone selection screen.
+            | "/settings" // Settings
+            | "/realms-plus-ended-screen" // Realms Plus Subscription Expired modal.
+            | "/mobile-data-blocked-modal/links/settings-page" // General Settings
+            | "/settings/accessibility" // Settings
+            | "/settings/how_to_play" // Settings
+            | "/settings/keyboard-and-mouse" // Settings
+            | "/settings/controller" // Settings
+            | "/settings/touch" // Settings
+            | "/settings/party" // Settings
+            | "/settings/general" // General Settings
+            | "/settings/video" // Video Settings
+            | "/settings/audio" // Settings
+            | "/settings/account" // Settings
+            | "/settings/global_resources" // Settings
+            | "/settings/storage" // Settings
+            | "/settings/language" // Settings
+            | "/settings/creator" // Settings
+            | "/settings/debug" // Settings
+            | "/settings/ui_debug" // Settings
+            // | "/settings/????" // Edu Debug Settings
+            | "/settings/marketplace_debug" // Settings
+            // | "/settings/????" // Gatherings Settings
+            | "/settings/flighting_debug" // Settings
+            | "/settings/automation" // Settings
+            | "/settings/game" // World Game Settings
+            | "/settings/multiplayer" // World Multiplayer Settings
+            | "/settings/classroom" // World Classroom Settings
+            // | "/settings/????" // World Resource Packs Settings
+            // | "/settings/????" // World Behavior Packs Settings
+            | "/settings/classroom" // World Classroom Settings
+            // | "/settings/????" // World Debug Settings
+            // | "/settings/????" // Realm Game Settings
+            | "/settings/members" // Realm Members Settings
+            | "/settings/subscription" // Realm Subscription Settings
+            // | "/settings/????" // TODO: Realms Backups Settings
+            | "/settings/dev_options" // Realms Dev Options Settings
+
+            // Crashing Screens:
+            | "/realms-allowlist"
+            | "/realms-create-screen"
+            | "/csb-pdp"
+            | "/realm-settings"
+            | "/realms-plus-pdp"
+
+            // Untriggerable Screens:
+            | "/__INVALID_ROUTE__"
+            | "/__bedrock__/cubemap_background_screen"
+            | "/__bedrock__/debug_screen"
+            | "/__bedrock__/toast_screen"
+            | "/__bedrock__/start_screen"
+            | "/__bedrock__/hud_screen"
+            | "/__bedrock__/pause_screen"
+            | "/__bedrock__/gamepad_disconnected_screen"
+            | "/__bedrock__/in_game_play_screen"
+            | "/__bedrock__/credits_screen"
+            | "/legacy-player-permissions"
+            | "/legacy-create-new-world"
+            | "/legacy-play"
+            | "/legacy-edit-world"
+            | "/legacy-edit-realm-world"
+            | "/invite-screen-legacy"
+            | "/legacy-start-from-template"
+            | "/sign-in-achievements"
+            | "/gameplay/menu"
+            | "/gameplay/chat"
+            | "/gameplay/pause-menu/debug-drawer"
+            | "/send-invites"
+            | "/edit-realm-world"
+            | "/view-all-packs"
+            | "/game-settings"
+            | "/pack-settings"
+            | "/realms-permissions"
+            | "/realms-replace-world"
+            | "/manifest-validation"
+
+            // Blank Screens:
+            // | "/realms-purchase-subscription/"
+            // | "/player-permissions"
+            // | "/edit-world"
+            // | "/realms-create-preview-with-only-one-subscription"
+            // | "/realms-choose-slot/"
+            // | "/announcement-modal"
+            // | "/achievement-detail"
+            // | "/realms-stories-report-feed-item"
+            // | "/realms-story-comments"
+
+            // Ore UI Screens:
+            // | "/disconnected"
+            // | "/friends-drawer"
+            // | "/hardcore-mode-world-warning-modal-route"
+            // | "/sign-in-worlds-friends-servers"
+            // | "/realms-pdp"
+            // | "/create-new-world"
+            // | "/post-to-realm-stories"
+            // | `/edit-world/${string}/general/?packid=` // Edit World error screen.
+            // | `/edit-world/${string}/general/?packid=${string}`
+            // | "/new-player-path/mode"
+            // | "/new-player-path/survival/difficulty"
+            // | "/idle-route"
+            // | "/first-time-sign-in"
+            // | "/realms-plan-picker-in-game"
+            // | "/realms-plan-picker"
+            // | "/inbox"
+            // | "/play"
+            // | "/start-from-template"
+            // | "/sign-in-play-on-server"
+            // | "/add-friend"
+            // | "/sign-in-add-friend"
+            // | "/realms-choose-realm/realm-subscriptions"
+            // | "/account-unlink"
+            // | "/mobile-data-blocked-modal/show-modal"
+            // | "/touch-control-selection"
+            // | "/achievements"
+            // | "/realms-stories"
+            // | "/realms-story-entry-route"
+            // | "/realms-story-share-link-modal-route"
+            // | "/realms-new-story"
+            // | "/realms-stories-settings"
+
+            // Ore UI Editor Mode Screens:
+            // | "/editor"
+
+            // Other Screens:
+            | "/sign-in" // Closes itself, probably because I am already signed in, test while signed out.
+            | "/sign-in?signInSource=AnnouncementModal_OreUI"; // Closes itself, probably because I am already signed in, test while signed out.
+
+        // Unchecked Screens:
+
         type EngineEventID = LooseAutocomplete<
             | "facet:request"
             | `facet:updated:${FacetList[number]}`
@@ -639,70 +1110,101 @@ declare global {
             | "facet:discard"
             | "engine:gamepad:onPress"
             | "engine:gamepad:onJoystickMovement"
+            | "core:mouse:delta"
+            | "core:touchdevice:back"
             | "core:keyboard:changed"
             | "core:keyboard:submitted"
             | "core:keyboard:dismissed"
             | "core:keyboard:tabbed"
             | "core:exception"
+            | "core:gui:flush-audio-streams"
             | "core:gui:resize-hack"
-            | `query:subscribed/${number}`
-            | `query:updated/${number}`
+            | `query:subscribed/${number | bigint}`
+            | `query:updated/${number | bigint}`
             | `query:subscribe/${keyof EngineQuerySubscribeEventParamsMap}`
             | "query:unsubscribe"
             | "core:routing:not-found"
             | "core:telemetry:eventfulNavigation"
             | "core:telemetry:firstMeaningfulPaint"
             | "core:telemetry:firstContentfulPaint"
+            | "core:telemetry:uneventfulNavigation"
             | "Ready"
+            | "_Unhandled"
+            | "_Result"
+            | "_Reject"
+            | "_OnReady"
+            | "_OnError"
+            | "*"
         >;
-        type EngineEvent<T extends EngineEventID | undefined> = T extends "facet:request"
-            ? [facetName: FacetList[number], facetName: FacetList[number], options: Record<PropertyKey, any>]
-            : T extends "facet:discard"
-            ? [facetName: FacetList[number]]
-            : T extends `facet:updated:${infer Facet}`
-            ? Facet extends FacetList[number]
-                ? [facetValue: FacetTypeMap[Facet]]
-                : [facetValue: unknown]
-            : T extends `facet:error:${infer _Facet}`
-            ? [...args: unknown[]] // TODO: Figure out the type of this.
-            : T extends "engine:gamepad:onPress"
-            ? [...args: unknown[]] // TODO: Figure out the type of this.
-            : T extends "engine:gamepad:onJoystickMovement"
-            ? [
-                  // Horizontal values are positive towards the right, vertical values are positive towards the bottom.
-                  joystickLeftHorizontal: number,
-                  joystickLeftVertical: number,
-                  joystickRightHorizontal: number,
-                  joystickRightVertical: number
-              ]
-            : T extends "core:keyboard:changed"
-            ? [...args: unknown[]] // TODO: Figure out the type of this.
-            : T extends "core:keyboard:submitted"
-            ? [...args: unknown[]] // TODO: Figure out the type of this.
-            : T extends "core:keyboard:dismissed"
-            ? [...args: unknown[]] // TODO: Figure out the type of this.
-            : T extends "core:keyboard:tabbed"
-            ? [...args: unknown[]] // TODO: Figure out the type of this.
-            : T extends "core:exception"
-            ? [...args: unknown[]] // TODO: Figure out the type of this.
-            : T extends "core:gui:resize-hack"
-            ? []
-            : T extends `query:subscribed/${infer _QueryID extends number}`
-            ? [...args: any[]] // TODO: Figure out the type of this.
-            : T extends `query:updated/${infer _QueryID extends number}`
-            ? [...args: any[]] // TODO: Figure out the type of this.
-            : T extends `query:subscribe/${infer QueryName}`
-            ? [
-                  queryID: number,
-                  ...queryParams: QueryName extends keyof EngineQuerySubscribeEventParamsMap ? EngineQuerySubscribeEventParamsMap[QueryName] : unknown[]
-              ]
-            : T extends "query:unsubscribe"
-            ? [queryName: unknown] // TODO: Figure out the type of this.
-            : T extends "core:telemetry:eventfulNavigation" | "core:telemetry:firstMeaningfulPaint" | "core:telemetry:firstContentfulPaint" | "Ready"
-            ? []
+        type EngineEvent<T extends EngineEventID | undefined> =
+            T extends "facet:request" ? [facetName: FacetList[number], facetName: FacetList[number], options: Record<PropertyKey, any>]
+            : T extends "facet:discard" ? [facetName: FacetList[number]]
+            : T extends `facet:updated:${infer Facet}` ?
+                Facet extends FacetList[number] ?
+                    [facetValue: FacetTypeMap[Facet]]
+                :   [facetValue: unknown]
+            : T extends `facet:error:${infer _Facet}` ?
+                [errorMessage: FacetErrorCode] // TODO: Figure out the type of this.
+            : T extends "engine:gamepad:onPress" ?
+                [...args: unknown[]] // TODO: Figure out the type of this.
+            : T extends "engine:gamepad:onJoystickMovement" ?
+                [
+                    // Horizontal values are positive towards the right, vertical values are positive towards the bottom.
+                    joystickLeftHorizontal: number,
+                    joystickLeftVertical: number,
+                    joystickRightHorizontal: number,
+                    joystickRightVertical: number,
+                ]
+            : T extends "core:mouse:delta" ?
+                [...args: unknown[]] // TODO: Figure out the type of this.
+            : T extends "core:touchdevice:back" ?
+                [...args: unknown[]] // TODO: Figure out the type of this.
+            : T extends "core:keyboard:changed" ?
+                [
+                    textInputChangeDetails: {
+                        index: number;
+                        invalidChars: string;
+                        removedChars: string;
+                        addedChars: string;
+                    },
+                ]
+            : T extends "core:keyboard:submitted" ?
+                [...args: unknown[]] // TODO: Figure out the type of this.
+            : T extends "core:keyboard:dismissed" ?
+                [...args: unknown[]] // TODO: Figure out the type of this.
+            : T extends "core:keyboard:tabbed" ?
+                [...args: unknown[]] // TODO: Figure out the type of this.
+            : T extends "core:exception" ?
+                [...args: unknown[]] // TODO: Figure out the type of this.
+            : T extends "core:gui:flush-audio-streams" ?
+                [...args: unknown[]] // TODO: Figure out the type of this.
+            : T extends "core:gui:resize-hack" ? []
+            : T extends `query:subscribed/${infer _QueryID extends number}` ?
+                [...args: any[]] // TODO: Figure out the type of this.
+            : T extends `query:updated/${infer _QueryID extends number}` ?
+                [...args: any[]] // TODO: Figure out the type of this.
+            : T extends `query:subscribe/${infer QueryName}` ?
+                [
+                    queryID: number | bigint,
+                    ...queryParams: QueryName extends keyof EngineQuerySubscribeEventParamsMap ? EngineQuerySubscribeEventParamsMap[QueryName] : unknown[],
+                ]
+            : T extends "query:unsubscribe" ?
+                [queryName: unknown] // TODO: Figure out the type of this.
+            : T extends "core:telemetry:eventfulNavigation" | "core:telemetry:firstMeaningfulPaint" | "core:telemetry:firstContentfulPaint" | "Ready" ? []
+            : T extends "core:telemetry:uneventfulNavigation" ?
+                [...args: unknown[]] // TODO: Figure out the type of this.
+            : T extends "_Unhandled" ? [eventName: LooseAutocomplete<EngineEventID>, ...args: any[]]
+            : T extends "_Result" | "_Reject" | "_OnReady" | "_OnError" ?
+                [...args: unknown[]] // TODO: Figure out the type of this.
+            : T extends "*" ? [...args: any[]]
             : [...args: unknown[]];
         interface EngineQuerySubscribeEventDeprecatedParamsMap {}
         interface EngineQuerySubscribeEventParamsMap {
+            "core.locale": [];
+            "core.splitscreen": [];
+            "core.safeZone": [];
+            "core.animation": [];
+            "core.input": [];
             "vanilla.core.dataDrivenUICompositionQuery": [
                 screenID: LooseAutocomplete<
                     | "minecraft:default_chest_screen"
@@ -710,7 +1212,7 @@ declare global {
                     | "minecraft:barrel_screen"
                     | "minecraft:ender_chest_screen"
                     | "minecraft:shulker_box_screen"
-                >
+                >,
             ];
             "vanilla.gameplay.furnace": [];
             /**
@@ -724,7 +1226,7 @@ declare global {
                     | "minecraft:barrel_screen"
                     | "minecraft:ender_chest_screen"
                     | "minecraft:shulker_box_screen"
-                >
+                >,
             ];
             vanillaCoreDataDrivenUIScreenIdQuery: [];
             /**
@@ -756,8 +1258,75 @@ declare global {
             vanillaGameplayTradeOverviewQuery: [];
             vanillaGameplayTradeTierQuery: [tradeTier: number];
             vanillaGameplayTradeOfferQuery: [tradeTier: number, tradeIndex: number];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            "vanilla.menus.settingsGroupQuery": [...args: unknown[]];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            "vanilla.menus.settingsGroupInfoQuery": [...args: unknown[]];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            "vanilla.menus.settingsUiDebugQuery": [...args: unknown[]];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            "vanilla.menus.settingsTextQuery": [...args: unknown[]];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            "vanilla.menus.settingsBooleanQuery": [...args: unknown[]];
+            /**
+             * @todo Figure out all of the option IDs and put them into a type.
+             */
+            "vanilla.menus.settingsNumberQuery": [optionID: LooseAutocomplete<"video.mode.fancy.framerate">];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            "vanilla.menus.settingsOptionQuery": [...args: unknown[]];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            "vanilla.menus.settingsActionQuery": [...args: unknown[]];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            "vanilla.menus.buildInfoQuery": [...args: unknown[]];
         }
         interface EngineQueryNonFacetResultMap {
+            "core.locale": {
+                __Type: `core.locale$_$${number}`;
+                locale: LooseAutocomplete<"en_US">;
+            };
+            "core.splitscreen": {
+                __Type: `core.splitscreen$_$${number}`;
+                isPrimaryUser: boolean;
+                splitScreenPosition: number;
+                numActivePlayer: number;
+                splitScreenDirection: number;
+            };
+            "core.safeZone": {
+                __Type: `core.safeZone$_$${number}`;
+                safeAreaX: number;
+                safeAreaY: number;
+                screenPositionX: number;
+                screenPositionY: number;
+            };
+            "core.animation": {
+                __Type: `core.animation$_$${number}`;
+                screenAnimationEnabled: boolean;
+            };
+            "core.input": {
+                __Type: `core.input$_$${number}`;
+                swapABButtons: boolean;
+                swapXYButtons: boolean;
+                currentInputType: number;
+                enableControllerHints: boolean;
+                keyboardType: number;
+                interactionModelLocked: boolean;
+            };
             "vanilla.core.dataDrivenUICompositionQuery": {
                 __Type: `vanilla.core.dataDrivenUICompositionQuery$_$${number}`;
                 /**
@@ -874,17 +1443,74 @@ declare global {
                 playerHasItemsForTrade: boolean;
                 isSelectedTrade: boolean;
             };
+            /**
+             * @todo Figure out the type of this query.
+             */
+            "vanilla.menus.settingsGroupQuery": unknown;
+            /**
+             * @todo Figure out the type of this query.
+             */
+            "vanilla.menus.settingsGroupInfoQuery": unknown;
+            /**
+             * @todo Figure out the type of this query.
+             */
+            "vanilla.menus.settingsUiDebugQuery": unknown;
+            /**
+             * @todo Figure out the type of this query.
+             */
+            "vanilla.menus.settingsTextQuery": unknown;
+            /**
+             * @todo Figure out the type of this query.
+             */
+            "vanilla.menus.settingsBooleanQuery": unknown;
+            /**
+             * @todo Add the version this was added in.
+             */
+            "vanilla.menus.settingsNumberQuery":
+                | {
+                      __Type: `vanilla.menus.settingsNumberQuery$_$${number}`;
+                      id: "video.mode.fancy.framerate";
+                      name: LooseAutocomplete<"Framerate Limit">;
+                      /**
+                       * @todo Make the type an enum.
+                       */
+                      state: number;
+                      description: LooseAutocomplete<"Set a limit for maximum frames per second to keep a steady frame rate or prevent overheating your device">;
+                      value: LooseAutocompleteB<number, 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>;
+                      valueText: LooseAutocomplete<`${30 | 35 | 40 | 45 | 50 | 55 | 60} FPS` | "Unlimited">;
+                      min: LooseAutocompleteB<number, 0>;
+                      max: LooseAutocompleteB<number, 7>;
+                      step: LooseAutocompleteB<number, 1>;
+                  }
+                | {
+                      __Type: `vanilla.menus.settingsNumberQuery$_$${number}`;
+                      id: string;
+                      // TODO: Add the rest of the fields.
+                      [key: PropertyKey]: unknown;
+                  };
+            /**
+             * @todo Figure out the type of this query.
+             */
+            "vanilla.menus.settingsOptionQuery": unknown;
+            /**
+             * @todo Figure out the type of this query.
+             */
+            "vanilla.menus.settingsActionQuery": unknown;
+            /**
+             * @todo Figure out the type of this query.
+             */
+            "vanilla.menus.buildInfoQuery": unknown;
         }
-        type EngineQueryResult<T extends LooseAutocomplete<FacetList[number] | keyof EngineQueryNonFacetResultMap>> = T extends FacetList[number]
-            ? FacetTypeMap[T] & {
-                  __Type: `${T}$_$${number}`;
-              }
-            : T extends keyof EngineQueryNonFacetResultMap
-            ? EngineQueryNonFacetResultMap[T]
-            : {
-                  __Type: `${T}$_$${number}`;
-                  [key: PropertyKey]: unknown;
-              };
+        type EngineQueryResult<T extends LooseAutocomplete<FacetList[number] | keyof EngineQueryNonFacetResultMap>> =
+            T extends keyof EngineQueryNonFacetResultMap ? EngineQueryNonFacetResultMap[T]
+            : T extends FacetList[number] ?
+                FacetTypeMap[T] & {
+                    __Type: `${T}$_$${number}`;
+                }
+            :   {
+                    __Type: `${T}$_$${number}`;
+                    [key: PropertyKey]: unknown;
+                };
 
         /**
          * A list of all the known facets.
@@ -1060,6 +1686,15 @@ declare global {
             "vanilla.realmsPlayerListQueries",
             "vanilla.realmsPlayerListCommands",
 
+            // Found in 1.26.0.26 preview (but may have existed before that).
+            "vanilla.realmsWorldEditorWorldDetailsCommands",
+            "vanilla.realmsWorldPackEditorQueries",
+            "vanilla.realmsWorldPackEditorCommands",
+
+            // Found in 1.26.0.2 Release (it is unknown what preview these were added in).
+            "vanilla.realmsRegionSettingsCommands",
+            "vanilla.realmsRegionSettingsQueries",
+
             // Editor mode only facets (crashes the game when not in editor mode).
             editorModeOnly: "vanilla.editorLogging", // Crashes the game in the v1.21.110.23 preview when not in editor mode.
             editorModeOnly: "vanilla.editorBlockPalette", // Crashes the game when not in editor mode.
@@ -1067,7 +1702,7 @@ declare global {
             editorModeOnly: "vanilla.editorInputState", // Crashes the game when not in editor mode.
             editorModeOnly: "vanilla.editorProjectConstants", // Crashes the game when not in editor mode.
             editorModeOnly: "vanilla.editorStructure", // Crashes the game when not in editor mode.
-            editorModeOnly: "vanilla.editorTutorial" // Crashes the game when not in editor mode.
+            editorModeOnly: "vanilla.editorTutorial", // Crashes the game when not in editor mode.
         ];
         /**
          * An interface that maps facets to their types.
@@ -1136,11 +1771,36 @@ declare global {
                 swapXYButtons: boolean;
                 swapABButtons: boolean;
             };
+            /**
+             * @deprecated Removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
+             * @see
+             * Use the `core.locale` query and {@link __commands__.coreTranslateCommandGroup| \_\_commands\_\_.coreTranslateCommandGroup} instead.
+             */
             "core.locale": {
-                locale: string;
+                /**
+                 * @deprecated This facet was removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
+                 * Use the `core.locale` query instead.
+                 */
+                locale: LooseAutocomplete<"en_US">;
+                /**
+                 * @deprecated This facet was removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
+                 * @see {@link __commands__.coreTranslateCommandGroup.formatDate.callable | \_\_commands\_\_.coreTranslateCommandGroup.formatDate.callable}
+                 */
                 formatDate(timestampInSeconds: number): string;
+                /**
+                 * @deprecated This facet was removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
+                 * @see {@link __commands__.coreTranslateCommandGroup.getHowLongAgoAsString.callable | \_\_commands\_\_.coreTranslateCommandGroup.getHowLongAgoAsString.callable}
+                 */
                 getHowLongAgoAsString(...args: unknown[]): string;
+                /**
+                 * @deprecated This facet was removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
+                 * @see {@link __commands__.coreTranslateCommandGroup.translate.callable | \_\_commands\_\_.coreTranslateCommandGroup.translate.callable}
+                 */
                 translate(key: string): string;
+                /**
+                 * @deprecated This facet was removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
+                 * @see {@link __commands__.coreTranslateCommandGroup.translate.callable | \_\_commands\_\_.coreTranslateCommandGroup.translate.callable}
+                 */
                 translateWithParameters(key: string, parameters: string[]): string;
             };
             /**
@@ -1222,10 +1882,35 @@ declare global {
                  */
                 clear(...args: unknown[]): unknown;
             };
+            /**
+             * @deprecated Removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
+             * @see
+             * Use the `core.splitScreen` query instead.
+             */
             "core.splitScreen": {
+                /**
+                 * @deprecated This facet was removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
+                 * @see
+                 * Use the `core.splitScreen` query instead.
+                 */
                 splitScreenDirection: number;
+                /**
+                 * @deprecated This facet was removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
+                 * @see
+                 * Use the `core.splitScreen` query instead.
+                 */
                 numActivePlayers: number;
+                /**
+                 * @deprecated This facet was removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
+                 * @see
+                 * Use the `core.splitScreen` query instead.
+                 */
                 splitScreenPosition: number;
+                /**
+                 * @deprecated This facet was removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
+                 * @see
+                 * Use the `core.splitScreen` query instead.
+                 */
                 isPrimaryUser: boolean;
             };
             /**
@@ -1249,7 +1934,7 @@ declare global {
                  *
                  * @param {number} id The ID of the sound to fade out.
                  * @param {number} duration The duration to fade out the sound in seconds.
-                 * @returns {null} Returns `null`.
+                 * @returns `null`
                  */
                 fadeOut(id: number, duration: number): null;
                 /**
@@ -1543,7 +2228,7 @@ declare global {
                  * Opens whatever URI is passed into it (no restrictions).
                  *
                  * @param {string} uri The URI to open.
-                 * @returns {null} Returns `null`.
+                 * @returns `null`
                  */
                 navigateUri(uri: string): null;
                 /**
@@ -1747,40 +2432,35 @@ declare global {
             };
             "vanilla.followersList": {
                 xboxAPICallResult: number;
-                playerList: CoherentArrayProxy<{
-                    description: string;
-                    isFollowedByMe: boolean;
-                    isFollowingMe: boolean;
-                    isOnline: boolean;
-                    gamerIcon: string;
-                    gamertag: string;
-                    xuid: string;
-                }>;
+                playerList: CoherentArrayProxy<AddFriendUserItem>;
                 isLoading: boolean;
             };
             "vanilla.friendsListFacet": {
+                /**
+                 * @todo Figure out the types for this array.
+                 */
                 platformFriends: CoherentArrayProxy<unknown>;
-                xblFriends: CoherentArrayProxy<{
-                    favoriteStatus: number;
-                    playingOnServerId: null;
-                    isCurrentlyPlaying: boolean;
-                    titleHistory: number;
-                    presenceMessage: string;
-                    isInSameGame: boolean;
-                    titleId: number;
-                    titleName: string;
-                    presence: number;
-                    gamerIcon: string;
-                    gamerTag: string;
-                    platformId: string;
-                    xuid: string;
-                }>;
+                xblFriends: CoherentArrayProxy<SocialPlayer>;
+                /**
+                 * @todo Make the type an enum.
+                 */
                 platformLoadingState: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
                 xblLoadingState: number;
                 /**
                  * @todo Figure out the types for this method.
                  */
                 userControlledUpdateGameList(...args: unknown[]): unknown;
+                // Unverified deprecated properties.
+                /**
+                 * This property may or may not have existed in older versions.
+                 *
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @deprecated Newer versions use the `xblLoadingState` property instead.
+                 */
+                loadingState?: number;
             };
             /**
              * NOTE: Not present in 1.21.120.4.
@@ -1878,7 +2558,7 @@ declare global {
             "vanilla.gameplay.playerRespawn": {
                 isAlive: boolean;
                 /**
-                 * @returns {null} Returns `null`.
+                 * @returns `null`
                  */
                 respawn(): null;
             };
@@ -2121,6 +2801,9 @@ declare global {
             "vanilla.networkWorldDetails": {
                 hasLoadedDetails: boolean;
                 networkDetails: {
+                    /**
+                     * @todo Figure out the types for this array.
+                     */
                     activities: CoherentArrayProxy<unknown>;
                     newsDescription: string;
                     newsTitle: string;
@@ -2135,15 +2818,20 @@ declare global {
                     description: string;
                     name: string;
                     id: string;
+                    /**
+                     * @added in a 1.26.10 preview.
+                     * @todo Figure out what 1.26.10 preview this was added in.
+                     */
+                    isSupportedForPartyTravel?: boolean;
                 };
                 /**
                  * Loads the details of a network world.
                  *
-                 * @param {`${number | bigint}`} id The ID of the server.
+                 * @param {`${number | bigint | string}`} id The ID of the server, if it is a non-numeric string it should be a UUID (ex. `a26af7a2-ed3b-473d-8d1c-a5b4733b85bd`).
                  * @param {0 | 1 | 2 | 3} type `0` = Featured Server, `1` = External Server, `2` = Realm, `3` = LAN Server
                  * @returns {undefined | null} `undefined` if the parameters are invalid, `null` otherwise.
                  */
-                loadNetworkWorldDetails(id: `${number | bigint}`, type: 0 | 1 | 2 | 3): undefined | null;
+                loadNetworkWorldDetails(id: `${number | bigint | string}`, type: 0 | 1 | 2 | 3): undefined | null;
             };
             "vanilla.networkWorldJoiner": {
                 /**
@@ -2263,7 +2951,7 @@ declare global {
                  * Snackbar mesages are one of the very few things in Ore UI that actually support [formatting codes](https://minecraft.wiki/w/Formatting_codes).
                  *
                  * @param {string} message The message to show. Any newlines will cause the message to be truncated there and appended with ellipses.
-                 * @returns {null} Returns `null`.
+                 * @returns `null`
                  */
                 queueSnackbar(message: string): null;
             };
@@ -2308,10 +2996,7 @@ declare global {
                 openXboxLiveBannedInfoPage(...args: unknown[]): unknown;
             };
             "vanilla.playerFollowingList": {
-                /**
-                 * @todo Figure out the types for this array.
-                 */
-                playerList: CoherentArrayProxy<unknown>;
+                playerList: CoherentArrayProxy<AddFriendUserItem>;
                 isLoading: boolean;
                 /**
                  * @todo Figure out the types for this method.
@@ -2429,45 +3114,16 @@ declare global {
                 clearErrorFlag(arg0: unknown): unknown;
             };
             "vanilla.playerProfile": {
-                playerProfiles: CoherentArrayProxy<{
-                    state: {
-                        platformError: number;
-                        platformState: number;
-                        xblError: number;
-                        xblState: number;
-                    };
-                    data: {
-                        favoriteStatus: number;
-                        isInSameGame: boolean;
-                        playingOnServerId: string;
-                        url: string;
-                        qrCode: string;
-                        presenceMessage: string;
-                        titleId: undefined;
-                        titleName: string;
-                        presence: number;
-                        isMuted: boolean;
-                        isBlocked: boolean;
-                        /**
-                         * @see {@link PlayerRelation}
-                         */
-                        relation: PlayerRelation<"values">;
-                        platformProfilePic: string;
-                        xblProfilePic: string;
-                        avatarState: number;
-                        avatar: string;
-                        realName: string;
-                        platformName: string;
-                        xblName: string;
-                        offlineName: string;
-                        platformId: string;
-                        xuid: string;
-                    };
-                }>;
+                playerProfiles: CoherentArrayProxy<PlayerProfile>;
                 /**
+                 * Subscribes to a player's profile.
+                 *
+                 * @param xuid The XUID of the player to subscribe to.
+                 * @param platformId The platform ID of the player to subscribe to. Can be an empty string if there isn't one.
+                 *
                  * @todo Figure out the types for this method.
                  */
-                subscribeToProfile(...args: unknown[]): unknown;
+                subscribeToProfile(xuid: string, platformId: LooseAutocomplete<"">): unknown;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -2943,15 +3599,13 @@ declare global {
                  * @todo Make the type an enum.
                  */
                 xboxAPICallResult: number;
-                playerList: CoherentArrayProxy<{
-                    description: string;
-                    isFollowedByMe: boolean;
-                    isFollowingMe: boolean;
-                    isOnline: boolean;
-                    gamerIcon: string;
-                    gamertag: string;
-                    xuid: string;
-                }>;
+                /**
+                 * @added some time after 1.21.93.1.
+                 *
+                 * @todo Figure out exactly what version this was added in.
+                 */
+                recentlyPlayedWith: CoherentArrayProxy<SocialPlayer>;
+                playerList: CoherentArrayProxy<AddFriendUserItem>;
                 isLoading: boolean;
             };
             "vanilla.recommendedFriendsList": {
@@ -2959,18 +3613,15 @@ declare global {
                  * @todo Make the type an enum.
                  */
                 xboxAPICallResult: number;
-                playerList: CoherentArrayProxy<{
-                    description: string;
-                    isFollowedByMe: boolean;
-                    isFollowingMe: boolean;
-                    isOnline: boolean;
-                    gamerIcon: string;
-                    gamertag: string;
-                    xuid: string;
-                }>;
+                playerList: CoherentArrayProxy<AddFriendUserItem>;
                 isLoading: boolean;
             };
             "vanilla.resourcePackOverrides": {
+                /**
+                 * This is in an unknown format.
+                 *
+                 * @example 62125.210887600006
+                 */
                 lastUpdated: number;
                 /**
                  * @todo Figure out the types for this array.
@@ -3237,19 +3888,55 @@ declare global {
             "vanilla.thirdPartyWorldList": {
                 fetchThirdPartyWorldsTaskState: number;
                 thirdPartyServersStatus: number;
-                thirdPartyWorlds: CoherentArrayProxy<{
-                    msgOfTheDay: string;
-                    image: string;
-                    capacity: number;
-                    playerCount: number;
-                    pingStatus: number;
-                    ping: string;
-                    description: string;
-                    name: string;
-                    id: `${bigint}`;
-                }>;
-            };
+            } & (
+                | {
+                      thirdPartyWorlds: CoherentArrayProxy<{
+                          msgOfTheDay: string;
+                          image: string;
+                          capacity: number;
+                          playerCount: number;
+                          pingStatus: number;
+                          ping: string;
+                          description: string;
+                          name: string;
+                          id: `${bigint}`;
+                      }>;
+                  }
+                | {
+                      creatorExperiences: CoherentArrayProxy<{
+                          msgOfTheDay: string;
+                          image: string;
+                          capacity: number;
+                          playerCount: number;
+                          pingStatus: number;
+                          ping: string;
+                          description: string;
+                          name: string;
+                          /**
+                           * @example "086920fe-4f18-4db5-a7bf-b587cec822ec"
+                           */
+                          id: string;
+                      }>;
+                      featuredExperiences: CoherentArrayProxy<{
+                          msgOfTheDay: string;
+                          image: string;
+                          capacity: number;
+                          playerCount: number;
+                          pingStatus: number;
+                          ping: string;
+                          description: string;
+                          name: string;
+                          /**
+                           * @example "a26af7a2-ed3b-473d-8d1c-a5b4733b85bd"
+                           */
+                          id: string;
+                      }>;
+                  }
+            );
             "vanilla.unpairedRealmsListFacet": {
+                /**
+                 * @todo Figure out the types for this array.
+                 */
                 realms: CoherentArrayProxy<unknown>;
                 state: number;
                 compatibility: undefined;
@@ -3342,13 +4029,32 @@ declare global {
             };
             "vanilla.webBrowserFacet": {
                 /**
-                 * @todo Figure out the types for this method.
+                 * Opens a hardcoded link.
+                 *
+                 * @param linkId The link to open. Should be a {@link WebBrowserFacetLinkType}.
+                 * @returns `null`
+                 *
+                 * @example
+                 * ```ts
+                 * // Opens the Edit World Screen feedback page.
+                 * openLink(WebBrowserFacetLinkType.EditWorldScreenFeedbackPage);
+                 * ```
                  */
-                openLink(...args: unknown[]): unknown;
+                openLink(linkId: WebBrowserFacetLinkType<"values">): null;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Opens a hardcoded link with a parameter appended to the end of the URI.
+                 *
+                 * @param linkId The link to open. Should be a {@link WebBrowserFacetLinkType}.
+                 * @param param The string to be appended to the end of the URI.
+                 * @returns `null`
+                 *
+                 * @example
+                 * ```ts
+                 * // Opens the Xbox account profile of "Andexter8".
+                 * openLinkWithParams(WebBrowserFacetLinkType.XboxAccountProfile, "Andexter8");
+                 * ```
                  */
-                openLinkWithParams(...args: unknown[]): unknown;
+                openLinkWithParams(linkId: WebBrowserFacetLinkType<"values">, param: string): null;
             };
             "vanilla.worldCloudSyncFacet": {
                 /**
@@ -3727,41 +4433,8 @@ declare global {
             "vanilla.worldPlayersList": {
                 isInRealm: boolean;
                 enableInviteToPlayButton: boolean;
-                playersInMyWorld: CoherentArrayProxy<{
-                    /**
-                     * @see {@link PlayerRelation}
-                     */
-                    relation: PlayerRelation<"values">;
-                    isMuted: boolean;
-                    isBlocked: boolean;
-                    /**
-                     * @see {@link PlayerPermissionLevel}
-                     */
-                    permissionLevel: PlayerPermissionLevel<"values">;
-                    favoriteStatus: FriendFavoriteStatus<"values">;
-                    isCurrentlyPlaying: boolean;
-                    titleHistory: number;
-                    presenceMessage: string;
-                    isInSameGame: boolean;
-                    titleName: string;
-                    partyPresence: number;
-                    presence: number;
-                    gamerIcon: string;
-                    playingOnServerId: string;
-                    gamerTag: string;
-                    platformId: string;
-                    xuid: string;
-                    actorId: string;
-                }>;
-                players: CoherentArrayProxy<{
-                    platform: number;
-                    isHosting: boolean;
-                    permissionLevel: number;
-                    profileImage: string;
-                    name: string;
-                    connectionType: number;
-                    id: string;
-                }>;
+                playersInMyWorld: CoherentArrayProxy<SocialPlayer>;
+                players: CoherentArrayProxy<WorldPlayerInfoBindings>;
                 /**
                  * Wheter the player whose client is running this code is the host of the world.
                  */
@@ -4060,13 +4733,13 @@ declare global {
                  * Fetches the realm data for the realm with the given ID.
                  *
                  * @param {`${bigint}`} realmId The ID of the realm.
-                 * @returns {null} Returns `null`.
+                 * @returns `null`
                  */
                 fetchRealmsWorld(realmId: `${bigint}`): null;
                 /**
                  * Unloads the fetched realm data.
                  *
-                 * @returns {null} Returns `null`.
+                 * @returns `null`
                  */
                 reset(): null;
             };
@@ -4419,9 +5092,34 @@ declare global {
                  * @todo Figure out the types for this array.
                  */
                 members: CoherentArrayProxy<unknown>;
+                /**
+                 * @todo Make the type an enum.
+                 */
                 privacy: number;
                 partyId: string;
                 isInParty: boolean;
+                shouldShowJoinDestination: boolean;
+                destinationName: LooseAutocomplete<"">;
+                // Unverified deprecated properties.
+                /**
+                 * This property may or may not have existed in older versions.
+                 *
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @deprecated Newer versions use the `pendingInvitees` property instead.
+                 *
+                 * @todo Figure out the types for this array.
+                 * @todo Figure out if this ever actually existed.
+                 */
+                pendingInvites?: CoherentArrayProxy<unknown>;
+                /**
+                 * This property may or may not have existed in older versions.
+                 *
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @deprecated Newer versions use the `leaderXuid` property instead.
+                 *
+                 * @todo Figure out if this ever actually existed.
+                 */
+                leader?: { xuid: string; pfid: string };
             };
             "vanilla.partyCommands": {
                 acceptInviteState: {
@@ -4496,6 +5194,28 @@ declare global {
                  * @todo Figure out the types for this method.
                  */
                 acceptInvite(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                travelToDestination(...args: unknown[]): unknown;
+                // Unverified deprecated properties.
+                /**
+                 * This property may or may not have existed in older versions.
+                 *
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 *
+                 * @todo Figure out if this ever actually existed.
+                 */
+                cancelInvite?(...args: unknown[]): unknown;
+                /**
+                 * This property may or may not have existed in older versions.
+                 *
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @deprecated Newer versions use the `setPrivacy` property instead.
+                 *
+                 * @todo Figure out if this ever actually existed.
+                 */
+                setPartyPrivacy?(...args: unknown[]): unknown;
             };
             /**
              * NOTE: Not present in 1.21.120.4.
@@ -4962,6 +5682,36 @@ declare global {
              * @todo Get the type for this facet.
              */
             "vanilla.realmsPlayerListCommands": unknown;
+            /**
+             * @since (First Referenced): Somewhere between 1.26.0.23 Preview and 1.26.0.26 Preview (in these previews this facet does not actually exist).
+             *
+             * @todo Get the type for this facet.
+             */
+            "vanilla.realmsWorldEditorWorldDetailsCommands": unknown;
+            /**
+             * @since Somewhere between 1.26.0.23 Preview and 1.26.0.26 Preview.
+             *
+             * @todo Get the type for this facet.
+             */
+            "vanilla.realmsWorldPackEditorQueries": unknown;
+            /**
+             * @since Somewhere between 1.26.0.23 Preview and 1.26.0.26 Preview.
+             *
+             * @todo Get the type for this facet.
+             */
+            "vanilla.realmsWorldPackEditorCommands": unknown;
+            /**
+             * @since Somewhere between 1.26.0.27 Preview and 1.26.0.2.
+             *
+             * @todo Get the type for this facet.
+             */
+            "vanilla.realmsRegionSettingsCommands": unknown;
+            /**
+             * @since Somewhere between 1.26.0.27 Preview and 1.26.0.2.
+             *
+             * @todo Get the type for this facet.
+             */
+            "vanilla.realmsRegionSettingsQueries": unknown;
         }
         /**
          * A shared facet.
@@ -5230,6 +5980,248 @@ declare global {
             achievementsUnlocked: number;
         }
 
+        interface PlayerProfile {
+            state: PlayerProfileState;
+            data: PlayerProfileData;
+        }
+        interface PlayerProfileState {
+            platformError: number;
+            platformState: number;
+            xblError: number;
+            xblState: number;
+        }
+        interface PlayerProfileData {
+            /**
+             * @see {@link FriendFavoriteStatus}
+             */
+            favoriteStatus: FriendFavoriteStatus<"values">;
+            isInSameGame: boolean;
+            playingOnServerId: string;
+            url: string;
+            /**
+             * The URI of the QR code to add this player as a friend.
+             *
+             * Usually in the format `qr://${number}`.
+             *
+             * @example "qr://1"
+             */
+            qrCode: string;
+            presenceMessage: string;
+            /**
+             * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+             */
+            titleId?: undefined;
+            /**
+             * The name of the player's activity status.
+             *
+             * If the player is offline, this will be an empty string.
+             *
+             * @default ""
+             *
+             * @example "Minecraft"
+             *
+             * @example "Online"
+             */
+            titleName: LooseAutocomplete<"Minecraft" | "Online" | "">;
+            /**
+             * @see {@link PlayerPartyPresence}
+             */
+            partyPresence: PlayerPartyPresence<"values">;
+            /**
+             * @see {@link FriendPresence}
+             */
+            presence: FriendPresence<"values">;
+            isMuted: boolean;
+            isBlocked: boolean;
+            /**
+             * @see {@link PlayerRelation}
+             */
+            relation: PlayerRelation<"values">;
+            platformProfilePic: string;
+            xblProfilePic: string;
+            avatarState: number;
+            avatar: string;
+            realName: string;
+            platformName: string;
+            xblName: string;
+            offlineName: string;
+            platformId: string;
+            xuid: string;
+            // Unverified deprecated properties.
+            /**
+             * This property may or may not have existed in older versions.
+             *
+             * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+             * @deprecated Newer versions use the `xblName` property instead.
+             */
+            gamerTag?: string;
+            /**
+             * This property may or may not have existed in older versions.
+             *
+             * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+             * @deprecated Newer versions use the `xblProfilePic` property instead.
+             */
+            gamerIcon?: string;
+            /**
+             * This property may or may not have existed in older versions.
+             *
+             * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+             * @deprecated Newer versions use the `presence` property instead.
+             */
+            isOnline?: boolean;
+            /**
+             * This property may or may not have existed in older versions.
+             *
+             * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+             * @deprecated Newer versions use the `presence` property instead.
+             */
+            isCurrentlyPlaying?: boolean;
+        }
+
+        interface SocialPlayer<InWorld extends boolean = boolean> {
+            /**
+             * @see {@link PlayerRelation}
+             */
+            relation: PlayerRelation<"values">;
+            isMuted: false;
+            isBlocked: false;
+            /**
+             * The permission level of the player in the current world.
+             *
+             * If the client user is not in a world/realm/server, or the player is not in the same world as the client user, this will be `null`.
+             *
+             * @see {@link PlayerPermissionLevel}
+             */
+            permissionLevel: (true extends InWorld ? PlayerPermissionLevel<"values"> : never) | (false extends InWorld ? null : never);
+            /**
+             * @see {@link FriendFavoriteStatus}
+             */
+            favoriteStatus: FriendFavoriteStatus<"values">;
+            playingOnServerId: LooseAutocomplete<""> | null;
+            isCurrentlyPlaying: boolean;
+            /**
+             * @see {@link PlayerTitleHistory}
+             */
+            titleHistory: PlayerTitleHistory<"values">;
+            presenceMessage: LooseAutocomplete<
+                `Playing ${"in" | "on a Realm -"} ${"Creative" | "Survival" | "Adventure"} Mode` | "In the Minecraft Menus" | ""
+            >;
+            isInSameGame: boolean;
+            /**
+             * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+             */
+            titleId?: number;
+            /**
+             * The name of the player's activity status.
+             *
+             * If the player is offline, this will be an empty string.
+             *
+             * @default ""
+             *
+             * @example "Minecraft"
+             *
+             * @example "Online"
+             */
+            titleName: LooseAutocomplete<"Minecraft" | "Online" | "">;
+            /**
+             * @see {@link FriendPresence}
+             */
+            presence: FriendPresence<"values">;
+            /**
+             * The URI of the player's profile picture.
+             *
+             * Usually in the format `profile-img://${number}`.
+             *
+             * @example "profile-img://356"
+             */
+            gamerIcon: string;
+            gamerTag: string;
+            platformId: string | null;
+            xuid: string;
+            /**
+             * @see {@link PlayerPartyPresence}
+             */
+            partyPresence: PlayerPartyPresence<"values">;
+            /**
+             * The player's UUID on the world.
+             *
+             * This is the same UUID accessible to add-ons in Script API through `Player.prototype.id`.
+             *
+             * If the client user is not in a world/realm/server, or the player is not in the same world as the client user, this will be `null`.
+             *
+             * @example "-4294967295"
+             */
+            actorId: (true extends InWorld ? string : never) | (false extends InWorld ? null : never);
+            // Unverified deprecated properties.
+            /**
+             * This property may or may not have existed in older versions.
+             *
+             * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+             * @deprecated Newer versions use the `presence` property instead.
+             */
+            isOnline?: boolean;
+        }
+
+        interface WorldPlayerInfoBindings {
+            /**
+             * @see {@link WorldPlayerInfoBindingsPlatform}
+             */
+            platform: WorldPlayerInfoBindingsPlatform<"values">;
+            /**
+             * Whether the player is the host of the world.
+             */
+            isHosting: boolean;
+            /**
+             * @see {@link PlayerPermissionLevel}
+             */
+            permissionLevel: PlayerPermissionLevel<"values">;
+            /**
+             * The URI of the player's profile picture.
+             *
+             * Usually in the format `profile-img://${number}`.
+             *
+             * @example "profile-img://356"
+             */
+            profileImage: string;
+            /**
+             * The player's name on the world.
+             *
+             * This is the same name accessible to add-ons in Script API through `Player.prototype.name`.
+             *
+             * @example "Andexter8"
+             */
+            name: string;
+            /**
+             * @see {@link WorldPlayerInfoBindingsConnectionType}
+             */
+            connectionType: WorldPlayerInfoBindingsConnectionType<"values">;
+            /**
+             * The player's UUID on the world.
+             *
+             * This is the same UUID accessible to add-ons in Script API through `Player.prototype.id`.
+             *
+             * @example "-4294967295"
+             */
+            id: string;
+        }
+
+        interface AddFriendUserItem {
+            description: LooseAutocomplete<"">;
+            isFollowedByMe: boolean;
+            isFollowingMe: boolean;
+            isOnline: boolean;
+            /**
+             * The URI of the player's profile picture.
+             *
+             * Usually in the format `profile-img://${number}`.
+             *
+             * @example "profile-img://5"
+             */
+            gamerIcon: string;
+            gamertag: string;
+            xuid: string;
+        }
+
         type CoherentArrayProxy<T> = ArrayLike<T> & {
             length: number;
             filter: Array<T>["filter"];
@@ -5251,7 +6243,11 @@ declare global {
             values(): ArrayIterator<T>;
             toString(): string;
         };
-        //#endregion
+
+        // interface Navigator {
+        //     get userAgent(): LooseAutocomplete<"Cohtml/1.59.2.7 (Windows; Native) cohtml/1.59.2.7 (Coherent Labs)">;
+        //     getGamepads(...args: unknown[]): unknown[];
+        // }
     }
 }
 
@@ -5387,7 +6383,10 @@ type LooseAutocompleteB<U extends string | number | symbol, T extends U> = T | (
  * type Original = Split<"abc">; // ["a", "b", "c"]
  * ```
  */
-type Split<S extends string> = S extends "" ? [] : S extends `${infer C}${infer R}` ? [C, ...Split<R>] : never;
+type Split<S extends string> =
+    S extends "" ? []
+    : S extends `${infer C}${infer R}` ? [C, ...Split<R>]
+    : never;
 
 /**
  * Takes the first N elements from a tuple type.
@@ -5401,52 +6400,47 @@ type Split<S extends string> = S extends "" ? [] : S extends `${infer C}${infer 
  * type Original = TakeFirstNElements<[1, 2, 3, 4], 2>; // [1, 2]
  * ```
  */
-type TakeFirstNElements<T extends any[], N extends number, Result extends any[] = []> = Result["length"] extends N
-    ? Result
-    : T extends [infer First, ...infer Rest]
-    ? TakeFirstNElements<Rest, N, [...Result, First]>
+type TakeFirstNElements<T extends any[], N extends number, Result extends any[] = []> =
+    Result["length"] extends N ? Result
+    : T extends [infer First, ...infer Rest] ? TakeFirstNElements<Rest, N, [...Result, First]>
     : Result;
 
 /**
  * @author 8Crafter
  */
-type TakeLastNElements<T extends any[], N extends number, Result extends any[] = []> = Result["length"] extends N
-    ? Result
-    : T extends [...infer Rest, infer Last]
-    ? TakeLastNElements<Rest, N, [Last, ...Result]>
+type TakeLastNElements<T extends any[], N extends number, Result extends any[] = []> =
+    Result["length"] extends N ? Result
+    : T extends [...infer Rest, infer Last] ? TakeLastNElements<Rest, N, [Last, ...Result]>
     : Result;
 
 /**
  * @author 8Crafter
  */
-type RemoveFirstNElements<T extends any[], N extends number, Removed extends any[] = [], Result extends any[] = []> = Removed["length"] extends N
-    ? Result
-    : T extends [infer First, ...infer Rest]
-    ? RemoveFirstNElements<Rest, N, [...Removed, First], Rest>
+type RemoveFirstNElements<T extends any[], N extends number, Removed extends any[] = [], Result extends any[] = []> =
+    Removed["length"] extends N ? Result
+    : T extends [infer First, ...infer Rest] ? RemoveFirstNElements<Rest, N, [...Removed, First], Rest>
     : Result;
 
 /**
  * @author 8Crafter
  */
-type RemoveLastNElements<T extends any[], N extends number, Removed extends any[] = [], Result extends any[] = []> = Removed["length"] extends N
-    ? Result
-    : T extends [...infer Rest, infer Last]
-    ? RemoveFirstNElements<Rest, N, [...Removed, Last], Rest>
+type RemoveLastNElements<T extends any[], N extends number, Removed extends any[] = [], Result extends any[] = []> =
+    Removed["length"] extends N ? Result
+    : T extends [...infer Rest, infer Last] ? RemoveFirstNElements<Rest, N, [...Removed, Last], Rest>
     : Result;
 
 /**
  * @author 8Crafter
  */
-type CreateTupleOfLength<T extends any, N extends number, Result extends any[] = []> = Result["length"] extends N
-    ? Result
-    : CreateTupleOfLength<T, N, [T, ...Result]>;
+type CreateTupleOfLength<T extends any, N extends number, Result extends any[] = []> =
+    Result["length"] extends N ? Result : CreateTupleOfLength<T, N, [T, ...Result]>;
 
 /**
  * @author 8Crafter
  */
-type SliceTuple<T extends any[], start extends number, end extends number> = RemoveFirstNElements<T, start> extends infer R extends any[]
-    ? TakeFirstNElements<R, RemoveFirstNElements<TakeFirstNElements<T, end>, start>["length"]>
-    : never;
+type SliceTuple<T extends any[], start extends number, end extends number> =
+    RemoveFirstNElements<T, start> extends infer R extends any[] ? TakeFirstNElements<R, RemoveFirstNElements<TakeFirstNElements<T, end>, start>["length"]>
+    :   never;
 
 /**
  * Joins an array of strings into a single string.
@@ -5458,13 +6452,13 @@ type SliceTuple<T extends any[], start extends number, end extends number> = Rem
  * type Original = Join<["a", "bcc", "de"]>; // "abccde"
  * ```
  */
-type Join<T extends string[]> = T extends []
-    ? ""
-    : T extends [infer Head, ...infer Tail]
-    ? Head extends string
-        ? `${Head}${Join<Tail extends string[] ? Tail : []>}`
-        : never
-    : never;
+type Join<T extends string[]> =
+    T extends [] ? ""
+    : T extends [infer Head, ...infer Tail] ?
+        Head extends string ?
+            `${Head}${Join<Tail extends string[] ? Tail : []>}`
+        :   never
+    :   never;
 
 /**
  * Cuts the first N characters from a string.
@@ -5535,11 +6529,12 @@ type MutableDeep<T> = {
  * type Mutated = DeepPartial<Original>; // { name?: string; age?: number }
  * ```
  */
-type DeepPartial<T> = T extends object
-    ? {
-          [P in keyof T]?: DeepPartial<T[P]>;
-      }
-    : T;
+type DeepPartial<T> =
+    T extends object ?
+        {
+            [P in keyof T]?: DeepPartial<T[P]>;
+        }
+    :   T;
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 type ValueTypes<T> = T extends { [key: string]: infer U } ? U : never;
 type AllValues<T> = T extends { [key: string]: infer V } ? V : never;
@@ -5550,19 +6545,21 @@ type KeyValuePairs<T> = {
  * @see https://stackoverflow.com/a/58986589
  * @author jcalz <https://stackoverflow.com/users/2887218/jcalz>
  */
-type ExcludeFromTuple<T extends readonly any[], E> = T extends [infer F, ...infer R]
-    ? [F] extends [E]
-        ? ExcludeFromTuple<R, E>
-        : [F, ...ExcludeFromTuple<R, E>]
-    : [];
+type ExcludeFromTuple<T extends readonly any[], E> =
+    T extends [infer F, ...infer R] ?
+        [F] extends [E] ?
+            ExcludeFromTuple<R, E>
+        :   [F, ...ExcludeFromTuple<R, E>]
+    :   [];
 /**
  * @author 8Crafter
  */
-type IncludeFromTuple<T extends readonly any[], E> = T extends [infer F, ...infer R]
-    ? [F] extends [E]
-        ? [F, ...IncludeFromTuple<R, E>]
-        : IncludeFromTuple<R, E>
-    : [];
+type IncludeFromTuple<T extends readonly any[], E> =
+    T extends [infer F, ...infer R] ?
+        [F] extends [E] ?
+            [F, ...IncludeFromTuple<R, E>]
+        :   IncludeFromTuple<R, E>
+    :   [];
 /**
  * @author 8Crafter
  */

@@ -1,3 +1,7 @@
+# v1.3.0
+
+## Changelog Pending
+
 # v1.2.0
 
 ## Changes

@@ -3,7 +3,7 @@
 *.json     linguist-detectable
 *.jsonc    linguist-detectable
 *.jsonl    linguist-detectable
-*.d.ts linguist-detectable -linguist-generated -linguist-vendored -lingust-documentation
+*.d.ts     linguist-detectable -linguist-generated -linguist-vendored -lingust-documentation
 
 tsconfig.json -linguist-detectable
 package.json -linguist-detectable

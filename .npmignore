@@ -1,4 +1,5 @@
 .git
+.gitattributes
 .github
 .vscode
 .*rc.json
