@@ -11,6 +11,8 @@ import type {
     PlayerPermissionLevel,
     PlayerRelation,
     PlayerTitleHistory,
+    RealmsPermissionAction,
+    RealmsPermissionRole,
     StorageType,
     VanillaGameplayContainerChestType,
     VanillaGameplayContainerItemType,
@@ -989,6 +991,9 @@ declare global {
             | "/settings" // Settings
             | "/realms-plus-ended-screen" // Realms Plus Subscription Expired modal.
             | "/mobile-data-blocked-modal/links/settings-page" // General Settings
+            | "/gameplay/menu" // Pause Screen
+            | "/gameplay/chat" // Chat
+            | "/gameplay/pause-menu/debug-drawer" // This screen is blank.
             | "/settings/accessibility" // Settings
             | "/settings/how_to_play" // Settings
             | "/settings/keyboard-and-mouse" // Settings
@@ -1049,9 +1054,6 @@ declare global {
             | "/invite-screen-legacy"
             | "/legacy-start-from-template"
             | "/sign-in-achievements"
-            | "/gameplay/menu"
-            | "/gameplay/chat"
-            | "/gameplay/pause-menu/debug-drawer"
             | "/send-invites"
             | "/edit-realm-world"
             | "/view-all-packs"
@@ -1199,8 +1201,7 @@ declare global {
                     queryID: number | bigint,
                     ...queryParams: QueryName extends keyof EngineQuerySubscribeEventParamsMap ? EngineQuerySubscribeEventParamsMap[QueryName] : unknown[],
                 ]
-            : T extends "query:unsubscribe" ?
-                [queryName: unknown] // TODO: Figure out the type of this.
+            : T extends "query:unsubscribe" ? [queryID: number | bigint]
             : T extends "core:telemetry:eventfulNavigation" | "core:telemetry:firstMeaningfulPaint" | "core:telemetry:firstContentfulPaint" | "Ready" ? []
             : T extends "core:telemetry:uneventfulNavigation" ?
                 [...args: unknown[]] // TODO: Figure out the type of this.
@@ -1216,6 +1217,96 @@ declare global {
             "core.safeZone": [];
             "core.animation": [];
             "core.input": [];
+            "core.cloudStorage": [];
+            "core.commandState": [commandID: number];
+            "core.device.display": [];
+            "core.device.network": [];
+            "core.device.platform": [];
+            "core.device.storage": [];
+            "core.staticFeatureFlag": [
+                // TEMP
+                featureFlagID: LooseAutocomplete<
+                    ValueTypes<{
+                        enableFallibleCreateWorld: "vanilla.enableFallibleCreateWorld";
+                        unlockRecipes: "vanilla.settings.unlockRecipes";
+                        debugDrawer: "vanilla.debugDrawer";
+                        hardcoreMode: "vanilla.hardcoreMode";
+                        parties: "vanilla.parties";
+                        hasRealmsEnabled: "core.hasRealmsEnabled";
+                        realmsOreUIPurchaseEnabled: "vanilla.realmsOreUIPurchaseEnabled";
+                        discoveryProd: "vanilla.marketplace.discovery.prod";
+                        abNewPlayerPathV3BNoSignInScreen: "vanilla.ab.newPlayerPathV3.B.noSignInScreen";
+                        abNewPlayerPathV3DNoControlScreen: "vanilla.ab.newPlayerPathV3.D.noControlScreen";
+                        textfieldPointerAuto: "core.textfield.pointerAuto";
+                        enableUI: "vanilla.editor.enableUI";
+                        paneCollapseAPI: "vanilla.editor.paneCollapseAPI";
+                        toolGrouping: "vanilla.editor.toolGrouping";
+                        structureCRUD: "vanilla.editor.structureCRUD";
+                        experimentalFeature: "vanilla.editor.experimentalFeature";
+                        mixBlendMode: "core.mixBlendMode";
+                        readWithOptions: "core.screenReader.readWithOptions";
+                        oreUIGameplay: "vanilla.oreUIGameplay";
+                    }>
+                >,
+            ];
+            "core.flightingConfig.bool": [
+                // TEMP
+                flightingConfigEntryID: LooseAutocomplete<
+                    | "enable-send-xbl-friend-requests"
+                    | "enable-view-xbl-friend-requests"
+                    | "enable-send-xbl-friend-requests"
+                    | "show-xbl-friends-not-follows"
+                    | "show-xbl-friends-not-follows"
+                    | "show-xbl-friends-not-follows"
+                    | "show-xbl-friends-not-follows"
+                    | "show-xbl-friends-not-follows"
+                    | "parties-travel-to-external"
+                    | "parties-travel-to-experiences"
+                >,
+            ];
+            "core.flightingToggle": [
+                // TEMP
+                flightingToggleID: LooseAutocomplete<
+                    ValueTypes<{
+                        actionBarDefaultCrosshair: "mc-editor-default-actionbar-crosshair";
+                        actionBarDefaultExport: "mc-editor-default-actionbar-export";
+                        actionBarDefaultHotbar: "mc-editor-default-actionbar-hotbar";
+                        actionBarDefaultKeyboardSettings: "mc-editor-default-actionbar-keyboard-settings";
+                        actionBarDefaultStructures: "mc-editor-default-actionbar-structures";
+                        createFromAddOn: "mc-create-from-add-on";
+                        disableAnimatedSignInScreens: "mc-disable-animated-sign-in-screens";
+                        friendsDrawerPlayersInMyWorld: "vanilla.friendsDrawerPlayersInMyWorld";
+                        hidePingAndPlayerCount: "mc-hide-ping-and-count";
+                        hotbarAutoProgress: "mc-editor-tutorial-hotbar-switch-progress";
+                        newAccessibilitySettingsScreen: "mc-new-accessibility-settings-screen";
+                        newAccountSettingsScreen: "mc-new-account-settings-screen";
+                        newAudioSettingsScreen: "mc-new-audio-settings-screen";
+                        newGameSettingsScreen: "mc-new-game-settings-screen";
+                        newGeneralSettingsScreen: "mc-new-general-settings-screen";
+                        newLanguageSettingsScreen: "mc-new-language-settings-screen";
+                        newMultiplayerSettingsScreen: "vanilla.newMultiplayerSettingsScreen";
+                        newVideoSettingsScreen: "mc-new-video-settings-screen";
+                        cloudStorageManagerFeature: "mc-new-enable-cloud-storage-manager";
+                        partiesChat: "mc-parties-chat";
+                        realmsPdpMembers: "mc-realms-pdp-members-cf";
+                        realmsPlanPicker: "mc-realms-plan-picker";
+                        realmsTermsLayout: "mc-realms-terms";
+                        screenshotsGallery: "vanilla.screenshotsGallery";
+                        screenshotsShowcase: "vanilla.screenshotsShowcase";
+                        showGifs: "vanilla.editor.tooltips.showGifs";
+                        showVideoLink: "mc-editor-tutorial-show-video-link";
+                        surfaceProfileReportButton: "mc-surface-profile-report-button";
+                        usePersonaProfileImages: "mc-use-persona-profile-images";
+                        createFromMarketplacePassBanner: "mc-create-from-mpp-banner";
+                        marketplacePassFreeWeekend: "mc-mpp-free-weekend";
+                        serversTabV2: "mc-servers-tab-v2";
+                        createFromPriceNoCreator: "mc-cf-price-no-creator";
+                        createFromPriceNoRating: "mc-cf-price-no-rating";
+                        serversTabV1LayoutService: "mc-servers-tab-v1-layout-service";
+                    }>
+                >,
+            ];
+            "core.screenReader": [];
             "vanilla.core.dataDrivenUICompositionQuery": [
                 screenID: LooseAutocomplete<
                     | "minecraft:default_chest_screen"
@@ -1305,6 +1396,8 @@ declare global {
              * @todo Figure out the parameters of this query.
              */
             "vanilla.menus.buildInfoQuery": [...args: unknown[]];
+            "vanilla.menus.localWorldListQuery": [];
+            "vanilla.menus.localWorldQuery": [worldId: string];
         }
         interface EngineQueryNonFacetResultMap {
             "core.locale": {
@@ -1337,6 +1430,81 @@ declare global {
                 enableControllerHints: boolean;
                 keyboardType: number;
                 interactionModelLocked: boolean;
+            };
+            "core.cloudStorage": {
+                __Type: `core.cloudStorage$_$${number}`;
+                cloudStorageSupported: boolean;
+                storageSize: number;
+                storageUsed: number;
+                storageAvailableSize: string;
+                storagePercentage: number;
+                isStorageFull: boolean;
+                isStorageLow: boolean;
+            };
+            "core.commandState": {
+                __Type: `core.commandState$_$${number}`;
+                state: number;
+                result: number;
+                progress: number;
+                error: null | unknown; // TODO
+            };
+            "core.device.display": {
+                __Type: `core.device.display$_$${number}`;
+                displayWidth: number;
+                displayHeight: number;
+                guiScaleModifier: number;
+                guiScaleBase: number;
+                pixelsPerMillimeter: number;
+            };
+            "core.device.network": {
+                __Type: `core.device.network$_$${number}`;
+                isOnline: boolean;
+                showCellularDataFee: boolean;
+                onlyCellularAvailable: boolean;
+                supportsManualAddedServers: boolean;
+                isLANAllowed: boolean;
+                isAdHocModeActive: boolean;
+                defaultNetworkMaxPlayers: number;
+            };
+            "core.device.platform": {
+                __Type: `core.device.platform$_$${number}`;
+                /**
+                 * @see {@link Platform}
+                 */
+                type: Platform<"values">;
+                /**
+                 * @see {@link InputMethod}
+                 */
+                inputMethods: CoherentArrayProxy<InputMethod<"values">>;
+            };
+            "core.device.storage": {
+                __Type: `core.device.storage$_$${number}`;
+                isUsingExternalStorage: boolean;
+                isUsingAppDataStorage: boolean;
+                storageSize: number;
+                storageUsed: number;
+                storageAvailableSize: string;
+                supportsSizeQuery: boolean;
+                isStorageFull: boolean;
+                isStorageLow: boolean;
+            };
+            "core.staticFeatureFlag": {
+                __Type: `core.staticFeatureFlag$_$${number}`;
+                enabled: boolean;
+            };
+            "core.flightingConfig.bool": {
+                __Type: `core.flightingConfig.bool$_$${number}`;
+                value: boolean;
+            };
+            "core.flightingToggle": {
+                __Type: `core.flightingToggle$_$${number}`;
+                enabled: boolean;
+            };
+            "core.screenReader": {
+                __Type: `core.screenReader$_$${number}`;
+                isChatTextToSpeechEnabled: boolean;
+                isUITextToSpeechEnabled: boolean;
+                isIdle: boolean;
             };
             "vanilla.core.dataDrivenUICompositionQuery": {
                 __Type: `vanilla.core.dataDrivenUICompositionQuery$_$${number}`;
@@ -1511,6 +1679,31 @@ declare global {
              * @todo Figure out the type of this query.
              */
             "vanilla.menus.buildInfoQuery": unknown;
+            "vanilla.menus.localWorldListQuery": {
+                __Type: `vanilla.menus.localWorldListQuery$_$${number}`;
+                worlds: CoherentArrayProxy<{
+                    __Type: `LocalWorldListEntry$_$${number}`;
+                    /**
+                     * The world folder name.
+                     *
+                     * @example
+                     * "7w4ZHhMl-GA="
+                     */
+                    id: string;
+                    /**
+                     * The display name of the world.
+                     */
+                    name: string;
+                    /**
+                     * If all content on the world is owned by the player.
+                     */
+                    allContentOwned: boolean;
+                }>;
+            };
+            "vanilla.menus.localWorldQuery": {
+                __Type: "vanilla.menus.localWorldQuery$_$29804";
+            } & LocalWorldDataType &
+                Required<Pick<LocalWorldDataType, "cloudSyncState">>;
         }
         type EngineQueryResult<T extends LooseAutocomplete<FacetList[number] | keyof EngineQueryNonFacetResultMap>> =
             T extends keyof EngineQueryNonFacetResultMap ? EngineQueryNonFacetResultMap[T]
@@ -1728,30 +1921,163 @@ declare global {
                 scalingModeOverride: LooseAutocomplete<"legacy">;
             };
             "core.deviceInformation": {
-                activeMultiplayerServiceIds: CoherentArrayProxy<number>;
-                changeStorageTask: number;
+                // DEPRECATED: Mark the properties of this first object as deprecated, as all but three of them have been removed.
+                /**
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 * @todo Figure out where this was moved to.
+                 */
+                activeMultiplayerServiceIds?: CoherentArrayProxy<number>;
+                /**
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 * @todo Figure out where this was moved to.
+                 */
+                changeStorageTask?: number;
                 /**
                  * @see {@link StorageType}
+                 *
+                 * @see
+                 * Use the `isUsingExternalStorage` and `isUsingAppDataStorage` properties of the `core.device.storage` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 * @todo Figure out what version this was added in.
                  */
-                storageType: StorageType<"values">;
-                supportsSizeQuery: boolean;
-                isStorageLow: boolean;
-                isStorageFull: boolean;
-                storageUsed: number;
-                storageSize: number;
-                storageAvailableSize: string;
-                supportsManualAddedServers: boolean;
-                onlyCellularAvailable: boolean;
-                showCellularDataFee: boolean;
-                isLANAllowed: boolean;
-                isOnline: boolean;
-                guiScaleBase: number;
-                guiScaleModifier: number;
-                displayHeight: number;
-                displayWidth: number;
-                pixelsPerMillimeter: number;
+                storageType?: StorageType<"values">;
+                /**
+                 * @see
+                 * Use the `supportsSizeQuery` property of the `core.device.storage` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                supportsSizeQuery?: boolean;
+                /**
+                 * @see
+                 * Use the `isStorageLow` property of the `core.device.storage` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                isStorageLow?: boolean;
+                /**
+                 * @see
+                 * Use the `isStorageFull` property of the `core.device.storage` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                isStorageFull?: boolean;
+                /**
+                 * @see
+                 * Use the `storageUsed` property of the `core.device.storage` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                storageUsed?: number;
+                /**
+                 * @see
+                 * Use the `storageSize` property of the `core.device.storage` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                storageSize?: number;
+                /**
+                 * @see
+                 * Use the `storageAvailableSize` property of the `core.device.storage` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                storageAvailableSize?: string;
+                /**
+                 * @see
+                 * Use the `supportsManualAddedServers` property of the `core.device.network` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                supportsManualAddedServers?: boolean;
+                /**
+                 * @see
+                 * Use the `onlyCellularAvailable` property of the `core.device.network` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                onlyCellularAvailable?: boolean;
+                /**
+                 * @see
+                 * Use the `showCellularDataFee` property of the `core.device.network` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                showCellularDataFee?: boolean;
+                /**
+                 * @see
+                 * Use the `isLANAllowed` property of the `core.device.network` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                isLANAllowed?: boolean;
+                /**
+                 * @see
+                 * Use the `isOnline` property of the `core.device.network` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                isOnline?: boolean;
+                /**
+                 * @see
+                 * Use the `guiScaleBase` property of the `core.device.display` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                guiScaleBase?: number;
+                /**
+                 * @see
+                 * Use the `guiScaleModifier` property of the `core.device.display` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                guiScaleModifier?: number;
+                /**
+                 * @see
+                 * Use the `displayHeight` property of the `core.device.display` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                displayHeight?: number;
+                /**
+                 * @see
+                 * Use the `displayWidth` property of the `core.device.display` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                displayWidth?: number;
+                /**
+                 * @see
+                 * Use the `pixelsPerMillimeter` property of the `core.device.display` query instead.
+                 *
+                 * @deprecated Removed either in 1.26.40 or at some point before that.
+                 * @todo Figure out what version this was removed in.
+                 */
+                pixelsPerMillimeter?: number;
                 isLowMemoryDevice: boolean;
                 /**
+                 * @see
+                 * Use the `inputMethods` property of the `core.device.platform` query instead.
+                 *
                  * @see {@link InputMethod}
                  */
                 inputMethods: CoherentArrayProxy<InputMethod<"values">>;
@@ -1762,6 +2088,9 @@ declare global {
                  */
                 arvrPlatform?: ARVRPlatform<"values">;
                 /**
+                 * @see
+                 * Use the `type` property of the `core.device.platform` query instead, as this will likely be removed soon.
+                 *
                  * @see {@link Platform}
                  */
                 platform: Platform<"values">;
@@ -5681,13 +6010,44 @@ declare global {
              *
              * @todo Get the type for this facet.
              */
-            "vanilla.realmsRolesAndPermissionsQueries": unknown;
+            "vanilla.realmsRolesAndPermissionsQueries": {
+                currentUserRolesAndActionsForAllRealms: CoherentArrayProxy<{
+                    /**
+                     * @see {@link RealmsPermissionAction}
+                     */
+                    actions: CoherentArrayProxy<RealmsPermissionAction<"values">>;
+                    /**
+                     * @see {@link RealmsPermissionRole}
+                     */
+                    role: RealmsPermissionRole<"values">;
+                    realmId: `${bigint}`;
+                }>;
+                /**
+                 * @see {@link RealmsPermissionAction}
+                 */
+                selectedUserActions: CoherentArrayProxy<RealmsPermissionAction<"values">>;
+                /**
+                 * @see {@link RealmsPermissionRole}
+                 */
+                selectedUserRole: RealmsPermissionRole<"values">;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                state: number;
+            };
             /**
              * @since Somewhere between 1.21.130.20 Preview and 1.21.130.26 Preview.
              *
              * @todo Get the type for this facet.
              */
-            "vanilla.realmsRolesAndPermissionsCommands": unknown;
+            "vanilla.realmsRolesAndPermissionsCommands": {
+                initRealmsRolesAndActions(...args: unknown[]): unknown; // TODO
+                initRealmsUserRoleAndActions(...args: unknown[]): unknown; // TODO
+                setRealmsUserRole(...args: unknown[]): unknown; // TODO
+                saveRealmsUserRole(...args: unknown[]): unknown; // TODO
+                resetState(...args: unknown[]): unknown; // TODO
+                refreshAllRealmRolesAndActionsForCurrentUser(): null;
+            };
             /**
              * @since Somewhere between 1.21.130.20 Preview and 1.21.130.26 Preview.
              *
@@ -5877,7 +6237,8 @@ declare global {
             /**
              * The size of the world in MiB.
              */
-            fileSize: `${number}MB`;
+            // REVIEW: See if it actually can render TB, PB, EB, ZB, YB.
+            fileSize: `${number}${"MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"}`;
             /**
              * The game mode of the world.
              */
@@ -5897,6 +6258,13 @@ declare global {
              * "7w4ZHhMl-GA="
              */
             id: string;
+            /**
+             * @todo Make the type an enum.
+             *
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            cloudSyncState?: number;
         }
         interface RealmDataType {
             world: {
