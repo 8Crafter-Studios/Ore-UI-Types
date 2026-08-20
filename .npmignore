@@ -6,3 +6,4 @@
 .*rc
 node_modules
 package-lock.json
+development_debug

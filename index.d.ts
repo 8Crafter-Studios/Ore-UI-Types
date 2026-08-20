@@ -1,25 +1,48 @@
 import type {
     ARVRPlatform,
-    FriendFavoriteStatus,
-    FriendPresence,
+    FavoriteStatusEnum,
+    SocialPresence,
+    FetchStatus,
     InputMethod,
     JoinRealmsServerError,
     KeyboardType,
     LeaveRealmsServerError,
     Platform,
-    PlayerPartyPresence,
+    PartyPresence,
     PlayerPermissionLevel,
     PlayerRelation,
     PlayerTitleHistory,
+    RealmPlayerRoleEnum,
     RealmsPermissionAction,
     RealmsPermissionRole,
+    RealmsPlayerListPlayerPermission,
+    RealmsStoriesTimelineOptInStatus,
     StorageType,
     VanillaGameplayContainerChestType,
     VanillaGameplayContainerItemType,
     VanillaGameplayUIProfile,
-    WebBrowserFacetLinkType,
+    WebBrowserLink,
     WorldPlayerInfoBindingsConnectionType,
     WorldPlayerInfoBindingsPlatform,
+    DeletionStatus,
+    InvocationState,
+    InvocationResult,
+    FacetTaskState,
+    DuplicateWorldError,
+    ExportWorldFlags,
+    ExportWorldResult,
+    ClearPlayerDataType,
+    ExportWorldStatus,
+    StartClearPlayerDataError,
+    WorldSizeConvertResult,
+    DownloadWorldTemplateStatus,
+    ImportFailure,
+    DownloadWorldTemplateError,
+    PostStatus,
+    NetworkWorldType,
+    WorldPingStatus,
+    ProfileImageState,
+    FriendsLoadingState,
 } from "@ore-ui-types/enums";
 declare const FACET_NO_VALUE_SYMBOL: unique symbol;
 declare global {
@@ -44,6 +67,13 @@ declare global {
          */
         var __commands__: {
             vanilla_menus_update_settings: {
+                commitString: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
                 updateNumber: {
                     id: number;
                     /**
@@ -74,6 +104,13 @@ declare global {
                 };
             };
             vanilla_menus_invoke_action_settings: {
+                cancelAsyncAction: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
                 invokeAction: {
                     id: number;
                     /**
@@ -89,6 +126,17 @@ declare global {
                      * @todo Figure out the types for this method.
                      */
                     callable(...args: [unknown, ...unknown[]]): unknown;
+                };
+            };
+            coreApplicationCommandGroup: {
+                exit: {
+                    id: number;
+                    /**
+                     * Closes Minecraft.
+                     *
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(): unknown;
                 };
             };
             soundCommandGroup: {
@@ -348,6 +396,566 @@ declare global {
                     callable(...args: unknown[]): unknown;
                 };
                 clear: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanillaGameplayContainerAPICommands: {
+                setPreviewItemName: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                performAutoTrade: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                pullInIngredientsForSelectedTrade: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                selectTrade: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setRecipeBookTab: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setRecipeBookFiltering: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setRecipeBookSearchString: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setDistributeAllSource: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                resetSplitStack: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                splitSingleItem: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                splitMultipleItemsTouch: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                splitMultipleItems: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                autoPlaceItems: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                coalesceOrAutoPlaceItems: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                coalesceItems: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                dropOneItem: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                dropAllItems: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                placeAmountOfItems: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                placeOneItem: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                placeAllItems: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                takeHalfItems: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                takeOneItem: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                takeAllItems: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                handleBackgroundMouseRelease: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                handlePanelMouseRelease: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                handleSlotMouseDrag: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                handleSlotMouseRelease: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                handleSlotMousePress: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                closeContainer: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            editorTelemetryCommandGroup: {
+                fireScriptAction: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanillaGameplayLocalPlayerWakeUpCommand: {
+                wakeUp: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanillaGameplayLocalPlayerRespawnCommand: {
+                respawn: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            realmsServerSettingsCommandGroup: {
+                setRealmsServerSimDist: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setRealmsServerRenderDist: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setRealmsServerMaxPlayerCount: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setRealmsServerMode: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                fetchRealmsServerSettings: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanillaRealmsSavesCommandGroup: {
+                cancelBackupDownload: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                downloadBackup: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                renameBackup: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                deleteBackup: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                restoreBackup: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                saveAutoBackup: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                saveBackup: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                fetchActiveWorldSize: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                fetchBackupList: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanillaRealmsMembersCommandGroup: {
+                addRealmMembers: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanillaAdminLogCommandGroup: {
+                fetchAdminLogs: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanilla_menus_auto_save_warning_screen: {
+                acknowledge: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanilla_menus_tts_warning_screen: {
+                disableTTS: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                markTTSShown: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                doesLanguageSupportTts: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            personaCommands: {
+                equipDefaultSkin: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            ClientUpdatesCommandGroup: {
+                launchStoreForClientUpdates: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanilla_socialSystemCommandGroup: {
+                setPollingForReceivedRequests: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                reportIsDrawerVisible: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanilla_inboxCommandGroup: {
+                reportSubmit: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                reportClick: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanillaGameplayLeaveGameCommandGroup: {
+                leaveGameThenJoinFriendsWorld: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                leaveGame: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanillaWorldStorageCommandGroup: {
+                deleteWorld: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanillaWorldCloudSyncCommandGroup: {
+                setCloudSaved: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setLocalOnly: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanillaStorageManagerCommandGroup: {
+                convertOldWorld: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                deleteSelectedItems: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setAllSelected: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setSelected: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanilla_menus_safe_zone_warning_screen: {
+                markShown: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setSafeZone: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            editorContentBadgeCommandGroup: {
+                restoreAllBadges: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                clearAllBadges: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                clearBadge: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+                setSuppressNewBadges: {
+                    id: number;
+                    /**
+                     * @todo Figure out the types for this method.
+                     */
+                    callable(...args: unknown[]): unknown;
+                };
+            };
+            vanillaRealmsDeleteCommandGroup: {
+                deleteRealm: {
                     id: number;
                     /**
                      * @todo Figure out the types for this method.
@@ -1150,13 +1758,13 @@ declare global {
             | "*"
         >;
         type EngineEvent<T extends EngineEventID | undefined> =
-            T extends "facet:request" ? [facetName: FacetList[number], facetName: FacetList[number], options: Record<PropertyKey, any>]
+            T extends "facet:request" ? [facetName: FacetList[number], requestId: LooseAutocomplete<FacetList[number]>, options: Record<PropertyKey, any>]
             : T extends "facet:discard" ? [facetName: FacetList[number]]
-            : T extends `facet:updated:${infer Facet}` ?
-                Facet extends FacetList[number] ?
-                    [facetValue: FacetTypeMap[Facet]]
+            : T extends `facet:updated:${infer RequestID}` ?
+                RequestID extends FacetList[number] ?
+                    [facetValue: FacetTypeMap[RequestID]]
                 :   [facetValue: unknown]
-            : T extends `facet:error:${infer _Facet}` ?
+            : T extends `facet:error:${infer _RequestID}` ?
                 [errorMessage: FacetErrorCode] // TODO: Figure out the type of this.
             : T extends "engine:gamepad:onPress" ?
                 [...args: unknown[]] // TODO: Figure out the type of this.
@@ -1208,12 +1816,76 @@ declare global {
             : T extends "_Unhandled" ? [eventName: LooseAutocomplete<EngineEventID>, ...args: any[]]
             : T extends "_Result" | "_Reject" | "_OnReady" | "_OnError" ?
                 [...args: unknown[]] // TODO: Figure out the type of this.
-            : T extends "*" ? [...args: any[]]
+            : T extends "*" ? [eventName: LooseAutocomplete<EngineEventID>, ...args: any[]]
             : [...args: unknown[]];
         interface EngineQuerySubscribeEventDeprecatedParamsMap {}
+        // TEMP // DEBUG
+        type QueryTypes = Exclude<
+            keyof EngineQuerySubscribeEventParamsMap extends `${infer QueryName}` ? QueryName : never,
+            | "core.animation"
+            | "core.input"
+            | "core.locale"
+            | "core.safeZone"
+            | "core.screenReader"
+            | "vanilla.gameplay.furnace"
+            | "core.splitScreen"
+            | "core.cloudStorage"
+            | "core.commandState"
+            | "core.device.display"
+            | "core.device.network"
+            | "core.device.platform"
+            | "core.device.storage"
+            | "core.staticFeatureFlag"
+            | "core.flightingConfig.bool"
+            | "core.flightingToggle"
+            | "vanilla.core.dataDrivenUICompositionQuery"
+            | "vanillaCoreDataDrivenUIDefinitionQuery"
+            | "vanillaCoreDataDrivenUIScreenIdQuery"
+            | "vanillaCoreDataStoreNumberQuery"
+            | "vanillaCoreDataStoreStringQuery"
+            | "vanillaCoreDataStoreBoolQuery"
+            | "vanillaGameplayContainerSizeQuery"
+            | "vanillaGameplayContainerItemQuery"
+            | "vanillaGameplayContainerNameQuery"
+            | "vanillaGameplayContainerChestTypeQuery"
+            | "vanillaGameplayRecipeBookSearchStringQuery"
+            | "vanillaGameplayRecipeBookFilteringQuery"
+            | "vanillaGameplayUIProfile"
+            | "vanillaGameplayAnvilQuery"
+            | "vanillaGameplayTradeOverviewQuery"
+            | "vanillaGameplayTradeTierQuery"
+            | "vanillaGameplayTradeOfferQuery"
+            | "vanilla.menus.settingsGroupQuery"
+            | "vanilla.menus.settingsGroupInfoQuery"
+            | "vanilla.menus.settingsUiDebugQuery"
+            | "vanilla.menus.settingsTextQuery"
+            | "vanilla.menus.settingsBooleanQuery"
+            | "vanilla.menus.settingsNumberQuery"
+            | "vanilla.menus.settingsOptionQuery"
+            | "vanilla.menus.settingsActionQuery"
+            | "vanilla.menus.buildInfoQuery"
+            | "vanilla.menus.localWorldListQuery"
+            | "vanilla.menus.localWorldQuery"
+            | "realmsServerSettingsQuery"
+            | "vanilla.currentParty.dataQuery"
+            | "vanilla.currentParty.destinationQuery"
+            | "vanilla.currentParty.membersQuery"
+            | "vanilla.menus.realms.adminLogQuery"
+            | "vanilla.menus.realms.realmsBackupDownloadQuery"
+            | "vanilla.menus.realms.realmsSavesQuery"
+            | "vanilla.partyChat.unreadMessagesQuery"
+            | "vanilla.playerFriendList"
+            | "vanilla.realms.currentRealm"
+            | "vanilla.receivedFriendRequests"
+            | "vanilla.CoreDataDrivenUIDefinitionQuery"
+            | "vanillaGameplayImmediateRespawnQuery"
+            | "vanillaGameplayActiveLevelHardcoreModeQuery"
+            | "vanillaGameplayPlayerDeathInfoQuery"
+            | "vanillaGameplayIsLocalPlayerAliveQuery"
+        >;
         interface EngineQuerySubscribeEventParamsMap {
             "core.locale": [];
-            "core.splitscreen": [];
+            "core.splitScreen": [];
             "core.safeZone": [];
             "core.animation": [];
             "core.input": [];
@@ -1254,11 +1926,6 @@ declare global {
                 flightingConfigEntryID: LooseAutocomplete<
                     | "enable-send-xbl-friend-requests"
                     | "enable-view-xbl-friend-requests"
-                    | "enable-send-xbl-friend-requests"
-                    | "show-xbl-friends-not-follows"
-                    | "show-xbl-friends-not-follows"
-                    | "show-xbl-friends-not-follows"
-                    | "show-xbl-friends-not-follows"
                     | "show-xbl-friends-not-follows"
                     | "parties-travel-to-external"
                     | "parties-travel-to-experiences"
@@ -1307,8 +1974,20 @@ declare global {
                 >,
             ];
             "core.screenReader": [];
+            realmsServerSettingsQuery: [];
+            "vanilla.currentParty.dataQuery": [];
+            "vanilla.currentParty.destinationQuery": [];
+            "vanilla.currentParty.membersQuery": [];
+            "vanilla.menus.realms.adminLogQuery": [];
+            "vanilla.menus.realms.realmsBackupDownloadQuery": [];
+            "vanilla.menus.realms.realmsSavesQuery": [];
+            "vanilla.partyChat.unreadMessagesQuery": [];
+            "vanilla.playerFriendList": [XUID: `${bigint}`];
+            "vanilla.realms.currentRealm": [realmID: `${bigint}`];
+            "vanilla.receivedFriendRequests": [];
             "vanilla.core.dataDrivenUICompositionQuery": [
                 screenID: LooseAutocomplete<
+                    // TODO: Find the newer screens.
                     | "minecraft:default_chest_screen"
                     | "minecraft:chest_screen"
                     | "minecraft:barrel_screen"
@@ -1320,6 +1999,20 @@ declare global {
             /**
              * @todo Figure out what `unknownArg1` is.
              */
+            "vanilla.CoreDataDrivenUIDefinitionQuery": [
+                unknownArg1: number | bigint,
+                screenID: LooseAutocomplete<
+                    // TODO: Find the newer screens.
+                    | "minecraft:default_chest_screen"
+                    | "minecraft:chest_screen"
+                    | "minecraft:barrel_screen"
+                    | "minecraft:ender_chest_screen"
+                    | "minecraft:shulker_box_screen"
+                >,
+            ];
+            /**
+             * @todo Figure out what `unknownArg1` is.
+             */
             vanillaCoreDataDrivenUIDefinitionQuery: [
                 unknownArg1: number | bigint,
                 screenID: LooseAutocomplete<
@@ -1328,6 +2021,8 @@ declare global {
                     | "minecraft:barrel_screen"
                     | "minecraft:ender_chest_screen"
                     | "minecraft:shulker_box_screen"
+                    | "minecraft:custom_form"
+                    | "minecraft:message_box"
                 >,
             ];
             vanillaCoreDataDrivenUIScreenIdQuery: [];
@@ -1360,6 +2055,22 @@ declare global {
             vanillaGameplayTradeOverviewQuery: [];
             vanillaGameplayTradeTierQuery: [tradeTier: number];
             vanillaGameplayTradeOfferQuery: [tradeTier: number, tradeIndex: number];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            vanillaGameplayImmediateRespawnQuery: [...args: unknown[]];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            vanillaGameplayActiveLevelHardcoreModeQuery: [...args: unknown[]];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            vanillaGameplayPlayerDeathInfoQuery: [...args: unknown[]];
+            /**
+             * @todo Figure out the parameters of this query.
+             */
+            vanillaGameplayIsLocalPlayerAliveQuery: [...args: unknown[]];
             /**
              * @todo Figure out the parameters of this query.
              */
@@ -1401,29 +2112,29 @@ declare global {
         }
         interface EngineQueryNonFacetResultMap {
             "core.locale": {
-                __Type: `core.locale$_$${number}`;
+                __Type: `core.locale$_$${number | bigint}`;
                 locale: LooseAutocomplete<"en_US">;
             };
-            "core.splitscreen": {
-                __Type: `core.splitscreen$_$${number}`;
+            "core.splitScreen": {
+                __Type: `core.splitScreen$_$${number | bigint}`;
                 isPrimaryUser: boolean;
                 splitScreenPosition: number;
                 numActivePlayer: number;
                 splitScreenDirection: number;
             };
             "core.safeZone": {
-                __Type: `core.safeZone$_$${number}`;
+                __Type: `core.safeZone$_$${number | bigint}`;
                 safeAreaX: number;
                 safeAreaY: number;
                 screenPositionX: number;
                 screenPositionY: number;
             };
             "core.animation": {
-                __Type: `core.animation$_$${number}`;
+                __Type: `core.animation$_$${number | bigint}`;
                 screenAnimationEnabled: boolean;
             };
             "core.input": {
-                __Type: `core.input$_$${number}`;
+                __Type: `core.input$_$${number | bigint}`;
                 swapABButtons: boolean;
                 swapXYButtons: boolean;
                 currentInputType: number;
@@ -1432,24 +2143,36 @@ declare global {
                 interactionModelLocked: boolean;
             };
             "core.cloudStorage": {
-                __Type: `core.cloudStorage$_$${number}`;
+                __Type: `core.cloudStorage$_$${number | bigint}`;
                 cloudStorageSupported: boolean;
                 storageSize: number;
                 storageUsed: number;
+                /**
+                 * @todo Figure out if this is rounded, floored, or ceilinged.
+                 */
                 storageAvailableSize: string;
+                /**
+                 * @todo Figure out if this is 0-1 or 0-100.
+                 */
                 storagePercentage: number;
                 isStorageFull: boolean;
                 isStorageLow: boolean;
             };
             "core.commandState": {
-                __Type: `core.commandState$_$${number}`;
-                state: number;
-                result: number;
+                __Type: `core.commandState$_$${number | bigint}`;
+                /**
+                 * @see {@link InvocationState}
+                 */
+                state: InvocationState<"values">;
+                /**
+                 * @see {@link InvocationResult}
+                 */
+                result: InvocationResult<"values">;
                 progress: number;
                 error: null | unknown; // TODO
             };
             "core.device.display": {
-                __Type: `core.device.display$_$${number}`;
+                __Type: `core.device.display$_$${number | bigint}`;
                 displayWidth: number;
                 displayHeight: number;
                 guiScaleModifier: number;
@@ -1457,7 +2180,7 @@ declare global {
                 pixelsPerMillimeter: number;
             };
             "core.device.network": {
-                __Type: `core.device.network$_$${number}`;
+                __Type: `core.device.network$_$${number | bigint}`;
                 isOnline: boolean;
                 showCellularDataFee: boolean;
                 onlyCellularAvailable: boolean;
@@ -1467,7 +2190,7 @@ declare global {
                 defaultNetworkMaxPlayers: number;
             };
             "core.device.platform": {
-                __Type: `core.device.platform$_$${number}`;
+                __Type: `core.device.platform$_$${number | bigint}`;
                 /**
                  * @see {@link Platform}
                  */
@@ -1478,55 +2201,221 @@ declare global {
                 inputMethods: CoherentArrayProxy<InputMethod<"values">>;
             };
             "core.device.storage": {
-                __Type: `core.device.storage$_$${number}`;
+                __Type: `core.device.storage$_$${number | bigint}`;
                 isUsingExternalStorage: boolean;
                 isUsingAppDataStorage: boolean;
                 storageSize: number;
                 storageUsed: number;
+                /**
+                 * @todo Figure out if this is rounded, floored, or ceilinged.
+                 */
                 storageAvailableSize: string;
                 supportsSizeQuery: boolean;
                 isStorageFull: boolean;
                 isStorageLow: boolean;
             };
             "core.staticFeatureFlag": {
-                __Type: `core.staticFeatureFlag$_$${number}`;
+                __Type: `core.staticFeatureFlag$_$${number | bigint}`;
                 enabled: boolean;
             };
             "core.flightingConfig.bool": {
-                __Type: `core.flightingConfig.bool$_$${number}`;
+                __Type: `core.flightingConfig.bool$_$${number | bigint}`;
                 value: boolean;
             };
             "core.flightingToggle": {
-                __Type: `core.flightingToggle$_$${number}`;
+                __Type: `core.flightingToggle$_$${number | bigint}`;
                 enabled: boolean;
             };
             "core.screenReader": {
-                __Type: `core.screenReader$_$${number}`;
+                __Type: `core.screenReader$_$${number | bigint}`;
                 isChatTextToSpeechEnabled: boolean;
                 isUITextToSpeechEnabled: boolean;
                 isIdle: boolean;
             };
+            realmsServerSettingsQuery: {
+                __Type: `realmsServerSettingsQuery$_$${number | bigint}`;
+                playerCount: {
+                    __Type: `playerCount$_$${number | bigint}`;
+                    min: LooseAutocompleteB<number, 1>;
+                    max: LooseAutocompleteB<number, 2 | 10>;
+                    defaultValue: LooseAutocompleteB<number, 2 | 10>;
+                    current: LooseAutocompleteB<number, 2 | 10>;
+                };
+                renderDistance: {
+                    __Type: `renderDistance$_$${number | bigint}`;
+                    min: LooseAutocompleteB<number, 4>;
+                    max: LooseAutocompleteB<number, 25>;
+                    defaultValue: LooseAutocompleteB<number, 25>;
+                    current: LooseAutocompleteB<number, 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25>;
+                };
+                simDistance: {
+                    __Type: `simDistance$_$${number | bigint}`;
+                    min: LooseAutocompleteB<number, 4>;
+                    max: LooseAutocompleteB<number, 4>;
+                    defaultValue: LooseAutocompleteB<number, 4>;
+                    current: LooseAutocompleteB<number, 4>;
+                };
+                /**
+                 * @todo Make the type an enum.
+                 */
+                realmsServerMode: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                tier: number;
+            };
+            "vanilla.currentParty.dataQuery": {
+                __Type: `vanilla.currentParty.dataQuery$_$${number | bigint}`;
+                isInParty: boolean;
+                partyId: string; // TODO
+                /**
+                 * @todo Make the type an enum.
+                 */
+                privacy: number;
+                restrictInvitesToLeader: boolean;
+            };
+            "vanilla.currentParty.destinationQuery": {
+                __Type: `vanilla.currentParty.destinationQuery$_$${number | bigint}`;
+                destinationName: string; // TODO
+                shouldShowJoinDestination: boolean;
+            };
+            "vanilla.currentParty.membersQuery": {
+                __Type: `vanilla.currentParty.membersQuery$_$${number | bigint}`;
+                leaderXuid: string; // TODO
+                maxMemberCount: number;
+                /**
+                 * @todo Figure out the types for this array.
+                 */
+                members: CoherentArrayProxy<unknown>;
+                /**
+                 * @todo Figure out the types for this array.
+                 */
+                pendingInvitees: CoherentArrayProxy<unknown>;
+            };
+            "vanilla.menus.realms.adminLogQuery": {
+                __Type: `vanilla.menus.realms.adminLogQuery$_$${number | bigint}`;
+                logs: CoherentArrayProxy<{
+                    __Type: `AdminLogData$_$${number | bigint}`;
+                    /**
+                     * @todo Find all the log types.
+                     */
+                    logType: LooseAutocomplete<
+                        | "PACK_ADDED"
+                        | "INVITE_LINK_USED"
+                        | "SLOT_REPLACED"
+                        | "PACK_REMOVED"
+                        | "SLOT_CHANGED"
+                        | "MEMBER_PERMISSION_CHANGED"
+                        | "MEMBER_REMOVED"
+                        | "BACKUP_RESTORED"
+                        | "MEMBER_ROLE_CHANGED"
+                        | "SLOT_RENAMED"
+                    >;
+                    /**
+                     * @example "Aug 12 2026"
+                     */
+                    datePosted: string;
+                    /**
+                     * @example "02:42PM"
+                     */
+                    timePosted: string;
+                    /**
+                     * @todo Define parameter types for each log type.
+                     */
+                    parameters: string[];
+                    /**
+                     * @todo Define parameter types for each log type.
+                     */
+                    keys: string[];
+                }>;
+            };
+            "vanilla.menus.realms.realmsBackupDownloadQuery": {
+                __Type: `vanilla.menus.realms.realmsBackupDownloadQuery$_$${number | bigint}`;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                state: number;
+                /**
+                 * The progress percentage.
+                 *
+                 * A number between 0 and 1 (inclusive).
+                 */
+                progress: number;
+            };
+            "vanilla.menus.realms.realmsSavesQuery": {
+                __Type: `vanilla.menus.realms.realmsSavesQuery$_$${number | bigint}`;
+                /**
+                 * @todo Figure out the types for this array.
+                 */
+                manualBackups: CoherentArrayProxy<unknown>;
+                /**
+                 * @todo Figure out the types for this array.
+                 */
+                automaticBackups: CoherentArrayProxy<unknown>;
+                storageBytesUsed: number;
+                storageBytesTotal: number;
+                activeWorldSizeBytes: number;
+            };
+            "vanilla.partyChat.unreadMessagesQuery": {
+                __Type: `vanilla.partyChat.unreadMessagesQuery$_$${number | bigint}`;
+                hasUnreadMessages: boolean;
+            };
+            "vanilla.playerFriendList": {
+                __Type: `vanilla.playerFriendList$_$${number | bigint}`;
+                isLoading: boolean;
+                /**
+                 * @todo Figure out the types for this array.
+                 */
+                playerList: CoherentArrayProxy<unknown>;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                xboxAPICallResult: number;
+            };
+            "vanilla.realms.currentRealm": {
+                __Type: `vanilla.realms.currentRealm$_$${number | bigint}`;
+                realmID: null | unknown; // TODO
+                isRealmOwner: boolean;
+            };
+            "vanilla.receivedFriendRequests": {
+                __Type: `vanilla.receivedFriendRequests$_$${number | bigint}`;
+                isLoading: boolean;
+                playerList: CoherentArrayProxy<
+                    AddFriendUserItem & {
+                        __Type: `AddFriendObject$_$${number | bigint}`;
+                        isFriend: boolean;
+                        isFriendRequestReceived: boolean;
+                        isFriendRequestSent: boolean;
+                    }
+                >;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                xboxAPICallResult: number;
+            };
             "vanilla.core.dataDrivenUICompositionQuery": {
-                __Type: `vanilla.core.dataDrivenUICompositionQuery$_$${number}`;
+                __Type: `vanilla.core.dataDrivenUICompositionQuery$_$${number | bigint}`;
                 /**
                  * The data of this UI definition.
+                 *
+                 * @todo Add a schema/type for this.
                  */
                 children: Record<string, any>;
             };
             "vanilla.gameplay.furnace": {
-                __Type: `vanilla.gameplay.furnace$_$${number}`;
+                __Type: `vanilla.gameplay.furnace$_$${number | bigint}`;
                 litProgress: number;
                 burnProgress: number;
             };
             vanillaCoreDataDrivenUIDefinitionQuery: {
-                __Type: `vanillaCoreDataDrivenUIDefinitionQuery$_$${number}`;
+                __Type: `vanillaCoreDataDrivenUIDefinitionQuery$_$${number | bigint}`;
                 /**
                  * The data of this UI definition.
                  */
                 children: Record<string, any>;
             };
             vanillaCoreDataDrivenUIScreenIdQuery: {
-                __Type: `vanillaCoreDataDrivenUIScreenIdQuery$_$${number}`;
+                __Type: `vanillaCoreDataDrivenUIScreenIdQuery$_$${number | bigint}`;
                 screenId: null | string;
             };
             vanillaCoreDataStoreNumberQuery: unknown; // TODO
@@ -1538,11 +2427,11 @@ declare global {
                  *
                  * The number at the end of this value is the index of this query (each time there is a query, this value seems to go up).
                  */
-                __Type: `vanillaGameplayContainerSizeQuery$_$${number}`;
+                __Type: `vanillaGameplayContainerSizeQuery$_$${number | bigint}`;
                 size: number;
             };
             vanillaGameplayContainerItemQuery: {
-                __Type: `vanillaGameplayContainerItemQuery$_$${number}`;
+                __Type: `vanillaGameplayContainerItemQuery$_$${number | bigint}`;
                 amount: number;
                 name: string;
                 image: string;
@@ -1555,33 +2444,33 @@ declare global {
                 containerItemType: VanillaGameplayContainerItemType<"values">;
             };
             vanillaGameplayContainerNameQuery: {
-                __Type: `vanillaGameplayContainerNameQuery$_$${number}`;
+                __Type: `vanillaGameplayContainerNameQuery$_$${number | bigint}`;
                 name: string;
             };
             vanillaGameplayContainerChestTypeQuery: {
-                __Type: `vanillaGameplayContainerChestTypeQuery$_$${number}`;
+                __Type: `vanillaGameplayContainerChestTypeQuery$_$${number | bigint}`;
                 /**
                  * @see {@link VanillaGameplayContainerChestType}
                  */
                 chestType: null | VanillaGameplayContainerChestType<"values">;
             };
             vanillaGameplayRecipeBookSearchStringQuery: {
-                __Type: `vanillaGameplayRecipeBookSearchStringQuery$_$${number}`;
+                __Type: `vanillaGameplayRecipeBookSearchStringQuery$_$${number | bigint}`;
                 searchString: string;
             };
             vanillaGameplayRecipeBookFilteringQuery: {
-                __Type: `vanillaGameplayRecipeBookFilteringQuery$_$${number}`;
+                __Type: `vanillaGameplayRecipeBookFilteringQuery$_$${number | bigint}`;
                 isFiltering: boolean;
             };
             vanillaGameplayUIProfile: {
-                __Type: `vanillaGameplayUIProfile$_$${number}`;
+                __Type: `vanillaGameplayUIProfile$_$${number | bigint}`;
                 /**
                  * @see {@link VanillaGameplayUIProfile}
                  */
                 uiProfile: VanillaGameplayUIProfile<"values">;
             };
             vanillaGameplayAnvilQuery: {
-                __Type: `vanillaGameplayAnvilQuery$_$${number}`;
+                __Type: `vanillaGameplayAnvilQuery$_$${number | bigint}`;
                 costText: string;
                 shouldCrossOutIconBeVisible: boolean;
                 previewItemName: string;
@@ -1592,7 +2481,7 @@ declare global {
                 damageState: number;
             };
             vanillaGameplayTradeOverviewQuery: {
-                __Type: `vanillaGameplayTradeOverviewQuery$_$${number}`;
+                __Type: `vanillaGameplayTradeOverviewQuery$_$${number | bigint}`;
                 isExperienceBarVisible: boolean;
                 experienceProgress: number;
                 experiencePossibleProgress: number;
@@ -1600,14 +2489,14 @@ declare global {
                 tradeTiers: number;
             };
             vanillaGameplayTradeTierQuery: {
-                __Type: `vanillaGameplayTradeTierQuery$_$${number}`;
+                __Type: `vanillaGameplayTradeTierQuery$_$${number | bigint}`;
                 tierName: string;
                 isTierVisible: boolean;
                 isTierUnlocked: boolean;
                 tradeOffers: number;
             };
             vanillaGameplayTradeOfferQuery: {
-                __Type: `vanillaGameplayTradeOfferQuery$_$${number}`;
+                __Type: `vanillaGameplayTradeOfferQuery$_$${number | bigint}`;
                 isOutOfUses: boolean;
                 buyAItemName: string;
                 buyBItemName: string;
@@ -1622,6 +2511,22 @@ declare global {
                 playerHasItemsForTrade: boolean;
                 isSelectedTrade: boolean;
             };
+            /**
+             * @todo Figure out the type of this query.
+             */
+            vanillaGameplayImmediateRespawnQuery: unknown;
+            /**
+             * @todo Figure out the type of this query.
+             */
+            vanillaGameplayActiveLevelHardcoreModeQuery: unknown;
+            /**
+             * @todo Figure out the type of this query.
+             */
+            vanillaGameplayPlayerDeathInfoQuery: unknown;
+            /**
+             * @todo Figure out the type of this query.
+             */
+            vanillaGameplayIsLocalPlayerAliveQuery: unknown;
             /**
              * @todo Figure out the type of this query.
              */
@@ -1647,7 +2552,7 @@ declare global {
              */
             "vanilla.menus.settingsNumberQuery":
                 | {
-                      __Type: `vanilla.menus.settingsNumberQuery$_$${number}`;
+                      __Type: `vanilla.menus.settingsNumberQuery$_$${number | bigint}`;
                       id: "video.mode.fancy.framerate";
                       name: LooseAutocomplete<"Framerate Limit">;
                       /**
@@ -1662,7 +2567,7 @@ declare global {
                       step: LooseAutocompleteB<number, 1>;
                   }
                 | {
-                      __Type: `vanilla.menus.settingsNumberQuery$_$${number}`;
+                      __Type: `vanilla.menus.settingsNumberQuery$_$${number | bigint}`;
                       id: string;
                       // TODO: Add the rest of the fields.
                       [key: PropertyKey]: unknown;
@@ -1680,9 +2585,9 @@ declare global {
              */
             "vanilla.menus.buildInfoQuery": unknown;
             "vanilla.menus.localWorldListQuery": {
-                __Type: `vanilla.menus.localWorldListQuery$_$${number}`;
+                __Type: `vanilla.menus.localWorldListQuery$_$${number | bigint}`;
                 worlds: CoherentArrayProxy<{
-                    __Type: `LocalWorldListEntry$_$${number}`;
+                    __Type: `LocalWorldListEntry$_$${number | bigint}`;
                     /**
                      * The world folder name.
                      *
@@ -1701,7 +2606,7 @@ declare global {
                 }>;
             };
             "vanilla.menus.localWorldQuery": {
-                __Type: "vanilla.menus.localWorldQuery$_$29804";
+                __Type: `vanilla.menus.localWorldQuery$_$${number | bigint}`;
             } & LocalWorldDataType &
                 Required<Pick<LocalWorldDataType, "cloudSyncState">>;
         }
@@ -1709,10 +2614,10 @@ declare global {
             T extends keyof EngineQueryNonFacetResultMap ? EngineQueryNonFacetResultMap[T]
             : T extends FacetList[number] ?
                 FacetTypeMap[T] & {
-                    __Type: `${T}$_$${number}`;
+                    __Type: `${T}$_$${number | bigint}`;
                 }
             :   {
-                    __Type: `${T}$_$${number}`;
+                    __Type: `${T}$_$${number | bigint}`;
                     [key: PropertyKey]: unknown;
                 };
 
@@ -1991,6 +2896,7 @@ declare global {
                  *
                  * @deprecated Removed either in 1.26.40 or at some point before that.
                  * @todo Figure out what version this was removed in.
+                 * @todo Figure out if this is rounded, floored, or ceilinged.
                  */
                 storageAvailableSize?: string;
                 /**
@@ -2256,7 +3162,10 @@ declare global {
             /**
              * NOTE: Not present in 1.21.120.4.
              *
+             * @deprecated This facet does not exist in newer versions. It is unknown what version this facet was removed in.
+             *
              * @todo Get the type for this facet.
+             * @todo Figure out what version this was added and removed in, or if it was only ever in dev builds.
              */
             "core.social": unknown;
             "core.sound": {
@@ -2338,9 +3247,9 @@ declare global {
             };
             "vanilla.createNewWorld": {
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                applyTemplateTaskState: number;
+                applyTemplateTaskState: FacetTaskState<"values">;
                 consumeResetFlag: boolean;
                 inWorldCreation: boolean;
                 showedAchievementWarning: boolean;
@@ -2500,9 +3409,9 @@ declare global {
                  */
                 createPreviewRealmFromSubscriptionResult: null | number;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                createPreviewRealmFromSubscriptionTaskState: number;
+                createPreviewRealmFromSubscriptionTaskState: FacetTaskState<"values">;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -2751,11 +3660,14 @@ declare global {
                     image: string;
                     capacity: number;
                     playerCount: number;
-                    pingStatus: number;
+                    /**
+                     * @see {@link WorldPingStatus}
+                     */
+                    pingStatus: WorldPingStatus<"values">;
                     ping: string;
                     description: string;
                     name: string;
-                    id: `${number}`;
+                    id: `${number | bigint}`;
                 }>;
                 /**
                  * @todo Figure out the types for this method.
@@ -2782,13 +3694,13 @@ declare global {
                 platformFriends: CoherentArrayProxy<unknown>;
                 xblFriends: CoherentArrayProxy<SocialPlayer>;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FriendsLoadingState}
                  */
-                platformLoadingState: number;
+                platformLoadingState: FriendsLoadingState<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FriendsLoadingState}
                  */
-                xblLoadingState: number;
+                xblLoadingState: FriendsLoadingState<"values">;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -2799,6 +3711,8 @@ declare global {
                  *
                  * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
                  * @deprecated Newer versions use the `xblLoadingState` property instead.
+                 * @todo Figure out what version this was removed in.
+                 * @todo Make the type an enum.
                  */
                 loadingState?: number;
             };
@@ -3057,6 +3971,9 @@ declare global {
             };
             "vanilla.lanWorldList": {
                 lanWorlds: CoherentArrayProxy<{
+                    /**
+                     * Either the ping number or the version number (due to a bug).
+                     */
                     ping: string;
                     capacity: number;
                     playerCount: number;
@@ -3098,9 +4015,9 @@ declare global {
             };
             "vanilla.marketplacePassWorldTemplateList": {
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                refreshTaskState: number;
+                refreshTaskState: FacetTaskState<"values">;
                 seeMoreMarketplacePassRouteData: {
                     /**
                      * @example "MultiItemPage_0182b00f-3b8f-411a-9e40-69d904408f90%7cPagedList_af5d5474-a360-e5f6-2de7-08514e8f12a8"
@@ -3141,16 +4058,27 @@ declare global {
             "vanilla.networkWorldDetails": {
                 hasLoadedDetails: boolean;
                 networkDetails: {
-                    /**
-                     * @todo Figure out the types for this array.
-                     */
-                    activities: CoherentArrayProxy<unknown>;
+                    activities: CoherentArrayProxy<{
+                        description: string;
+                        subtitle: string;
+                        title: string;
+                        /**
+                         * @example "id://29"
+                         */
+                        imagePath: string;
+                    }>;
                     newsDescription: string;
                     newsTitle: string;
-                    type: number;
+                    /**
+                     * @see {@link NetworkWorldType}
+                     */
+                    type: NetworkWorldType<"values">;
                     capacity: number;
                     playerCount: number;
-                    pingStatus: number;
+                    /**
+                     * @see {@link WorldPingStatus}
+                     */
+                    pingStatus: WorldPingStatus<"values">;
                     imagePath: string;
                     ping: string;
                     port: number;
@@ -3162,16 +4090,16 @@ declare global {
                      * @added in a 1.26.10 preview.
                      * @todo Figure out what 1.26.10 preview this was added in.
                      */
-                    isSupportedForPartyTravel?: boolean;
+                    isSupportedForPartyTravel: boolean;
                 };
                 /**
                  * Loads the details of a network world.
                  *
-                 * @param {`${number | bigint | string}`} id The ID of the server, if it is a non-numeric string it should be a UUID (ex. `a26af7a2-ed3b-473d-8d1c-a5b4733b85bd`).
-                 * @param {0 | 1 | 2 | 3} type `0` = Featured Server, `1` = External Server, `2` = Realm, `3` = LAN Server
-                 * @returns {undefined | null} `undefined` if the parameters are invalid, `null` otherwise.
+                 * @param id The ID of the server, if it is a non-numeric string it should be a UUID (ex. `a26af7a2-ed3b-473d-8d1c-a5b4733b85bd`).
+                 * @param type `0` = Featured Server, `1` = External Server, `2` = Realm, `3` = LAN Server. See {@link NetworkWorldType}.
+                 * @returns `undefined` if the parameters are invalid, `null` otherwise.
                  */
-                loadNetworkWorldDetails(id: `${number | bigint | string}`, type: 0 | 1 | 2 | 3): undefined | null;
+                loadNetworkWorldDetails(id: `${number | bigint | string}`, type: NetworkWorldType<"values">): undefined | null;
             };
             "vanilla.networkWorldJoiner": {
                 /**
@@ -3184,8 +4112,18 @@ declare global {
                 joinLANServerResult: null | number;
                 /**
                  * @todo Make the type an enum.
+                 *
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @deprecated Newer versions use the `joinFriendServerState` property instead.
+                 * @todo Figure out what version this was removed in.
                  */
                 joinFriendServerTaskState: number;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Make the type an enum.
+                 */
+                joinFriendServerState: number;
                 /**
                  * @todo Make the type an enum.
                  */
@@ -3214,6 +4152,20 @@ declare global {
                  * @todo Make the type an enum.
                  */
                 joinThirdPartyServerResult: null | number;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                joinRealmFailureData: {
+                    /**
+                     * @todo Figure out the types for this array.
+                     */
+                    nonMemberPartyXuids: CoherentArrayProxy<unknown>;
+                    /**
+                     * @default ""
+                     */
+                    worldName: string;
+                };
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -3254,6 +4206,10 @@ declare global {
                  * @todo Figure out the types for this method.
                  */
                 clearJoinRealmTaskState(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                setEditorConnectionJoinIntent(...args: unknown[]): unknown;
             };
             "vanilla.notificationOptions": {
                 doNotShowFriendsListFTUE: boolean;
@@ -3270,6 +4226,11 @@ declare global {
                 doNotShowMultiplayerOnlineSafetyWarning: boolean;
                 doNotShowMultiplayerIpSafetyWarning: boolean;
                 doNotShowHardcoreModeWarning: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                doNotShowUnavailableDependenciesBeta: boolean;
                 /**
                  * @param {string} worldId
                  * @returns {boolean}
@@ -3311,7 +4272,10 @@ declare global {
             /**
              * NOTE: Not present in 1.21.120.4.
              *
+             * @deprecated This facet does not exist in newer versions. It is unknown what version this facet was removed in.
+             *
              * @todo Get the type for this facet.
+             * @todo Figure out what version this was added and removed in, or if it was only ever in dev builds.
              */
             "vanilla.party": unknown;
             "vanilla.playerAchievements": {
@@ -3636,14 +4600,20 @@ declare global {
                  * @see {@link LeaveRealmsServerError}
                  */
                 leaveRealmResult: null | LeaveRealmsServerError<"values">;
-                leaveRealmProgress: number;
+                /**
+                 * @see {@link FacetTaskState}
+                 */
+                leaveRealmProgress: FacetTaskState<"values">;
                 joinedRealmName: string;
                 joinedRealmId: string;
                 /**
                  * @see {@link JoinRealmsServerError}
                  */
                 joinRealmError: null | JoinRealmsServerError<"values">;
-                joinRealmProgress: number;
+                /**
+                 * @see {@link FacetTaskState}
+                 */
+                joinRealmProgress: FacetTaskState<"values">;
                 /**
                  * @todo Make the type an enum.
                  */
@@ -3666,7 +4636,10 @@ declare global {
                     realmName: string;
                     id: number;
                 };
-                fetchRealmProgress: number;
+                /**
+                 * @see {@link FacetTaskState}
+                 */
+                fetchRealmProgress: FacetTaskState<"values">;
                 joinRealm(realmCode: string): null;
                 clearJoinRealm(): null;
                 leaveRealm(id: number): null;
@@ -3701,42 +4674,18 @@ declare global {
                  * @todo Figure out the types for this method.
                  */
                 clearPostCommentStatus(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                fetchStories(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                clearStoryFeedStatus(...args: unknown[]): unknown;
+                fetchStories(): null;
+                clearStoryFeedStatus(): null;
                 /**
                  * @todo Figure out the types for this method.
                  */
                 fetchStoryImage(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                fetchEvents(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                clearEventsStatus(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                fetchMembers(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                fetchSessions(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                clearFetchMembersStatus(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                loadStoriesSlice(...args: unknown[]): unknown;
+                fetchEvents(): null;
+                clearEventsStatus(): null;
+                fetchMembers(): null;
+                fetchSessions(): null;
+                clearFetchMembersStatus(): null;
+                loadStoriesSlice(from: number, to: number): null;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -3753,10 +4702,7 @@ declare global {
                  * @todo Figure out the types for this method.
                  */
                 toggleLike(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                clearFetchSessionsStatus(...args: unknown[]): unknown;
+                clearFetchSessionsStatus(): null;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -3858,17 +4804,14 @@ declare global {
             };
             "vanilla.realmsStories.players": {
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FetchStatus}
                  */
-                fetchOnlineMembersStatus: number;
+                fetchOnlineMembersStatus: FetchStatus<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FetchStatus}
                  */
-                fetchMembersStatus: number;
-                /**
-                 * @todo Figure out the types for this array.
-                 */
-                players: CoherentArrayProxy<unknown>;
+                fetchMembersStatus: FetchStatus<"values">;
+                players: CoherentArrayProxy<RealmsStoriesPlayer>;
             };
             "vanilla.realmsStories.realmData": {
                 isHardcore: boolean;
@@ -3880,20 +4823,100 @@ declare global {
                 name: string;
             };
             "vanilla.realmsStories.settings": {
+                /**
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @todo Figure out what version this was removed in.
+                 */
                 newPostAvailable: boolean;
                 /**
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @todo Figure out what version this was removed in.
                  * @todo Make the type an enum.
                  */
                 currentMemberSortOption: number;
                 /**
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @todo Figure out what version this was removed in.
                  * @todo Make the type an enum.
                  */
                 currentMemberFilterOption: number;
+                /**
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @todo Figure out what version this was removed in.
+                 */
                 currentMemberSearchText: string;
+                /**
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @todo Figure out what version this was removed in.
+                 */
                 storyScreenshotSelectionFilePath: string;
+                /**
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @todo Figure out what version this was removed in.
+                 */
                 commentInProgressBody: string;
+                /**
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @todo Figure out what version this was removed in.
+                 */
                 postInProgressBody: string;
+                /**
+                 * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                 * @todo Figure out what version this was removed in.
+                 */
                 currentStoryId: string;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                timelineRequiredStatus: boolean;
+                /**
+                 * @see {@link PostStatus}
+                 *
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                currentPostState: PostStatus<"values">;
+                /**
+                 * @see {@link FetchStatus}
+                 *
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                currentFetchState: FetchStatus<"values">;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                realmTimelineStatus: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                realmCoordinatesStatus: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                realmEventsStatus: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                realmNotificationsStatus: boolean;
+                /**
+                 * @see {@link RealmsStoriesTimelineOptInStatus}
+                 *
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                playerOptIn: RealmsStoriesTimelineOptInStatus<"values">;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Make the type an enum.
+                 */
+                realmOptIn: number;
             };
             "vanilla.realmsStories.stories": {
                 mostRecentStoriesViewed: boolean;
@@ -3901,18 +4924,15 @@ declare global {
                 unreadStoryCount: number;
                 totalStories: number;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link PostStatus}
                  */
-                postStoryStatus: number;
+                postStoryStatus: PostStatus<"values">;
                 storiesFirstPageReady: boolean;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FetchStatus}
                  */
-                storiesStatus: number;
-                /**
-                 * @todo Figure out the types for this array.
-                 */
-                stories: CoherentArrayProxy<unknown>;
+                storiesStatus: FetchStatus<"values">;
+                stories: CoherentArrayProxy<RealmsStory>;
             };
             "vanilla.RealmsPDPFacet": {
                 isRealmsTrialAvailable: boolean;
@@ -3925,9 +4945,9 @@ declare global {
                  */
                 uploadWorldToRealmError: null | number;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                uploadWorldToRealmTaskState: number;
+                uploadWorldToRealmTaskState: FacetTaskState<"values">;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -4233,7 +5253,13 @@ declare global {
                 fireEventRealmsStoriesOptIn(...args: unknown[]): unknown;
             };
             "vanilla.thirdPartyWorldList": {
-                fetchThirdPartyWorldsTaskState: number;
+                /**
+                 * @see {@link FacetTaskState}
+                 */
+                fetchThirdPartyWorldsTaskState: FacetTaskState<"values">;
+                /**
+                 * @todo Make the type an enum.
+                 */
                 thirdPartyServersStatus: number;
             } & (
                 | {
@@ -4242,11 +5268,17 @@ declare global {
                           image: string;
                           capacity: number;
                           playerCount: number;
-                          pingStatus: number;
+                          /**
+                           * @see {@link WorldPingStatus}
+                           */
+                          pingStatus: WorldPingStatus<"values">;
                           ping: string;
                           description: string;
                           name: string;
-                          id: `${bigint}`;
+                          /**
+                           * A UUID v4.
+                           */
+                          id: string;
                       }>;
                   }
                 | {
@@ -4255,11 +5287,16 @@ declare global {
                           image: string;
                           capacity: number;
                           playerCount: number;
-                          pingStatus: number;
+                          /**
+                           * @see {@link WorldPingStatus}
+                           */
+                          pingStatus: WorldPingStatus<"values">;
                           ping: string;
                           description: string;
                           name: string;
                           /**
+                           * A UUID v4.
+                           *
                            * @example "086920fe-4f18-4db5-a7bf-b587cec822ec"
                            */
                           id: string;
@@ -4269,11 +5306,16 @@ declare global {
                           image: string;
                           capacity: number;
                           playerCount: number;
-                          pingStatus: number;
+                          /**
+                           * @see {@link WorldPingStatus}
+                           */
+                          pingStatus: WorldPingStatus<"values">;
                           ping: string;
                           description: string;
                           name: string;
                           /**
+                           * A UUID v4.
+                           *
                            * @example "a26af7a2-ed3b-473d-8d1c-a5b4733b85bd"
                            */
                           id: string;
@@ -4303,9 +5345,9 @@ declare global {
                 signInPlatformNetworkTaskState: number;
                 isSignedInPlatformNetwork: boolean;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                accountUnlinkState: number;
+                accountUnlinkState: FacetTaskState<"values">;
                 currentXuid: string;
                 currentPlatformId: string;
                 isMarketplacePassSubscriptionActive: boolean;
@@ -4378,36 +5420,36 @@ declare global {
                 /**
                  * Opens a hardcoded link.
                  *
-                 * @param linkId The link to open. Should be a {@link WebBrowserFacetLinkType}.
+                 * @param linkId The link to open. Should be a {@link WebBrowserLink}.
                  * @returns `null`
                  *
                  * @example
                  * ```ts
                  * // Opens the Edit World Screen feedback page.
-                 * openLink(WebBrowserFacetLinkType.EditWorldScreenFeedbackPage);
+                 * openLink(WebBrowserLink.EditWorldScreenFeedbackPage);
                  * ```
                  */
-                openLink(linkId: WebBrowserFacetLinkType<"values">): null;
+                openLink(linkId: WebBrowserLink<"values">): null;
                 /**
                  * Opens a hardcoded link with a parameter appended to the end of the URI.
                  *
-                 * @param linkId The link to open. Should be a {@link WebBrowserFacetLinkType}.
+                 * @param linkId The link to open. Should be a {@link WebBrowserLink}.
                  * @param param The string to be appended to the end of the URI.
                  * @returns `null`
                  *
                  * @example
                  * ```ts
                  * // Opens the Xbox account profile of "Andexter8".
-                 * openLinkWithParams(WebBrowserFacetLinkType.XboxAccountProfile, "Andexter8");
+                 * openLinkWithParams(WebBrowserLink.XboxAccountProfile, "Andexter8");
                  * ```
                  */
-                openLinkWithParams(linkId: WebBrowserFacetLinkType<"values">, param: string): null;
+                openLinkWithParams(linkId: WebBrowserLink<"values">, param: string): null;
             };
             "vanilla.worldCloudSyncFacet": {
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                syncWorldTaskState: number;
+                syncWorldTaskState: FacetTaskState<"values">;
                 /**
                  * @todo Make the type an enum.
                  */
@@ -4439,9 +5481,9 @@ declare global {
                  */
                 saveRealmsWorldError: null | number;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                saveLocalWorldTaskState: number;
+                saveLocalWorldTaskState: FacetTaskState<"values">;
                 /**
                  * @todo Make the type an enum.
                  */
@@ -4590,38 +5632,38 @@ declare global {
             };
             "vanilla.worldOperations": {
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                clearPlayerDataTaskState: number;
+                clearPlayerDataTaskState: FacetTaskState<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link StartClearPlayerDataError}
                  */
-                startClearPlayerDataError: null | number;
+                startClearPlayerDataError: null | StartClearPlayerDataError<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link ExportWorldStatus}
                  */
-                exportWorldStatus: number;
+                exportWorldStatus: ExportWorldStatus<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link ExportWorldResult}
                  */
-                exportWorldResult: null | number;
+                exportWorldResult: null | ExportWorldResult<"values">;
                 makeWorldInfiniteProgress: number;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                makeWorldInfiniteState: number;
+                makeWorldInfiniteState: FacetTaskState<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link WorldSizeConvertResult}
                  */
-                makeWorldInfiniteError: null | number;
+                makeWorldInfiniteError: null | WorldSizeConvertResult<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                duplicateWorldTaskState: number;
+                duplicateWorldTaskState: FacetTaskState<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link DuplicateWorldError}
                  */
-                duplicateWorldError: null | number;
+                duplicateWorldError: null | DuplicateWorldError<"values">;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -4643,21 +5685,33 @@ declare global {
                  */
                 deleteWorld(...args: unknown[]): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Exports the world.
+                 *
+                 * @param worldId The world ID.
+                 * @param flags A bitfield of flags that represent the export options. See {@link ExportWorldFlags}.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                exportWorld(...args: unknown[]): unknown;
+                exportWorld(worldId: string, flags: number): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Exports the world as a template.
+                 *
+                 * @param worldId The world ID.
+                 * @param flags A bitfield of flags that represent the export options. See {@link ExportWorldFlags}.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                exportWorldAsTemplate(...args: unknown[]): unknown;
+                exportWorldAsTemplate(worldId: string, flags: number): unknown;
                 /**
                  * @todo Figure out the types for this method.
                  */
                 clearExportWorldResult(...args: unknown[]): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * @param dataType The player data type to clear. See {@link ClearPlayerDataType}.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                clearPlayerData(...args: unknown[]): unknown;
+                clearPlayerData(dataType: ClearPlayerDataType<"values">): unknown;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -4693,9 +5747,9 @@ declare global {
                  */
                 packDownloadStatus: number;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                packDownloadTaskState: number;
+                packDownloadTaskState: FacetTaskState<"values">;
                 packDownloadProgress: number;
                 packDownloadName: string;
                 /**
@@ -4834,17 +5888,29 @@ declare global {
                 missingTemplateToStart: string;
                 hasMissingResources: boolean;
                 /**
+                 * @see {@link FacetTaskState}
+                 */
+                startLocalWorldTaskState: FacetTaskState<"values">;
+                /**
                  * @todo Make the type an enum.
                  */
-                startLocalWorldTaskState: number;
-                /**
-                 * @todo Figure out the non-null type of this.
-                 */
-                startLocalWorldResult: null;
+                startLocalWorldResult: null | number;
                 /**
                  * @todo Figure out the types for this method.
                  */
                 startLocalWorld(...args: unknown[]): unknown;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                setConfirmedPlatformLockedContentForWorld(worldId: string): null;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                hasConfirmedPlatformLockedContentForWorld(worldId: string): boolean;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -5146,9 +6212,9 @@ declare global {
             };
             "vanilla.realmsStories.sessions": {
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FetchStatus}
                  */
-                fetchSessionStatus: number;
+                fetchSessionStatus: FetchStatus<"values">;
                 /**
                  * @todo Figure out the types for this array.
                  */
@@ -5169,9 +6235,9 @@ declare global {
             };
             "vanilla.realmsStories.comments": {
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link PostStatus}
                  */
-                postCommentStatus: number;
+                postCommentStatus: PostStatus<"values">;
                 /**
                  * @todo Figure out the types for this array.
                  */
@@ -5288,9 +6354,9 @@ declare global {
             };
             "vanilla.featuredWorldTemplateList": {
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                refreshTaskState: number;
+                refreshTaskState: FacetTaskState<"values">;
                 seeMoreFeaturedRouteData: { pageId: string; title: string };
                 featuredWorldTemplates: CoherentArrayProxy<{
                     /**
@@ -5336,25 +6402,25 @@ declare global {
                 canDownloadBeCancelled: boolean;
                 importedPackName: string;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link ImportFailure}
                  */
-                importingTaskResult: null | number;
+                importingTaskResult: null | ImportFailure<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                importingTaskState: number;
+                importingTaskState: FacetTaskState<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link DownloadWorldTemplateError}
                  */
-                downloadingTaskResult: null | number;
+                downloadingTaskResult: null | DownloadWorldTemplateError<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                downloadingTaskState: number;
+                downloadingTaskState: FacetTaskState<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link DownloadWorldTemplateStatus}
                  */
-                downloadingStatus: null | number;
+                downloadingStatus: null | DownloadWorldTemplateStatus<"values">;
                 downloadTotalBytes: string;
                 downloadingProgressBytes: string;
                 downloadingProgressPercent: number;
@@ -5902,30 +6968,59 @@ declare global {
              * @todo Try this.
              */
             "vanilla.realmsFeatureFlags": {
-                flags: CoherentArrayProxy<string>;
+                commerceV2PlatformFeatureName: LooseAutocomplete<"commerce_v2_microsoft">;
+                flags: CoherentArrayProxy<
+                    LooseAutocomplete<
+                        | "berwick_enabled"
+                        | "cayman_payments"
+                        | "commerce_v2_nintendo_2"
+                        | "enable_subpacks"
+                        | "gamepass_purchase_info"
+                        | "hub_adminlog"
+                        | "hub_world_saves"
+                        | "ore_ui_moderation"
+                        | "ore_ui_purchase_enabled"
+                        | "owners_can_require_opt_in"
+                        | "realms_permissions"
+                        | "realms_edit_world_packs_tabs"
+                        | "realms_hub"
+                        | "realms_hub_pause"
+                        | "realms_hub_render_distance"
+                        | "realms_in_aks"
+                        | "realms_ore_ui_edit_world"
+                        | "realms_pause_settings"
+                        | "realms_plus"
+                        | "realms_user_roles"
+                        | "sunset_tier"
+                        | "switch_playfab_subscriptions"
+                        | "switch_trial_mpp"
+                        | "unified_join_realm_flow"
+                        | "win10_subs"
+                        | "world_replica_based_backup"
+                        | "clubs"
+                        | "xbox_subscriptions"
+                    >
+                >;
             };
             "vanilla.realmsStories.reports": {
-                hasDeleted: number;
-                pageLength: number;
+                /**
+                 * @see {@link DeletionStatus}
+                 */
+                hasDeleted: DeletionStatus<"values">;
+                pageLength: LooseAutocompleteB<number, 10>;
                 totalStories: number;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FetchStatus}
                  */
-                storiesStatus: number;
-                /**
-                 * @todo Figure out the types for this array.
-                 */
-                reports: CoherentArrayProxy<unknown>;
+                storiesStatus: FetchStatus<"values">;
+                reports: CoherentArrayProxy<RealmsStoriesReport>;
             };
             "vanilla.realmsStories.reportCommands": {
                 /**
                  * @todo Figure out the types for this method.
                  */
                 reset(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                fetchReportPaths(...args: unknown[]): unknown;
+                fetchReportPaths(): null;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -6050,16 +7145,40 @@ declare global {
             };
             /**
              * @since Somewhere between 1.21.130.20 Preview and 1.21.130.26 Preview.
-             *
-             * @todo Get the type for this facet.
              */
-            "vanilla.realmsPlayerListQueries": unknown;
+            "vanilla.realmsPlayerListQueries": {
+                /**
+                 * @todo Make the type an enum.
+                 */
+                manageMembersStatus: number;
+                /**
+                 * @todo Make the type an enum.
+                 */
+                state: number;
+                players: CoherentArrayProxy<RealmsPlayerListPlayer>;
+            };
             /**
              * @since Somewhere between 1.21.130.20 Preview and 1.21.130.26 Preview.
-             *
-             * @todo Get the type for this facet.
              */
-            "vanilla.realmsPlayerListCommands": unknown;
+            "vanilla.realmsPlayerListCommands": {
+                populateMembers(): null;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                resetState(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                removePlayer(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                blockPlayer(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                resetManageState(...args: unknown[]): unknown;
+            };
             /**
              * @since (First Referenced): Somewhere between 1.26.0.23 Preview and 1.26.0.26 Preview (in these previews this facet does not actually exist).
              *
@@ -6169,14 +7288,14 @@ declare global {
             /**
              * If the world is an editor world.
              *
-             * @added Unknown.
+             * @added In some version in the range 1.26.1.1<x<=1.26.10.4.
              * @todo Figure out what version this was added in.
              */
             isEditorWorld: boolean;
             /**
              * UNDOCUMENTED.
              *
-             * @added Unknown.
+             * @added In some version in the range 1.21.131.1<x<=1.26.1.1.
              * @todo Figure out what version this was added in.
              */
             xblBroadcastIntent: number;
@@ -6207,14 +7326,14 @@ declare global {
             /**
              * Whether the number of days the player has played in the world should be shown.
              *
-             * @added Unknown.
+             * @added In some version in the range 1.26.1.1<x<=1.26.10.4.
              * @todo Figure out what version this was added in.
              */
             showDaysPlayed: boolean;
             /**
              * The number of days the player has played in the world.
              *
-             * @added Unknown.
+             * @added In some version in the range 1.26.1.1<x<=1.26.10.4.
              * @todo Figure out what version this was added in.
              */
             daysPlayed: number;
@@ -6233,12 +7352,12 @@ declare global {
             /**
              * The URI of the world preview image.
              */
-            previewImgPath: `id://${bigint}`;
+            previewImgPath: `id://${bigint}` | "";
             /**
              * The size of the world in MiB.
              */
             // REVIEW: See if it actually can render TB, PB, EB, ZB, YB.
-            fileSize: `${number}${"MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"}`;
+            fileSize: `${number}${"MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"}` | "";
             /**
              * The game mode of the world.
              */
@@ -6261,10 +7380,10 @@ declare global {
             /**
              * @todo Make the type an enum.
              *
-             * @added Unknown.
+             * @added In some version in the range 1.26.20.4<x<=1.26.30.5.
              * @todo Figure out what version this was added in.
              */
-            cloudSyncState?: number;
+            cloudSyncState: number | null;
         }
         interface RealmDataType {
             world: {
@@ -6431,9 +7550,9 @@ declare global {
         }
         interface PlayerProfileData {
             /**
-             * @see {@link FriendFavoriteStatus}
+             * @see {@link FavoriteStatusEnum}
              */
-            favoriteStatus: FriendFavoriteStatus<"values">;
+            favoriteStatus: FavoriteStatusEnum<"values">;
             isInSameGame: boolean;
             playingOnServerId: string;
             url: string;
@@ -6448,6 +7567,7 @@ declare global {
             presenceMessage: string;
             /**
              * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+             * @todo Figure out what version this was removed in.
              */
             titleId?: undefined;
             /**
@@ -6463,13 +7583,13 @@ declare global {
              */
             titleName: LooseAutocomplete<"Minecraft" | "Online" | "">;
             /**
-             * @see {@link PlayerPartyPresence}
+             * @see {@link PartyPresence}
              */
-            partyPresence: PlayerPartyPresence<"values">;
+            partyPresence: PartyPresence<"values">;
             /**
-             * @see {@link FriendPresence}
+             * @see {@link SocialPresence}
              */
-            presence: FriendPresence<"values">;
+            presence: SocialPresence<"values">;
             isMuted: boolean;
             isBlocked: boolean;
             /**
@@ -6478,7 +7598,10 @@ declare global {
             relation: PlayerRelation<"values">;
             platformProfilePic: string;
             xblProfilePic: string;
-            avatarState: number;
+            /**
+             * @see {@link ProfileImageState}
+             */
+            avatarState: ProfileImageState<"values">;
             avatar: string;
             realName: string;
             platformName: string;
@@ -6492,6 +7615,7 @@ declare global {
              *
              * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
              * @deprecated Newer versions use the `xblName` property instead.
+             * @todo Figure out what version this was removed in.
              */
             gamerTag?: string;
             /**
@@ -6499,6 +7623,7 @@ declare global {
              *
              * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
              * @deprecated Newer versions use the `xblProfilePic` property instead.
+             * @todo Figure out what version this was removed in.
              */
             gamerIcon?: string;
             /**
@@ -6506,6 +7631,7 @@ declare global {
              *
              * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
              * @deprecated Newer versions use the `presence` property instead.
+             * @todo Figure out what version this was removed in.
              */
             isOnline?: boolean;
             /**
@@ -6513,6 +7639,7 @@ declare global {
              *
              * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
              * @deprecated Newer versions use the `presence` property instead.
+             * @todo Figure out what version this was removed in.
              */
             isCurrentlyPlaying?: boolean;
         }
@@ -6533,9 +7660,9 @@ declare global {
              */
             permissionLevel: (true extends InWorld ? PlayerPermissionLevel<"values"> : never) | (false extends InWorld ? null : never);
             /**
-             * @see {@link FriendFavoriteStatus}
+             * @see {@link FavoriteStatusEnum}
              */
-            favoriteStatus: FriendFavoriteStatus<"values">;
+            favoriteStatus: FavoriteStatusEnum<"values">;
             playingOnServerId: LooseAutocomplete<""> | null;
             isCurrentlyPlaying: boolean;
             /**
@@ -6548,6 +7675,7 @@ declare global {
             isInSameGame: boolean;
             /**
              * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+             * @todo Figure out what version this was removed in.
              */
             titleId?: number;
             /**
@@ -6563,9 +7691,9 @@ declare global {
              */
             titleName: LooseAutocomplete<"Minecraft" | "Online" | "">;
             /**
-             * @see {@link FriendPresence}
+             * @see {@link SocialPresence}
              */
-            presence: FriendPresence<"values">;
+            presence: SocialPresence<"values">;
             /**
              * The URI of the player's profile picture.
              *
@@ -6578,9 +7706,9 @@ declare global {
             platformId: string | null;
             xuid: string;
             /**
-             * @see {@link PlayerPartyPresence}
+             * @see {@link PartyPresence}
              */
-            partyPresence: PlayerPartyPresence<"values">;
+            partyPresence: PartyPresence<"values">;
             /**
              * The player's UUID on the world.
              *
@@ -6597,6 +7725,7 @@ declare global {
              *
              * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
              * @deprecated Newer versions use the `presence` property instead.
+             * @todo Figure out what version this was removed in.
              */
             isOnline?: boolean;
         }
@@ -6658,6 +7787,287 @@ declare global {
              */
             gamerIcon: string;
             gamertag: string;
+            xuid: string;
+        }
+
+        interface RealmsStoriesPlayer {
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            hasAccepted: boolean;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            hasOptedIn: boolean;
+            /**
+             * @see {@link FetchStatus}
+             */
+            fetchProfileStatus: FetchStatus<"values">;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            lastSeenTime: number;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            isInRealm: boolean;
+            isOnline: boolean;
+            /**
+             * @see {@link RealmPlayerRoleEnum}
+             *
+             * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+             * @deprecated Newer versions use the `realmsStoriesRole` property instead.
+             * @todo Figure out what version this was removed in.
+             */
+            role: RealmPlayerRoleEnum<"values">;
+            /**
+             * @see {@link RealmsPermissionRole}
+             *
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            realmsRole: RealmsPermissionRole<"values">;
+            /**
+             * @see {@link RealmPlayerRoleEnum}
+             *
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            realmStoriesRole: RealmPlayerRoleEnum<"values">;
+            /**
+             * The URI of the player's profile picture.
+             *
+             * Usually in the format `profile-img://${number}`.
+             *
+             * @example "profile-img://5"
+             */
+            gamerIcon: string;
+            gamerTag: string;
+            xuid: string;
+        }
+
+        interface RealmsStoriesReport {
+            /**
+             * @todo Figure out the structure of this string value.
+             */
+            eventMetadata: LooseAutocomplete<"">;
+            /**
+             * @default 0
+             */
+            eventZCoordinate: number;
+            /**
+             * @default 0
+             */
+            eventYCoordinate: number;
+            /**
+             * @default 0
+             */
+            eventXCoordinate: number;
+            eventHasCoordinates: boolean;
+            eventPlayerXuids: CoherentArrayProxy<`${bigint}`>;
+            isEvent: boolean;
+            isComment: boolean;
+            reporterXuids: CoherentArrayProxy<`${bigint}`>;
+            reportCount: number;
+            /**
+             * @example "2026-08-15T05:18:34.2373736Z"
+             */
+            lastReported: string;
+            /**
+             * @see {@link PostStatus}
+             */
+            reportToXboxStatus: PostStatus<"values">;
+            /**
+             * @see {@link PostStatus}
+             */
+            deleteStatus: PostStatus<"values">;
+            body: string;
+            /**
+             * @see {@link FetchStatus}
+             */
+            imageStatus: FetchStatus<"values">;
+            /**
+             * @default ""
+             * @example "id://86"
+             */
+            image: string;
+            /**
+             * @see {@link FetchStatus}
+             */
+            reportStatus: FetchStatus<"values">;
+            /**
+             * @example "Posted 5 days ago"
+             * @example "Posted on December 31, 1969"
+             */
+            timePostedNarration: string;
+            /**
+             * @example "5d ago"
+             * @example "Dec 31 1969"
+             */
+            timePosted: string;
+            /**
+             * @default ""
+             */
+            authorXuid: "" | `${bigint}`;
+            /**
+             * @default "no content"
+             * @example "userposts.xboxlive.com/users/xuid(2535465562441515)/posts/1f72cbd8-00dc-44d2-8bee-322012b9f2d2/timelines/Club/3379859039823613"
+             */
+            feedItemId: string;
+            /**
+             * @example "userposts.xboxlive.com/users/xuid(2535465562441515)/posts/1f72cbd8-00dc-44d2-8bee-322012b9f2d2/timelines/Club/3379859039823613"
+             */
+            id: string;
+        }
+
+        interface RealmsStory {
+            /**
+             * @todo Figure out the structure of this string value.
+             */
+            eventMetadata: LooseAutocomplete<"">;
+            /**
+             * @default 0
+             */
+            eventZCoordinate: number;
+            /**
+             * @default 0
+             */
+            eventYCoordinate: number;
+            /**
+             * @default 0
+             */
+            eventXCoordinate: number;
+            eventHasCoordinates: boolean;
+            eventPlayerXuids: CoherentArrayProxy<`${bigint}`>;
+            isEventLoaded: boolean;
+            isEvent: boolean;
+            /**
+             * @see {@link PostStatus}
+             */
+            reportToXboxStatus: PostStatus<"values">;
+            /**
+             * @see {@link PostStatus}
+             */
+            reportToClubOwnerStatus: PostStatus<"values">;
+            /**
+             * @see {@link PostStatus}
+             */
+            deleteStatus: PostStatus<"values">;
+            /**
+             * @see {@link PostStatus}
+             */
+            toggleLikeStatus: PostStatus<"values">;
+            hasLiked: boolean;
+            /**
+             * @see {@link PostStatus}
+             */
+            setViewedStatus: PostStatus<"values">;
+            hasViewed: boolean;
+            /**
+             * @see {@link FetchStatus}
+             */
+            commentsStatus: FetchStatus<"values">;
+            totalComments: number;
+            totalLikes: number;
+            body: string;
+            /**
+             * @todo Make the type an enum.
+             */
+            imageStatus: number;
+            /**
+             * @default ""
+             */
+            image: LooseAutocomplete<"">;
+            /**
+             * @example "Posted 5 days ago"
+             * @example "Posted on December 31, 1969"
+             */
+            timePostedNarration: string;
+            /**
+             * @example "5d ago"
+             * @example "Dec 31 1969"
+             */
+            timePosted: string;
+            /**
+             * @default ""
+             */
+            authorXuid: "" | `${bigint}`;
+            /**
+             * @example "userposts.xboxlive.com/users/xuid(2535465562441515)/posts/1f72cbd8-00dc-44d2-8bee-322012b9f2d2/timelines/Club/3379859039823613"
+             */
+            id: string;
+        }
+
+        interface RealmsPlayerListPlayer {
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            hasAccepted: boolean;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            hasOptedIn: boolean;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             * @todo Make the type an enum.
+             */
+            fetchProfileStatus: number;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            lastSeenTime: number;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            isInRealm: boolean;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            isOnline: boolean;
+            /**
+             * @see {@link RealmsPermissionRole}
+             *
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            role: RealmsPermissionRole<"values">;
+            /**
+             * @see {@link RealmsPlayerListPlayerPermission}
+             *
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            permission: RealmsPlayerListPlayerPermission<"values">;
+            /**
+             * The URI of the player's profile picture.
+             *
+             * Usually in the format `profile-img://${number}`.
+             *
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             *
+             * @example "profile-img://5"
+             */
+            gamerIcon: string;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            gamerTag: string;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
             xuid: string;
         }
 
