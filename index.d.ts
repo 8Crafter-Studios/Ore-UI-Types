@@ -43,8 +43,26 @@ import type {
     WorldPingStatus,
     ProfileImageState,
     FriendsLoadingState,
+    SettingsComponentState,
+    GeneralMultiplayerWarningStateEnum,
+    PlayerPermissions,
+    PlayerAccess,
+    GeneratorType,
+    DifficultyEnum,
+    GameMode,
+    DaylightCycleEnum,
+    JoinServerWorldResult,
+    JoinRealmWorldResult,
+    RealmConnectionFlow,
+    PlayerMessagingServiceFacetStatus,
+    PlayerPermissionsActionState,
+    PlayerPermissionsAbility,
+    PlayerPermissionsError,
+    AddedFriendLocation,
+    StartLocalWorldResult,
 } from "@ore-ui-types/enums";
 declare const FACET_NO_VALUE_SYMBOL: unique symbol;
+// TEST: Check all the method parameters that take numbers to see if they actually also take bigints, like ["vanilla.openAndCloseRealmCommandsFacet"].openRealm/closeRealm does.
 declare global {
     namespace globalThis {
         // copyTextToClipboardAsync(Object.entries(__commands__).map(v=>`${v[0]}: {${Object.keys(v[1]).map(v2=>`${v2}: {
@@ -1835,6 +1853,7 @@ declare global {
             | "core.device.network"
             | "core.device.platform"
             | "core.device.storage"
+            | "core.featureFlag"
             | "core.staticFeatureFlag"
             | "core.flightingConfig.bool"
             | "core.flightingToggle"
@@ -1895,6 +1914,32 @@ declare global {
             "core.device.network": [];
             "core.device.platform": [];
             "core.device.storage": [];
+            "core.featureFlag": [
+                // TEMP
+                featureFlagID: LooseAutocomplete<
+                    ValueTypes<{
+                        enableFallibleCreateWorld: "vanilla.enableFallibleCreateWorld";
+                        unlockRecipes: "vanilla.settings.unlockRecipes";
+                        debugDrawer: "vanilla.debugDrawer";
+                        hardcoreMode: "vanilla.hardcoreMode";
+                        parties: "vanilla.parties";
+                        hasRealmsEnabled: "core.hasRealmsEnabled";
+                        realmsOreUIPurchaseEnabled: "vanilla.realmsOreUIPurchaseEnabled";
+                        discoveryProd: "vanilla.marketplace.discovery.prod";
+                        abNewPlayerPathV3BNoSignInScreen: "vanilla.ab.newPlayerPathV3.B.noSignInScreen";
+                        abNewPlayerPathV3DNoControlScreen: "vanilla.ab.newPlayerPathV3.D.noControlScreen";
+                        textfieldPointerAuto: "core.textfield.pointerAuto";
+                        enableUI: "vanilla.editor.enableUI";
+                        paneCollapseAPI: "vanilla.editor.paneCollapseAPI";
+                        toolGrouping: "vanilla.editor.toolGrouping";
+                        structureCRUD: "vanilla.editor.structureCRUD";
+                        experimentalFeature: "vanilla.editor.experimentalFeature";
+                        mixBlendMode: "core.mixBlendMode";
+                        readWithOptions: "core.screenReader.readWithOptions";
+                        oreUIGameplay: "vanilla.oreUIGameplay";
+                    }>
+                >,
+            ];
             "core.staticFeatureFlag": [
                 // TEMP
                 featureFlagID: LooseAutocomplete<
@@ -1983,7 +2028,7 @@ declare global {
             "vanilla.menus.realms.realmsSavesQuery": [];
             "vanilla.partyChat.unreadMessagesQuery": [];
             "vanilla.playerFriendList": [XUID: `${bigint}`];
-            "vanilla.realms.currentRealm": [realmID: `${bigint}`];
+            "vanilla.realms.currentRealm": [XUID: `${bigint}`];
             "vanilla.receivedFriendRequests": [];
             "vanilla.core.dataDrivenUICompositionQuery": [
                 screenID: LooseAutocomplete<
@@ -2169,7 +2214,7 @@ declare global {
                  */
                 result: InvocationResult<"values">;
                 progress: number;
-                error: null | unknown; // TODO
+                error: unknown | null; // TODO
             };
             "core.device.display": {
                 __Type: `core.device.display$_$${number | bigint}`;
@@ -2213,6 +2258,10 @@ declare global {
                 supportsSizeQuery: boolean;
                 isStorageFull: boolean;
                 isStorageLow: boolean;
+            };
+            "core.featureFlag": {
+                __Type: `core.featureFlag$_$${number | bigint}`;
+                enabled: boolean;
             };
             "core.staticFeatureFlag": {
                 __Type: `core.staticFeatureFlag$_$${number | bigint}`;
@@ -2374,7 +2423,7 @@ declare global {
             };
             "vanilla.realms.currentRealm": {
                 __Type: `vanilla.realms.currentRealm$_$${number | bigint}`;
-                realmID: null | unknown; // TODO
+                realmID: unknown | null; // TODO
                 isRealmOwner: boolean;
             };
             "vanilla.receivedFriendRequests": {
@@ -2416,7 +2465,7 @@ declare global {
             };
             vanillaCoreDataDrivenUIScreenIdQuery: {
                 __Type: `vanillaCoreDataDrivenUIScreenIdQuery$_$${number | bigint}`;
-                screenId: null | string;
+                screenId: string | null;
             };
             vanillaCoreDataStoreNumberQuery: unknown; // TODO
             vanillaCoreDataStoreStringQuery: unknown; // TODO
@@ -2452,7 +2501,7 @@ declare global {
                 /**
                  * @see {@link VanillaGameplayContainerChestType}
                  */
-                chestType: null | VanillaGameplayContainerChestType<"values">;
+                chestType: VanillaGameplayContainerChestType<"values"> | null;
             };
             vanillaGameplayRecipeBookSearchStringQuery: {
                 __Type: `vanillaGameplayRecipeBookSearchStringQuery$_$${number | bigint}`;
@@ -2556,9 +2605,9 @@ declare global {
                       id: "video.mode.fancy.framerate";
                       name: LooseAutocomplete<"Framerate Limit">;
                       /**
-                       * @todo Make the type an enum.
+                       * @see {@link SettingsComponentState}
                        */
-                      state: number;
+                      state: SettingsComponentState<"values">;
                       description: LooseAutocomplete<"Set a limit for maximum frames per second to keep a steady frame rate or prevent overheating your device">;
                       value: LooseAutocompleteB<number, 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7>;
                       valueText: LooseAutocomplete<`${30 | 35 | 40 | 45 | 50 | 55 | 60} FPS` | "Unlimited">;
@@ -3294,25 +3343,25 @@ declare global {
                         friendlyFire: boolean;
                         visibleToLanPlayers: boolean;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link PlayerPermissions}
                          */
-                        playerPermissions: number;
+                        playerPermissions: PlayerPermissions<"values">;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link PlayerAccess}
                          */
-                        playerAccess: number;
+                        playerAccess: PlayerAccess<"values">;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link GeneralMultiplayerWarningStateEnum}
                          */
-                        generalWarningState: number;
+                        generalWarningState: GeneralMultiplayerWarningStateEnum<"values">;
                         platformPlayerFriendsOfFriendsAccessSupported: boolean;
                         platformPlayerInviteAccessSupported: boolean;
                         platformPlayerAccessEnabled: boolean;
                         platformPlayerAccessSupported: boolean;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link PlayerAccess}
                          */
-                        platformPlayerAccess: number;
+                        platformPlayerAccess: PlayerAccess<"values">;
                         multiplayerGame: boolean;
                         multiplayerSupported: boolean;
                     };
@@ -3337,22 +3386,22 @@ declare global {
                         startWithMap: boolean;
                         simulationDistance: number;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link GeneratorType}
                          */
-                        generatorType: number;
+                        generatorType: GeneratorType<"values">;
                         useFlatWorld: boolean;
                     };
                     general: {
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link DifficultyEnum}
                          */
-                        difficulty: number;
+                        difficulty: DifficultyEnum<"values">;
                         playerHasDied: boolean;
                         isHardcore: boolean;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link GameMode}
                          */
-                        gameMode: number;
+                        gameMode: GameMode<"values">;
                         worldName: string;
                     };
                 };
@@ -3360,11 +3409,11 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                createOnRealmsError: null | number;
+                createOnRealmsError: number | null;
                 /**
                  * @todo Make the type an enum.
                  */
-                createWorldError: null | number;
+                createWorldError: number | null;
                 isCreatingWorld: boolean;
                 isEditorWorld: boolean;
                 isRandomSeedAllowed: boolean;
@@ -3407,7 +3456,7 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                createPreviewRealmFromSubscriptionResult: null | number;
+                createPreviewRealmFromSubscriptionResult: number | null;
                 /**
                  * @see {@link FacetTaskState}
                  */
@@ -3723,7 +3772,7 @@ declare global {
              */
             "vanilla.friendsManagerFacet": unknown;
             "vanilla.gameplay.activeLevelHardcoreMode": {
-                isHardcoreMode: null | boolean;
+                isHardcoreMode: boolean | null;
             };
             "vanilla.gameplay.bedtime": {
                 canChangeSleepSettings: boolean;
@@ -3785,7 +3834,7 @@ declare global {
                 burnProgress: number;
             };
             "vanilla.gameplay.immediateRespawn": {
-                immediateRespawn: null | boolean;
+                immediateRespawn: boolean | null;
             };
             "vanilla.gameplay.leaveGame": {
                 /**
@@ -3863,7 +3912,7 @@ declare global {
                     /**
                      * @default null
                      */
-                    gamedrop: null | unknown;
+                    gamedrop: unknown | null;
                     items: CoherentArrayProxy<{
                         button: {
                             action: number;
@@ -3913,7 +3962,7 @@ declare global {
                     /**
                      * @default null
                      */
-                    expiryDaysLeft: null | unknown;
+                    expiryDaysLeft: unknown | null;
                     invType: number;
                     imgSource: string;
                     invitationId: string;
@@ -3978,7 +4027,10 @@ declare global {
                     capacity: number;
                     playerCount: number;
                     isHardcore: boolean;
-                    gameMode: number;
+                    /**
+                     * @see {@link GameMode}
+                     */
+                    gameMode: GameMode<"values">;
                     port: number;
                     address: LooseAutocomplete<"UNASSIGNED_SYSTEM_ADDRESS" | `${number}.${number}.${number}.${number}`>;
                     ownerName: string;
@@ -4103,21 +4155,23 @@ declare global {
             };
             "vanilla.networkWorldJoiner": {
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                joinLANServerTaskState: number;
+                // REVIEW: Verify this is the correct type, this is a guess.
+                joinLANServerTaskState: FacetTaskState<"values">;
                 /**
                  * @todo Make the type an enum.
                  */
-                joinLANServerResult: null | number;
+                joinLANServerResult: number | null;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  *
                  * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
                  * @deprecated Newer versions use the `joinFriendServerState` property instead.
                  * @todo Figure out what version this was removed in.
                  */
-                joinFriendServerTaskState: number;
+                // REVIEW: Verify this is the correct type, this is a guess.
+                joinFriendServerTaskState: FacetTaskState<"values">;
                 /**
                  * @added Unknown.
                  * @todo Figure out what version this was added in.
@@ -4125,37 +4179,48 @@ declare global {
                  */
                 joinFriendServerState: number;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link JoinRealmWorldResult}
+                 *
+                 * @default null
                  */
-                joinFriendServerResult: null | number;
+                joinFriendServerResult: JoinServerWorldResult<"values"> | null;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                joinRealmTaskState: number;
+                joinRealmTaskState: FacetTaskState<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link JoinRealmWorldResult}
+                 *
+                 * @default null
                  */
-                joinRealmResult: null | number;
+                joinRealmResult: JoinRealmWorldResult<"values"> | null;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                joinExternalServerTaskState: number;
+                // REVIEW: Verify this is the correct type, this is a guess.
+                joinExternalServerTaskState: FacetTaskState<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link JoinServerWorldResult}
+                 *
+                 * @default null
                  */
-                joinExternalServerResult: null | number;
+                joinExternalServerResult: JoinServerWorldResult<"values"> | null;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link FacetTaskState}
                  */
-                joinThirdPartyServerTaskState: number;
+                // REVIEW: Verify this is the correct type, this is a guess.
+                joinThirdPartyServerTaskState: FacetTaskState<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link JoinServerWorldResult}
+                 *
+                 * @default null
                  */
-                joinThirdPartyServerResult: null | number;
+                joinThirdPartyServerResult: JoinServerWorldResult<"values"> | null;
                 /**
                  * @added Unknown.
                  * @todo Figure out what version this was added in.
                  */
+                // REVIEW: Double check if maybe this could possibly be null.
                 joinRealmFailureData: {
                     /**
                      * @todo Figure out the types for this array.
@@ -4164,52 +4229,26 @@ declare global {
                     /**
                      * @default ""
                      */
-                    worldName: string;
+                    worldName: LooseAutocomplete<"">;
                 };
+                joinThirdPartyServer(serverID: string): null;
+                clearJoinThirdPartyServerTaskState(): null;
+                joinExternalServer(serverID: string): null;
+                clearJoinExternalServerTaskState(): null;
+                joinFriendServer(serverID: string): null;
+                clearJoinFriendServerTaskState(): null;
+                joinLanServer(serverID: string): null;
+                clearJoinLANServerTaskState(): null;
+                joinRealmWorld(realmID: string, realmConnectionFlow: RealmConnectionFlow<"values">): null;
+                clearJoinRealmTaskState(): null;
                 /**
-                 * @todo Figure out the types for this method.
+                 * @param editorConnectionJoinIntent 0=Default, 1=EditorIntent, 2=VanillaIntent, 3=ServerDecides
+                 * @returns `null`
+                 *
+                 * @todo Make the editorConnectionJoinIntent param an enum.
                  */
-                joinThirdPartyServer(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                clearJoinThirdPartServerTaskState(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                joinExternalServer(serverID: string): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                clearJoinExternalServerTaskState(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                joinFriendServer(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                clearJoinFriendServerTaskState(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                joinLanServer(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                clearJoinLANServerTaskState(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                joinRealmWorld(realmID: string, joinRealmTaskState: number): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                clearJoinRealmTaskState(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                setEditorConnectionJoinIntent(...args: unknown[]): unknown;
+                // REVIEW: Verify the return type of this method.
+                setEditorConnectionJoinIntent(editorConnectionJoinIntent: 0 | 1 | 2 | 3): null;
             };
             "vanilla.notificationOptions": {
                 doNotShowFriendsListFTUE: boolean;
@@ -4320,17 +4359,15 @@ declare global {
                         /**
                          * @default null
                          */
-                        gamedrop: null | unknown;
+                        gamedrop: unknown | null;
                         buttons: CoherentArrayProxy<{
                             action: number;
                             link: string;
                             description: string;
                             text: string;
                             id: string;
-                            /**
-                             * @todo Figure out the types for this method.
-                             */
-                            openExternalLink(...args: unknown[]): unknown;
+                            // REVIEW: Verify the return type of this method.
+                            openExternalLink(): null;
                         }>;
                         images: CoherentArrayProxy<{
                             isLoaded: boolean;
@@ -4350,13 +4387,13 @@ declare global {
                     messageCount: number;
                 };
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link PlayerMessagingServiceFacetStatus}
                  */
-                status: number;
+                status: PlayerMessagingServiceFacetStatus<"values">;
                 /**
                  * @todo Figure out the types for this method.
                  */
-                reportClick(...args: unknown[]): unknown;
+                reportClick(messageID: unknown, instanceID: unknown, surface: unknown, buttonID: unknown): unknown;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -4364,9 +4401,9 @@ declare global {
             };
             "vanilla.playerPermissions": {
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link PlayerPermissionsActionState}
                  */
-                kickCommandState: number;
+                kickCommandState: PlayerPermissionsActionState<"values">;
                 operatorCommandsRevokedFlag: boolean;
                 selectedPlayerPermissionsChangedFlag: boolean;
                 selectedPlayerLeftFlag: boolean;
@@ -4378,44 +4415,69 @@ declare global {
                 canEditPermissions: boolean;
                 playerPermissionList: CoherentArrayProxy<{
                     isEnabled: boolean;
-                    abilityIndex: number;
+                    /**
+                     * @see {@link PlayerPermissionsAbility}
+                     */
+                    abilityIndex: PlayerPermissionsAbility<"values">;
                 }>;
-                playerPermissionLevel: null | PlayerPermissionLevel<"values">;
                 /**
-                 * @todo Figure out the types for this method.
+                 * @see {@link PlayerPermissionLevel}
+                 *
+                 * @default null
                  */
-                loadPlayerPermissions(playerName: unknown): unknown;
+                playerPermissionLevel: PlayerPermissionLevel<"values"> | null;
                 /**
-                 * @todo Figure out the return type for this method.
+                 * Loads the permissions for a player into the {@link playerPermissionList} and {@link playerPermissionLevel} fields.
+                 * 
+                 * @param playerId The world UUID of the player to load the permissions for.
+                 * @returns `null`
                  */
-                requestSavePermissions(): unknown;
+                loadPlayerPermissions(playerId: string): null;
                 /**
-                 * @param {unknown} playerId The ID of the player to set the permission level for.
+                 * Saves the modified permissions.
+                 *
+                 * @returns `null`
+                 */
+                requestSavePermissions(): null;
+                /**
+                 * Sets the permission level of a player.
+                 *
+                 * @param {string} playerId The world UUID of the player to set the permission level for.
                  * @param {PlayerPermissionLevel<"values">} permissionLevel The {@link PlayerPermissionLevel|permission level} to set.
-                 *
-                 * @todo Figure out the types for this method.
+                 * @returns `null`
                  */
-                setPlayerPermissionLevel(playerId: unknown, permissionLevel: PlayerPermissionLevel<"values">): unknown;
+                setPlayerPermissionLevel(playerId: string, permissionLevel: PlayerPermissionLevel<"values">): null;
                 /**
-                 * @param {unknown} playerId The ID of the player to set the permission for.
-                 * @param {number} abilityIndex The index of the permission to set.
+                 * Sets a permission for a player.
+                 *
+                 * @param {string} playerId The world UUID of the player to set the permission for.
+                 * @param {number} abilityIndex The index of the permission to set. See {@link PlayerPermissionsAbility}.
                  * @param {boolean} isEnabled Whether the permission should be enabled or disabled.
+                 * @returns `null`
+                 */
+                setPlayerPermission(playerId: string, abilityIndex: PlayerPermissionsAbility<"values">, isEnabled: boolean): null;
+                /**
+                 * Kicks a player.
                  *
-                 * @todo Figure out the types for this method.
+                 * @param playerId The ID of the player to kick.
+                 * @returns `null`
                  */
-                setPlayerPermission(playerId: unknown, abilityIndex: number, isEnabled: boolean): unknown;
+                kickPlayer(playerId: string): null;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Enables cheats.
+                 *
+                 * @returns `null`
+                 *
+                 * @warning This can crash the game if run while not in a level.
                  */
-                kickPlayer(playerId: unknown): unknown;
+                enableCheats(): null;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Sets the field for the specified error flag to `false`.
+                 *
+                 * @param errorFlag See {@link PlayerPermissionsError}.
+                 * @returns `null`
                  */
-                enableCheats(): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                clearErrorFlag(arg0: unknown): unknown;
+                clearErrorFlag(errorFlag: PlayerPermissionsError<"values">): null;
             };
             "vanilla.playerProfile": {
                 playerProfiles: CoherentArrayProxy<PlayerProfile>;
@@ -4425,13 +4487,18 @@ declare global {
                  * @param xuid The XUID of the player to subscribe to.
                  * @param platformId The platform ID of the player to subscribe to. Can be an empty string if there isn't one.
                  *
-                 * @todo Figure out the types for this method.
+                 * @todo Figure out the return type for this method.
                  */
                 subscribeToProfile(xuid: string, platformId: LooseAutocomplete<"">): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Refetches a player's profile.
+                 *
+                 * @param xuid The XUID of the player to subscribe to.
+                 * @param platformId The platform ID of the player to subscribe to. Can be an empty string if there isn't one.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                refetchProfile(...args: unknown[]): unknown;
+                refetchProfile(xuid: string, platformId: LooseAutocomplete<"">): unknown;
             };
             "vanilla.playerReport": {
                 hasReachedReportLimit: boolean;
@@ -4483,41 +4550,78 @@ declare global {
             };
             "vanilla.playerSocialManager": {
                 /**
-                 * @todo Figure out the types for this method.
+                 * Adds a player as a friend.
+                 *
+                 * @param xuid The XUID of the target player.
+                 * @param location UNDOCUMENTED. See {@link AddedFriendLocation}.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                addFriend(...args: unknown[]): unknown;
+                addFriend(xuid: string, location: AddedFriendLocation<"values">): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Removes a player as a friend.
+                 *
+                 * @param xuid The XUID of the target player.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                removeFriend(...args: unknown[]): unknown;
+                removeFriend(xuid: string): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Blocks a player.
+                 *
+                 * @param xuid The XUID of the target player.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                block(...args: unknown[]): unknown;
+                block(xuid: string): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Unblocks a player.
+                 *
+                 * @param xuid The XUID of the target player.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                unblock(...args: unknown[]): unknown;
+                unblock(xuid: string): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Mutes a player.
+                 *
+                 * @param xuid The XUID of the target player.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                mute(...args: unknown[]): unknown;
+                mute(xuid: string): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Unmutes a player.
+                 *
+                 * @param xuid The XUID of the target player.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                unmute(...args: unknown[]): unknown;
+                unmute(xuid: string): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Favorites a player.
+                 *
+                 * @param xuid The XUID of the target player.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                favorite(...args: unknown[]): unknown;
+                favorite(xuid: string): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Unfavorites a player.
+                 *
+                 * @param xuid The XUID of the target player.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                unfavorite(...args: unknown[]): unknown;
+                unfavorite(xuid: string): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Shows the Xbox profile card for a player.
+                 *
+                 * @param xuid The XUID of the target player.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                showXboxProfileCard(...args: unknown[]): unknown;
+                showXboxProfileCard(xuid: string): unknown;
             };
             "vanilla.playerStatistics": {
                 /**
@@ -4582,15 +4686,26 @@ declare global {
                 realmSlots: [slot0: RealmSlot, slot1: RealmSlot, slot2: RealmSlot];
                 isLoading: boolean;
                 selectedRealmIndex: number;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                activeSlotIndex: LooseAutocompleteB<number, -1 | 0 | 1 | 2>;
                 isSlotSelected: boolean;
                 didFailToActivateSlot: boolean;
                 didFailToQuerySelectedRealmDetails: boolean;
                 isShowingConfirmationModal: boolean;
                 selectedRealmName: string;
-                getSelectedRealmDetails: (id: string) => null;
-                selectSlot: (index: 0 | 1 | 2) => null;
-                confirm: () => null;
-                reset: () => null;
+                getSelectedRealmDetails(id: string): null;
+                selectSlot(index: LooseAutocompleteB<number, -1 | 0 | 1 | 2>): null;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                activateSlot(slot: LooseAutocompleteB<number, -1 | 0 | 1 | 2>): unknown;
+                confirm(): null;
+                reset(): null;
                 status: number;
             };
             "vanilla.realmsMembership": {
@@ -4599,7 +4714,7 @@ declare global {
                 /**
                  * @see {@link LeaveRealmsServerError}
                  */
-                leaveRealmResult: null | LeaveRealmsServerError<"values">;
+                leaveRealmResult: LeaveRealmsServerError<"values"> | null;
                 /**
                  * @see {@link FacetTaskState}
                  */
@@ -4609,7 +4724,7 @@ declare global {
                 /**
                  * @see {@link JoinRealmsServerError}
                  */
-                joinRealmError: null | JoinRealmsServerError<"values">;
+                joinRealmError: JoinRealmsServerError<"values"> | null;
                 /**
                  * @see {@link FacetTaskState}
                  */
@@ -4617,16 +4732,19 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                fetchRealmError: null | number;
+                fetchRealmError: number | null;
                 fetchRealmResult: null | {
                     onlinePlayers: CoherentArrayProxy<PlayerData>;
                     players: CoherentArrayProxy<PlayerData>;
                     closed: boolean;
-                    lastSaved: null | number;
+                    lastSaved: number | null;
                     description: string;
                     isInitialized: boolean;
                     isHardcore: boolean;
-                    gameMode: null | number;
+                    /**
+                     * @see {@link GameMode}
+                     */
+                    gameMode: GameMode<"values"> | null;
                     expired: boolean;
                     daysLeft: number;
                     full: boolean;
@@ -4943,7 +5061,7 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                uploadWorldToRealmError: null | number;
+                uploadWorldToRealmError: number | null;
                 /**
                  * @see {@link FacetTaskState}
                  */
@@ -5338,7 +5456,7 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                signInPlatformNetworkTaskResult: null | number;
+                signInPlatformNetworkTaskResult: number | null;
                 /**
                  * @todo Make the type an enum.
                  */
@@ -5453,7 +5571,7 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                syncWorldResult: null | number;
+                syncWorldResult: number | null;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -5471,7 +5589,7 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                loadWorldError: null | number;
+                loadWorldError: number | null;
                 /**
                  * @todo Make the type an enum.
                  */
@@ -5479,7 +5597,7 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                saveRealmsWorldError: null | number;
+                saveRealmsWorldError: number | null;
                 /**
                  * @see {@link FacetTaskState}
                  */
@@ -5487,7 +5605,7 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                saveLocalWorldError: null | number;
+                saveLocalWorldError: number | null;
                 worldHasBeenModified: boolean;
                 worldIsInitialized: boolean;
                 currentWorldId: string;
@@ -5535,30 +5653,30 @@ declare global {
                         friendlyFire: boolean;
                         visibleToLanPlayers: boolean;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link PlayerPermissions}
                          */
-                        playerPermissions: number;
+                        playerPermissions: PlayerPermissions<"values">;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link PlayerAccess}
                          */
-                        playerAccess: number;
+                        playerAccess: PlayerAccess<"values">;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link GeneralMultiplayerWarningStateEnum}
                          */
-                        generalWarningState: number;
+                        generalWarningState: GeneralMultiplayerWarningStateEnum<"values">;
                         platformPlayerFriendsOfFriendsAccessSupported: boolean;
                         platformPlayerInviteAccessSupported: boolean;
                         platformPlayerAccessEnabled: boolean;
                         platformPlayerAccessSupported: boolean;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link PlayerAccess}
                          */
-                        platformPlayerAccess: number;
+                        platformPlayerAccess: PlayerAccess<"values">;
                         multiplayerGame: boolean;
                         multiplayerSupported: boolean;
                     };
                     advanced: {
-                        flatWorldPreset: null | string;
+                        flatWorldPreset: string | null;
                         worldSeed: string;
                         respawnRadius: string;
                         immediateRespawn: boolean;
@@ -5578,9 +5696,9 @@ declare global {
                         startWithMap: boolean;
                         simulationDistance: number;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link GeneratorType}
                          */
-                        generatorType: number;
+                        generatorType: GeneratorType<"values">;
                         useFlatWorld: boolean;
                     };
                     general: {
@@ -5591,9 +5709,9 @@ declare global {
                         playerHasDied: boolean;
                         isHardcore: boolean;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link GameMode}
                          */
-                        gameMode: number;
+                        gameMode: GameMode<"values">;
                         worldName: string;
                     };
                 };
@@ -5638,7 +5756,7 @@ declare global {
                 /**
                  * @see {@link StartClearPlayerDataError}
                  */
-                startClearPlayerDataError: null | StartClearPlayerDataError<"values">;
+                startClearPlayerDataError: StartClearPlayerDataError<"values"> | null;
                 /**
                  * @see {@link ExportWorldStatus}
                  */
@@ -5646,7 +5764,7 @@ declare global {
                 /**
                  * @see {@link ExportWorldResult}
                  */
-                exportWorldResult: null | ExportWorldResult<"values">;
+                exportWorldResult: ExportWorldResult<"values"> | null;
                 makeWorldInfiniteProgress: number;
                 /**
                  * @see {@link FacetTaskState}
@@ -5655,7 +5773,7 @@ declare global {
                 /**
                  * @see {@link WorldSizeConvertResult}
                  */
-                makeWorldInfiniteError: null | WorldSizeConvertResult<"values">;
+                makeWorldInfiniteError: WorldSizeConvertResult<"values"> | null;
                 /**
                  * @see {@link FacetTaskState}
                  */
@@ -5663,7 +5781,7 @@ declare global {
                 /**
                  * @see {@link DuplicateWorldError}
                  */
-                duplicateWorldError: null | DuplicateWorldError<"values">;
+                duplicateWorldError: DuplicateWorldError<"values"> | null;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -5734,7 +5852,7 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                lastConsultedPackSizesError: null | number;
+                lastConsultedPackSizesError: number | null;
                 packDownloadErrorData: {
                     /**
                      * @todo Figure out the types for this array.
@@ -5755,7 +5873,7 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                packDownloadError: null | number;
+                packDownloadError: number | null;
                 worldPacksData: {
                     /**
                      * @todo Figure out the types for this array.
@@ -5854,7 +5972,7 @@ declare global {
                     /**
                      * @todo Make the type an enum.
                      */
-                    progress: null | number;
+                    progress: number | null;
                     /**
                      * @todo Make the type an enum.
                      */
@@ -5862,7 +5980,7 @@ declare global {
                     /**
                      * @todo Make the type an enum.
                      */
-                    result: null | number;
+                    result: number | null;
                     /**
                      * @todo Figure out the types for this method.
                      */
@@ -5885,36 +6003,37 @@ declare global {
                  * @todo Figure out the types for this array.
                  */
                 missingPacksToStart: CoherentArrayProxy<unknown>;
-                missingTemplateToStart: string;
+                /**
+                 * The ID of the missing world template that is needed to start the world.
+                 *
+                 * This is used for the `downloadWorldTemplate` method of the `vanilla.worldTemplateOperations` facet.
+                 *
+                 * @default ""
+                 */
+                missingTemplateToStart: LooseAutocomplete<"">;
                 hasMissingResources: boolean;
                 /**
                  * @see {@link FacetTaskState}
                  */
                 startLocalWorldTaskState: FacetTaskState<"values">;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link StartLocalWorldResult}
+                 *
+                 * @default null
                  */
-                startLocalWorldResult: null | number;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                startLocalWorld(...args: unknown[]): unknown;
+                startLocalWorldResult: StartLocalWorldResult<"values"> | null;
+                startLocalWorld(worldId: string): null;
                 /**
                  * @added Unknown.
                  * @todo Figure out what version this was added in.
-                 * @todo Figure out the types for this method.
                  */
                 setConfirmedPlatformLockedContentForWorld(worldId: string): null;
                 /**
                  * @added Unknown.
                  * @todo Figure out what version this was added in.
-                 * @todo Figure out the types for this method.
                  */
                 hasConfirmedPlatformLockedContentForWorld(worldId: string): boolean;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                clearStartLocalWorldResult(...args: unknown[]): unknown;
+                clearStartLocalWorldResult(): null;
             };
             "vanilla.worldTemplateList": {
                 /**
@@ -5935,15 +6054,15 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                backupWorldResult: null | number;
+                backupWorldResult: number | null;
                 importWorldProgress: number;
                 importWorldProgressPercentage: number;
                 /**
                  * @todo Make the type an enum.
                  */
-                importWorldResult: null | number;
+                importWorldResult: number | null;
                 importWorld: {
-                    progress: null | number;
+                    progress: number | null;
                     /**
                      * @todo Make the type an enum.
                      */
@@ -5951,7 +6070,7 @@ declare global {
                     /**
                      * @todo Make the type an enum.
                      */
-                    result: null | number;
+                    result: number | null;
                     run(): void;
                     cancel(): void;
                     clear(): void;
@@ -5959,7 +6078,7 @@ declare global {
                 importWorld_v2(): null;
                 resetImportWorld(): void;
                 /**
-                 * @todo Figure out the types for this method.
+                 * @todo Figure out the return type for this method.
                  */
                 backupWorld(): unknown;
                 resetBackupWorld(): void;
@@ -5970,7 +6089,10 @@ declare global {
                     capacity: number;
                     playerCount: number;
                     isHardcore: boolean;
-                    gameMode: number;
+                    /**
+                     * @see {@link GameMode}
+                     */
+                    gameMode: GameMode<"values">;
                     ownerId: `${number}`;
                     ownerName: string;
                     name: string;
@@ -6346,7 +6468,7 @@ declare global {
                 /**
                  * @todo Make the type an enum.
                  */
-                purchaseGameError: null | number;
+                purchaseGameError: number | null;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -6404,7 +6526,7 @@ declare global {
                 /**
                  * @see {@link ImportFailure}
                  */
-                importingTaskResult: null | ImportFailure<"values">;
+                importingTaskResult: ImportFailure<"values"> | null;
                 /**
                  * @see {@link FacetTaskState}
                  */
@@ -6412,7 +6534,7 @@ declare global {
                 /**
                  * @see {@link DownloadWorldTemplateError}
                  */
-                downloadingTaskResult: null | DownloadWorldTemplateError<"values">;
+                downloadingTaskResult: DownloadWorldTemplateError<"values"> | null;
                 /**
                  * @see {@link FacetTaskState}
                  */
@@ -6420,14 +6542,14 @@ declare global {
                 /**
                  * @see {@link DownloadWorldTemplateStatus}
                  */
-                downloadingStatus: null | DownloadWorldTemplateStatus<"values">;
+                downloadingStatus: DownloadWorldTemplateStatus<"values"> | null;
                 downloadTotalBytes: string;
                 downloadingProgressBytes: string;
                 downloadingProgressPercent: number;
                 /**
                  * @todo Figure out the types for this method.
                  */
-                downloadWorldTemplate(...args: unknown[]): unknown;
+                downloadWorldTemplate(templateId: string): unknown;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -6488,7 +6610,7 @@ declare global {
              */
             "vanilla.editorTutorial": unknown;
             "vanilla.gameplay.localPlayerWeatherLightningFacet": {
-                isLightning: null | boolean;
+                isLightning: boolean | null;
             };
             "vanilla.levelInfo": {
                 isInitialized: boolean;
@@ -6542,10 +6664,7 @@ declare global {
                      */
                     error: undefined | unknown;
                     loading: boolean;
-                    /**
-                     * @todo Figure out the types for this method.
-                     */
-                    clearError(...args: unknown[]): unknown;
+                    clearError(): null;
                 };
                 joinPartyState: {
                     hasError: boolean;
@@ -6554,10 +6673,7 @@ declare global {
                      */
                     error: undefined | unknown;
                     loading: boolean;
-                    /**
-                     * @todo Figure out the types for this method.
-                     */
-                    clearError(...args: unknown[]): unknown;
+                    clearError(): null;
                 };
                 createPartyState: {
                     hasError: boolean;
@@ -6566,10 +6682,7 @@ declare global {
                      */
                     error: undefined | unknown;
                     loading: boolean;
-                    /**
-                     * @todo Figure out the types for this method.
-                     */
-                    clearError(...args: unknown[]): unknown;
+                    clearError(): null;
                 };
                 /**
                  * @todo Figure out the types for this method.
@@ -6592,9 +6705,13 @@ declare global {
                  */
                 removeMember(...args: unknown[]): unknown;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Sets a player as the party leader.
+                 *
+                 * @param xuid The XUID of the target player.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                setLeader(...args: unknown[]): unknown;
+                setLeader(xuid: string): unknown;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -6696,30 +6813,30 @@ declare global {
                         friendlyFire: boolean;
                         visibleToLanPlayers: boolean;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link PlayerPermissions}
                          */
-                        playerPermissions: number;
+                        playerPermissions: PlayerPermissions<"values">;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link PlayerAccess}
                          */
-                        playerAccess: number;
+                        playerAccess: PlayerAccess<"values">;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link GeneralMultiplayerWarningStateEnum}
                          */
-                        generalWarningState: number;
+                        generalWarningState: GeneralMultiplayerWarningStateEnum<"values">;
                         platformPlayerFriendsOfFriendsAccessSupported: boolean;
                         platformPlayerInviteAccessSupported: boolean;
                         platformPlayerAccessEnabled: boolean;
                         platformPlayerAccessSupported: boolean;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link PlayerAccess}
                          */
-                        platformPlayerAccess: number;
+                        platformPlayerAccess: PlayerAccess<"values">;
                         multiplayerGame: boolean;
                         multiplayerSupported: boolean;
                     };
                     advanced: {
-                        flatWorldPreset: null | string;
+                        flatWorldPreset: string | null;
                         worldSeed: string;
                         respawnRadius: string;
                         immediateRespawn: boolean;
@@ -6739,9 +6856,9 @@ declare global {
                         startWithMap: boolean;
                         simulationDistance: number;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link GeneratorType}
                          */
-                        generatorType: number;
+                        generatorType: GeneratorType<"values">;
                         useFlatWorld: boolean;
                     };
                     general: {
@@ -6752,14 +6869,20 @@ declare global {
                         playerHasDied: boolean;
                         isHardcore: boolean;
                         /**
-                         * @todo Make the type an enum.
+                         * @see {@link GameMode}
                          */
-                        gameMode: number;
+                        gameMode: GameMode<"values">;
                         worldName: string;
                     };
                 };
             };
             "vanilla.realmBackupsCommands": {
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                fetchRealmsBackups(...args: unknown[]): unknown;
                 /**
                  * @todo Figure out the types for this method.
                  */
@@ -6768,6 +6891,12 @@ declare global {
                  * @todo Figure out the types for this method.
                  */
                 clearRealmBackupsState(...args: unknown[]): unknown;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                clearRealmsBackupsDownloadState(...args: unknown[]): unknown;
             };
             "vanilla.realmBackupsQueries": {
                 /**
@@ -6894,8 +7023,108 @@ declare global {
                  * @todo Figure out the types for this method.
                  */
                 setRespawnRadius(...args: unknown[]): unknown;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                setRandomTickSpeed(...args: unknown[]): unknown;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                setKeepInventory(...args: unknown[]): unknown;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                setMobSpawn(...args: unknown[]): unknown;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                setMobGriefing(...args: unknown[]): unknown;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                setEntityDrop(...args: unknown[]): unknown;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                setWeatherCycle(...args: unknown[]): unknown;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                setCommandBlocksEnabled(...args: unknown[]): unknown;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                setFriendlyFireEnabled(...args: unknown[]): unknown;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Figure out the types for this method.
+                 */
+                setPlayerWaypointsMode(...args: unknown[]): unknown;
             };
             "vanilla.realmsWorldEditorGameRulesQueries": {
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Make the type an enum.
+                 */
+                playerWaypointsMode: number;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                friendlyFireEnabled: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                commandBlocks: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                entitiesDropLoot: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                weatherCycle: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                mobGriefing: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                mobSpawn: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                keepInventory: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                randomTickSpeed: number;
                 respawnRadius: number;
                 immediateRespawn: boolean;
                 sleepSkipNightPercent: number;
@@ -6915,12 +7144,70 @@ declare global {
                 bonusChest: boolean;
                 startWithMap: boolean;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link GeneratorType}
                  */
-                generatorType: number;
+                generatorType: GeneratorType<"values">;
                 flatWorldPreset: string;
                 useFlatWorld: boolean;
-                worldSeed: string;
+                /**
+                 * @todo Figure out what version this changed to a number | bigint in.
+                 */
+                worldSeed: string | number | bigint;
+                /**
+                 * @see {@link DaylightCycleEnum}
+                 *
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                realmDaylightCycle: DaylightCycleEnum<"values">;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                realmCheatsEnabled: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                realmWorldGeneralSettings: {
+                    isHardcore: boolean;
+                    /**
+                     * @see {@link DifficultyEnum}
+                     */
+                    difficulty: DifficultyEnum<"values">;
+                    /**
+                     * @see {@link GameMode}
+                     */
+                    gameMode: GameMode<"values">;
+                    worldName: string;
+                };
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                realmAreTexturesRequired: boolean;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                realmDescription: string;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 */
+                realmName: string;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Make the type an enum.
+                 */
+                status: number /* 647 */;
+                /**
+                 * @added Unknown.
+                 * @todo Figure out what version this was added in.
+                 * @todo Make the type an enum.
+                 */
+                state: number /* -2138773776 */;
             };
             /**
              * NOTE: Not present in 1.21.120.4.
@@ -7060,13 +7347,11 @@ declare global {
             };
             "vanilla.openAndCloseRealmCommandsFacet": {
                 /**
-                 * @todo Figure out the types for this method.
+                 * @todo Make the type an enum.
                  */
-                openRealm(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                closeRealm(...args: unknown[]): unknown;
+                status: 0 | 1; // 0=Idle, 1=Processing
+                openRealm(realmId: number | bigint): null;
+                closeRealm(realmId: number | bigint): null;
             };
             /**
              * NOTE: Not present in 1.21.120.4 (however, it is referenced by the vanilla files there for some reason).
@@ -7184,19 +7469,363 @@ declare global {
              *
              * @todo Get the type for this facet.
              */
-            "vanilla.realmsWorldEditorWorldDetailsCommands": unknown;
+            "vanilla.realmsWorldEditorWorldDetailsCommands": {
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                setRealmName(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                setRealmDescription(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                saveRealmDetails(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                setRealmAreTexturesRequired(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                setRealmCheatsEnabled(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                setRealmDaylightCycle(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                setRealmWorldName(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                setRealmWorldGameType(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                setRealmWorldDifficulty(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                setRealmWorldIsHardcore(...args: unknown[]): unknown;
+            };
             /**
              * @since Somewhere between 1.26.0.23 Preview and 1.26.0.26 Preview.
              *
              * @todo Get the type for this facet.
              */
-            "vanilla.realmsWorldPackEditorQueries": unknown;
+            "vanilla.realmsWorldPackEditorQueries": {
+                // TODO: Figure out which of these were added when the facet was first added, and then add notes of what versions the others were added in.
+                /**
+                 * @default null
+                 */
+                marketplacePackDownloadStatus: unknown | null; // TODO
+                /**
+                 * @default null
+                 */
+                changePackPriorityError: unknown | null; // TODO
+                /**
+                 * @default null
+                 */
+                pendingPackAction: unknown | null; // TODO
+                /**
+                 * @default null
+                 */
+                packApplicationError: unknown | null; // TODO
+                /**
+                 * @todo Figure out the types for this array.
+                 */
+                marketplacePassBehaviorPacks: CoherentArrayProxy<unknown>;
+                availableBehaviorPacks: CoherentArrayProxy<{
+                    isAddon: boolean;
+                    hasSettings: boolean;
+                    isPlatformLocked: boolean;
+                    isMarketplaceItem: boolean;
+                    /**
+                     * @default null
+                     */
+                    error: unknown | null; // TODO
+                    /**
+                     * @example "id://213"
+                     */
+                    image: string;
+                    /**
+                     * A UUID v4.
+                     *
+                     * @example "47ce4145-8aa7-4d13-87bb-0cb27e8dbe3f"
+                     */
+                    contentId: string;
+                    /**
+                     * @example "47ce4145-8aa7-4d13-87bb-0cb27e8dbe3f_1.0.0"
+                     */
+                    id: string;
+                    /**
+                     * The size of the behavior pack in MiB/GiB/TiB/PiB/EiB/ZiB/YiB.
+                     *
+                     * @default ""
+                     */
+                    // REVIEW: See if it actually can render TB, PB, EB, ZB, YB.
+                    size: `${number}${"MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"}` | "";
+                    description: string;
+                    type: LooseAutocomplete<"">; // TODO
+                    name: string;
+                }>;
+                selectedBehaviorPacks: CoherentArrayProxy<{
+                    isAddon: boolean;
+                    hasSettings: boolean;
+                    isPlatformLocked: boolean;
+                    isMarketplaceItem: boolean;
+                    /**
+                     * @default null
+                     */
+                    error: unknown | null; // TODO
+                    /**
+                     * @example "id://213"
+                     */
+                    image: string;
+                    /**
+                     * A UUID v4.
+                     *
+                     * @default "00000000-0000-0000-0000-000000000000"
+                     */
+                    contentId: LooseAutocomplete<"00000000-0000-0000-0000-000000000000">;
+                    /**
+                     * @example "47ce4145-8aa7-4d13-87bb-0cb27e8dbe3f_1.0.0"
+                     */
+                    id: string;
+                    /**
+                     * The size of the behavior pack in MiB/GiB/TiB/PiB/EiB/ZiB/YiB.
+                     *
+                     * @default ""
+                     */
+                    // REVIEW: See if it actually can render TB, PB, EB, ZB, YB.
+                    size: `${number}${"MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"}` | "";
+                    /**
+                     * @efault "This pack is missing!"
+                     */
+                    description: LooseAutocomplete<"This pack is missing!">;
+                    type: LooseAutocomplete<"">; // TODO
+                    /**
+                     * @default "Unknown Name"
+                     */
+                    name: LooseAutocomplete<"Unknown Name">;
+                }>;
+                globalResourcePacks: CoherentArrayProxy<{
+                    isAddon: boolean;
+                    hasSettings: boolean;
+                    isPlatformLocked: boolean;
+                    isMarketplaceItem: boolean;
+                    /**
+                     * @default null
+                     */
+                    error: unknown | null; // TODO
+                    /**
+                     * @example "id://213"
+                     */
+                    image: string;
+                    /**
+                     * A UUID v4.
+                     *
+                     * @example "47ce4145-8aa7-4d13-87bb-0cb27e8dbe3f"
+                     */
+                    contentId: string;
+                    /**
+                     * @example "47ce4145-8aa7-4d13-87bb-0cb27e8dbe3f_1.0.0"
+                     */
+                    id: string;
+                    /**
+                     * The size of the resource pack in MiB/GiB/TiB/PiB/EiB/ZiB/YiB.
+                     *
+                     * @default ""
+                     */
+                    // REVIEW: See if it actually can render TB, PB, EB, ZB, YB.
+                    size: `${number}${"MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"}` | "";
+                    description: string;
+                    type: LooseAutocomplete<"">; // TODO
+                    name: string;
+                }>;
+                marketplacePassResourcePacks: CoherentArrayProxy<{
+                    isAddon: boolean;
+                    hasSettings: boolean;
+                    isPlatformLocked: boolean;
+                    isMarketplaceItem: boolean;
+                    /**
+                     * @default null
+                     */
+                    error: unknown | null; // TODO
+                    /**
+                     * @example "id://213"
+                     */
+                    image: string;
+                    /**
+                     * A UUID v4.
+                     *
+                     * @example "47ce4145-8aa7-4d13-87bb-0cb27e8dbe3f"
+                     */
+                    contentId: string;
+                    /**
+                     * @example "47ce4145-8aa7-4d13-87bb-0cb27e8dbe3f_1.0.0"
+                     */
+                    id: string;
+                    /**
+                     * The size of the resource pack in MiB/GiB/TiB/PiB/EiB/ZiB/YiB.
+                     *
+                     * @default ""
+                     */
+                    // REVIEW: See if it actually can render TB, PB, EB, ZB, YB.
+                    size: `${number}${"MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"}` | "";
+                    description: string;
+                    type: LooseAutocomplete<"">; // TODO
+                    name: string;
+                }>;
+                availableResourcePacks: CoherentArrayProxy<{
+                    isAddon: boolean;
+                    hasSettings: boolean;
+                    isPlatformLocked: boolean;
+                    isMarketplaceItem: boolean;
+                    /**
+                     * @default null
+                     */
+                    error: unknown | null; // TODO
+                    /**
+                     * @example "id://213"
+                     */
+                    image: string;
+                    /**
+                     * A UUID v4.
+                     *
+                     * @example "47ce4145-8aa7-4d13-87bb-0cb27e8dbe3f"
+                     */
+                    contentId: string;
+                    /**
+                     * @example "47ce4145-8aa7-4d13-87bb-0cb27e8dbe3f_1.0.0"
+                     */
+                    id: string;
+                    /**
+                     * The size of the resource pack in MiB/GiB/TiB/PiB/EiB/ZiB/YiB.
+                     *
+                     * @default ""
+                     */
+                    // REVIEW: See if it actually can render TB, PB, EB, ZB, YB.
+                    size: `${number}${"MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"}` | "";
+                    description: string;
+                    type: LooseAutocomplete<"">; // TODO
+                    name: string;
+                }>;
+                selectedResourcePacks: CoherentArrayProxy<{
+                    isAddon: boolean;
+                    hasSettings: boolean;
+                    isPlatformLocked: boolean;
+                    isMarketplaceItem: boolean;
+                    /**
+                     * @default null
+                     */
+                    error: unknown | null; // TODO
+                    /**
+                     * @example "id://213"
+                     */
+                    image: string;
+                    /**
+                     * A UUID v4.
+                     *
+                     * @default "00000000-0000-0000-0000-000000000000"
+                     */
+                    contentId: LooseAutocomplete<"00000000-0000-0000-0000-000000000000">;
+                    /**
+                     * @example "47ce4145-8aa7-4d13-87bb-0cb27e8dbe3f_1.0.0"
+                     */
+                    id: string;
+                    /**
+                     * The size of the resource pack in MiB/GiB/TiB/PiB/EiB/ZiB/YiB.
+                     *
+                     * @default ""
+                     */
+                    // REVIEW: See if it actually can render TB, PB, EB, ZB, YB.
+                    size: `${number}${"MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"}` | "";
+                    /**
+                     * @efault "This pack is missing!"
+                     */
+                    description: LooseAutocomplete<"This pack is missing!">;
+                    type: LooseAutocomplete<"">; // TODO
+                    /**
+                     * @default "Unknown Name"
+                     */
+                    name: LooseAutocomplete<"Unknown Name">;
+                }>;
+                isPackEditorContentChanged: boolean;
+                /**
+                 * @default null
+                 */
+                packEditorFailedUploadPackName: unknown | null; // TODO
+                /**
+                 * @default null
+                 */
+                packEditorSaveError: unknown | null; // TODO
+                /**
+                 * @todo Make the type an enum.
+                 */
+                packEditorSaveState: number;
+                /**
+                 * @default undefined
+                 */
+                packEditorFetchError: undefined | unknown; // TODO
+                /**
+                 * @todo Make the type an enum.
+                 */
+                packEditorFetchState: number;
+            };
             /**
              * @since Somewhere between 1.26.0.23 Preview and 1.26.0.26 Preview.
-             *
-             * @todo Get the type for this facet.
              */
-            "vanilla.realmsWorldPackEditorCommands": unknown;
+            "vanilla.realmsWorldPackEditorCommands": {
+                // TODO: Figure out which of these were added when the facet was first added, and then add notes of what versions the others were added in.
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                savePackSettings(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                clearSavePackSettingsState(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                reloadPacks(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                changePackPriority(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                clearChangePackPriorityError(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                activatePack(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                deactivatePack(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                clearPackApplicationError(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                continuePendingPackAction(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                clearPendingPackAction(...args: unknown[]): unknown;
+                /**
+                 * @todo Figure out the types for this method.
+                 */
+                setEditorEnabled(...args: unknown[]): unknown;
+            };
             /**
              * @since Somewhere between 1.26.0.27 Preview and 1.26.0.2.
              *
@@ -7354,14 +7983,18 @@ declare global {
              */
             previewImgPath: `id://${bigint}` | "";
             /**
-             * The size of the world in MiB.
+             * The size of the world in MiB/GiB/TiB/PiB/EiB/ZiB/YiB.
+             *
+             * @default ""
              */
             // REVIEW: See if it actually can render TB, PB, EB, ZB, YB.
             fileSize: `${number}${"MB" | "GB" | "TB" | "PB" | "EB" | "ZB" | "YB"}` | "";
             /**
              * The game mode of the world.
+             *
+             * @see {@link GameMode}
              */
-            gameMode: number;
+            gameMode: GameMode<"values">;
             /**
              * The last time the world was saved.
              */
@@ -7390,14 +8023,14 @@ declare global {
                 onlinePlayers: CoherentArrayProxy<PlayerData>;
                 players: CoherentArrayProxy<PlayerData>;
                 closed: boolean;
-                lastSaved: null | number;
+                lastSaved: number | null;
                 description: string;
                 isInitialized: boolean;
                 isHardcore: boolean;
                 /**
-                 * @todo Make the type an enum.
+                 * @see {@link GameMode}
                  */
-                gameMode: number;
+                gameMode: GameMode<"values">;
                 expired: boolean;
                 daysLeft: number;
                 full: boolean;
@@ -7416,9 +8049,26 @@ declare global {
         }
 
         interface RealmSlot {
-            id: 0 | 1 | 2;
+            id: LooseAutocompleteB<number, -1 | 0 | 1 | 2>;
             worldName: string;
             slotImage: string;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            hardcore: boolean;
+            /**
+             * @see {@link GameMode}
+             *
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            gameMode: GameMode<"values">;
+            /**
+             * @added Unknown.
+             * @todo Figure out what version this was added in.
+             */
+            empty: boolean;
         }
 
         interface AchievementData {

@@ -1,6 +1,6 @@
 {
     "name": "ore-ui-types",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "description": "Type definitions for Minecraft Bedrock Edition's Ore UI scripting environment.",
     "keywords": [
         "Ore UI",
@@ -32,7 +32,7 @@
     },
     "type": "module",
     "dependencies": {
-        "@ore-ui-types/enums": "^1.7.0"
+        "@ore-ui-types/enums": "^1.8.0"
     },
     "exports": {
         ".": {
