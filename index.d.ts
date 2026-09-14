@@ -195,7 +195,7 @@ declare global {
              *
              * Use the `core:router:*` engine events instead for newer versions.
              *
-             * @deprecated Removed in some version in the range 1.26.50.20<x<=1.26.60.22, most likely a 1.21.60 preview.
+             * @deprecated Removed in some version in the range 1.26.50.20<=x<=1.26.60.22, most likely a 1.26.60 preview.
              * @deprecated This command group does not exist in newer versions. It is unknown what version this command group was removed in.
              * @todo Figure out what version this was added and removed in.
              */
@@ -1863,7 +1863,7 @@ declare global {
                     },
                 ]
             : T extends "core:router:go" ? [distance: number | bigint]
-            : T extends "core:router:push" ? [router: string]
+            : T extends "core:router:push" ? [route: string]
             : T extends "core:router:replace" ? [route: string]
             : T extends "core:router:requestState" ? []
             : T extends `query:subscribed/${infer _QueryID extends number}` ?
@@ -3164,7 +3164,7 @@ declare global {
              *
              * Use the `core:router:*` engine events instead for newer versions.
              *
-             * @deprecated Removed in some version in the range 1.26.50.20<x<=1.26.60.22, most likely a 1.21.60 preview.
+             * @deprecated Removed in some version in the range 1.26.50.20<=x<=1.26.60.22, most likely a 1.26.60 preview.
              * @deprecated This command group does not exist in newer versions. It is unknown what version this command group was removed in.
              * @todo Figure out what version this was added and removed in.
              */

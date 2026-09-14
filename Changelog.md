@@ -1,3 +1,9 @@
+# v1.9.0
+
+## Fixes
+
+-   Typo fixes.
+
 # v1.8.0
 
 ## Changelog Pending
