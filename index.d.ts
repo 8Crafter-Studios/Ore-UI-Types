@@ -60,6 +60,8 @@ import type {
     PlayerPermissionsError,
     AddedFriendLocation,
     StartLocalWorldResult,
+    VRMode,
+    ProfanityFilterContext,
 } from "@ore-ui-types/enums";
 declare const FACET_NO_VALUE_SYMBOL: unique symbol;
 // TEST: Check all the method parameters that take numbers to see if they actually also take bigints, like ["vanilla.openAndCloseRealmCommandsFacet"].openRealm/closeRealm does.
@@ -188,6 +190,15 @@ declare global {
                     callable(key: string, parameters: string[]): string;
                 };
             };
+            /**
+             * NOTE: Not present in 1.26.60.22.
+             *
+             * Use the `core:router:*` engine events instead for newer versions.
+             *
+             * @deprecated Removed in some version in the range 1.26.50.20<x<=1.26.60.22, most likely a 1.21.60 preview.
+             * @deprecated This command group does not exist in newer versions. It is unknown what version this command group was removed in.
+             * @todo Figure out what version this was added and removed in.
+             */
             routerCommandGroup: {
                 go: {
                     id: number;
@@ -1653,6 +1664,8 @@ declare global {
             | "/settings/subscription" // Realm Subscription Settings
             // | "/settings/????" // TODO: Realms Backups Settings
             | "/settings/dev_options" // Realms Dev Options Settings
+            | `/pack-settings/${string}/${string}` // /pack-settings/pack_ID/world_ID // /pack-settings/332e0179-037f-4805-b50a-fa7681ffc49f_1.1.2/FVdYb2XzWUw%3D
+            | `/realms-replace-world?realmId=${string}&slotId=${string}`
 
             // Crashing Screens:
             | "/realms-allowlist"
@@ -1684,9 +1697,7 @@ declare global {
             | "/edit-realm-world"
             | "/view-all-packs"
             | "/game-settings"
-            | "/pack-settings"
             | "/realms-permissions"
-            | "/realms-replace-world"
             | "/manifest-validation"
 
             // Blank Screens:
@@ -1758,6 +1769,12 @@ declare global {
             | "core:exception"
             | "core:gui:flush-audio-streams"
             | "core:gui:resize-hack"
+            | "core:router:back"
+            | "core:router:changed"
+            | "core:router:go"
+            | "core:router:push"
+            | "core:router:replace"
+            | "core:router:requestState"
             | `query:subscribed/${number | bigint}`
             | `query:updated/${number | bigint}`
             | `query:subscribe/${keyof EngineQuerySubscribeEventParamsMap}`
@@ -1818,6 +1835,37 @@ declare global {
             : T extends "core:gui:flush-audio-streams" ?
                 [...args: unknown[]] // TODO: Figure out the type of this.
             : T extends "core:gui:resize-hack" ? []
+            : T extends "core:router:back" ? []
+            : T extends "core:router:changed" ?
+                [
+                    routerState: {
+                        __Type: "core.RouterState";
+                        /**
+                         * The length of the history stack.
+                         */
+                        length?: number;
+                        /**
+                         * The last action performed on the history stack.
+                         */
+                        action?: LooseAutocomplete<"REPLACE" | "PUSH" | "POP">;
+                        /**
+                         * The current route.
+                         */
+                        location: RouteHistoryItem & {
+                            __Type: "core.RouterLocation";
+                        };
+                        /**
+                         * The history stack.
+                         */
+                        history: (RouteHistoryItem & {
+                            __Type: "core.RouterLocation";
+                        })[];
+                    },
+                ]
+            : T extends "core:router:go" ? [distance: number | bigint]
+            : T extends "core:router:push" ? [router: string]
+            : T extends "core:router:replace" ? [route: string]
+            : T extends "core:router:requestState" ? []
             : T extends `query:subscribed/${infer _QueryID extends number}` ?
                 [...args: any[]] // TODO: Figure out the type of this.
             : T extends `query:updated/${infer _QueryID extends number}` ?
@@ -3099,15 +3147,26 @@ declare global {
                 translateWithParameters(key: string, parameters: string[]): string;
             };
             /**
-             * NOTE: Not present in 1.21.120.4 (may exist in dev builds).
+             * NOTE: Not present in 1.21.120.4 or 1.21.51.1 (may exist in dev builds).
+             *
+             * @deprecated This facet does not exist in newer versions. It is unknown what version this facet was removed in.
              *
              * @todo Get the type for this facet.
+             * @todo Figure out what version this was added and removed in, or if it was only ever in dev builds.
              */
             "core.performanceFacet": unknown;
             /**
              * The router facet.
              *
              * This is used for navigating between routes in the UI.
+             *
+             * NOTE: Not present in 1.26.60.22.
+             *
+             * Use the `core:router:*` engine events instead for newer versions.
+             *
+             * @deprecated Removed in some version in the range 1.26.50.20<x<=1.26.60.22, most likely a 1.21.60 preview.
+             * @deprecated This command group does not exist in newer versions. It is unknown what version this command group was removed in.
+             * @todo Figure out what version this was added and removed in.
              */
             "core.router": {
                 /**
@@ -3169,13 +3228,29 @@ declare global {
                 isUITextToSpeechEnabled: boolean;
                 isChatTextToSpeechEnabled: boolean;
                 /**
-                 * @todo Figure out the types for this method.
+                 * Reads text using the screen reader.
+                 *
+                 * @param textToRead The text to read.
+                 * @param profanityFilterContext The profanity filter context. See {@link ProfanityFilterContext}.
+                 * @param screenReaderOptions The screen reader options.
+                 *
+                 * @todo Figure out the return type for this method.
                  */
-                read(...args: unknown[]): unknown;
+                read(
+                    textToRead: string,
+                    profanityFilterContext: ProfanityFilterContext<"values">,
+                    screenReaderOptions: {
+                        __Type: "core.screenReaderOptions";
+                        canBeInterrupted: boolean;
+                        isRequired: boolean;
+                        shouldPlayInBackground: boolean;
+                        shouldPlayWhenPlatformTTSEnabled: boolean;
+                    }
+                ): unknown;
                 /**
                  * @todo Figure out the types for this method.
                  */
-                clear(...args: unknown[]): unknown;
+                clear(): unknown;
             };
             /**
              * @deprecated Removed in either 1.26.0.23, 1.26.0.25, or 1.26.0.26.
@@ -3209,52 +3284,71 @@ declare global {
                 isPrimaryUser: boolean;
             };
             /**
-             * NOTE: Not present in 1.21.120.4.
+             * NOTE: Not present in 1.21.120.4 or 1.21.51.1, but it seems like it may exist in 1.21.2.2.
              *
              * @deprecated This facet does not exist in newer versions. It is unknown what version this facet was removed in.
-             *
-             * @todo Get the type for this facet.
              * @todo Figure out what version this was added and removed in, or if it was only ever in dev builds.
+             * @todo Get the type for this facet.
              */
             "core.social": unknown;
+            /**
+             * NOTE: Not present in 1.26.42.1.
+             *
+             * @see {@link __commands__.soundCommandGroup | \_\_commands\_\_.soundCommandGroup}
+             *
+             * @deprecated This has been removed in ? and replaced with the new commands system.
+             * @deprecated This facet does not exist in newer versions. It is unknown what version this facet was removed in.
+             * @todo Figure out what version this was added and removed in.
+             */
             "core.sound": {
                 /**
                  * Plays a sound.
                  *
+                 * NOTE: In 1.26.42.1 when a non-existent sound ID is passed to {@link sound} this returns `18446744073709551615n`, it is unknown if this also happens in older versions, or what version this behavior was added in. This was tested via {@link __commands__.soundCommandGroup.play.callable | \_\_commands\_\_.soundCommandGroup.play.callable}, so this may only apply to the command and not when done via this facet.
+                 *
                  * @param {string} sound The sound to play. Should be a key from `sound_definitions.json`.
-                 * @param {number} volume The volume to play the sound at.
-                 * @param {number} pitch The pitch to play the sound at.
-                 * @returns {number} The ID used to fade out the sound or check if the sound is playing.
+                 * @param {number} volume The volume to play the sound at. Max is 1.
+                 * @param {number} pitch The pitch to play the sound at. Max is 256.
+                 * @returns {number | bigint} The ID used to fade out the sound or check if the sound is playing.
+                 *
+                 * @todo Figure out what version the non-existent sound ID behavior was added in.
                  */
-                play(sound: string, volume: number, pitch: number): number;
+                play(sound: string, volume: number, pitch: number): number | bigint;
                 /**
                  * Fades out a sound.
                  *
-                 * @param {number} id The ID of the sound to fade out.
+                 * @param {number | bigint} id The ID of the sound to fade out.
                  * @param {number} duration The duration to fade out the sound in seconds.
                  * @returns `null`
                  */
-                fadeOut(id: number, duration: number): null;
+                fadeOut(id: number | bigint, duration: number): null;
                 /**
                  * Checks if a sound is currently playing.
                  *
-                 * @param {number} id The ID of the sound to check.
+                 * @param {number | bigint} id The ID of the sound to check.
                  * @returns {boolean} Returns `true` if the sound is currently playing, `false` if it is not, or `undefined` if the id parameter is invalid.
                  */
-                isPlaying(id: number): boolean;
+                isPlaying(id: number | bigint): boolean;
             };
             /**
-             * NOTE: Not present in 1.21.120.4.
+             * NOTE: Not present in 1.21.120.4 or 1.21.51.1, but it seems like it may exist in 1.21.2.2.
              *
+             * @deprecated This facet does not exist in newer versions. It is unknown what version this facet was removed in.
+             * @todo Figure out what version this was added and removed in, or if it was only ever in dev builds.
              * @todo Get the type for this facet.
              */
             "core.user": unknown;
             /**
-             * @deprecated This has been removed.
-             *
+             * @deprecated Removed in some version in the range 1.21.51.1<x<=1.21.120.4, most likely a 1.21.80 preview.
+             * @todo Figure out what version this was removed in.
              * @todo Get the type for this facet.
              */
-            "core.vrMode": unknown; // Found in dev build file.
+            "core.vrMode": {
+                /**
+                 * @see {@link VRMode}
+                 */
+                mode: VRMode<"values">;
+            };
             "vanilla.achievements": {
                 data: PlayerAchievementData;
                 /**
@@ -3713,6 +3807,9 @@ declare global {
                      * @see {@link WorldPingStatus}
                      */
                     pingStatus: WorldPingStatus<"values">;
+                    /**
+                     * @default "-1"
+                     */
                     ping: string;
                     description: string;
                     name: string;
@@ -4022,6 +4119,8 @@ declare global {
                 lanWorlds: CoherentArrayProxy<{
                     /**
                      * Either the ping number or the version number (due to a bug).
+                     *
+                     * @default ""
                      */
                     ping: string;
                     capacity: number;
@@ -4031,6 +4130,9 @@ declare global {
                      * @see {@link GameMode}
                      */
                     gameMode: GameMode<"values">;
+                    /**
+                     * @default 0
+                     */
                     port: number;
                     address: LooseAutocomplete<"UNASSIGNED_SYSTEM_ADDRESS" | `${number}.${number}.${number}.${number}`>;
                     ownerName: string;
@@ -4038,7 +4140,11 @@ declare global {
                     /**
                      * The world ID.
                      *
-                     * In the format `${ownName}${name}v`.
+                     * In the format `${ownerName}${name}v` or `${ownerName}${name}v${UNKNOWNNUMBER}${address}${raknetGuid}`.
+                     *
+                     * @example "Andexter8My Worldv18187444371181568579UNASSIGNED_SYSTEM_ADDRESSUNASSIGNED_RAKNET_GUID"
+                     *
+                     * @todo Figure out what the number in the ID is.
                      */
                     id: `${string}${string}v`;
                 }>;
@@ -4132,6 +4238,13 @@ declare global {
                      */
                     pingStatus: WorldPingStatus<"values">;
                     imagePath: string;
+                    /**
+                     * The ping of the network world.
+                     *
+                     * If the network world has no ping data, this will be `"-1"`, if the details are not loaded, this will be `""`.
+                     *
+                     * @default ""
+                     */
                     ping: string;
                     port: number;
                     address: string;
@@ -4309,7 +4422,7 @@ declare global {
                 renderDistance: number;
             };
             /**
-             * NOTE: Not present in 1.21.120.4.
+             * NOTE: Not present in 1.21.120.4 or 1.21.51.1.
              *
              * @deprecated This facet does not exist in newer versions. It is unknown what version this facet was removed in.
              *
@@ -4329,38 +4442,66 @@ declare global {
                 load(...args: unknown[]): unknown;
             };
             "vanilla.playerBanned": {
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                openBannedInfoPage(...args: unknown[]): unknown;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                openXboxLiveBannedInfoPage(...args: unknown[]): unknown;
+                // REVIEW: Verify the return type of this method.
+                openBannedInfoPage(): null;
+                // REVIEW: Verify the return type of this method.
+                openXboxLiveBannedInfoPage(): null;
             };
             "vanilla.playerFollowingList": {
                 playerList: CoherentArrayProxy<AddFriendUserItem>;
                 isLoading: boolean;
-                /**
-                 * @todo Figure out the types for this method.
-                 */
-                load(...args: unknown[]): unknown;
+                // REVIEW: Verify the return type of this method.
+                load(xuid: string): null;
             };
             /**
-             * NOTE: Not present in 1.21.120.4.
-             *
-             * @todo Get the type for this facet.
+             * @deprecated Removed in some version in the range 1.21.51.1<x<=1.21.114.1.
+             * @todo Figure out what version this was removed in.
              */
-            "vanilla.playerLinkedPlatformProfile": unknown; // Found in dev build file.
+            "vanilla.playerLinkedPlatformProfile": {
+                /**
+                 * @default false
+                 */
+                loaded: boolean;
+                data: {
+                    /**
+                     * @default ""
+                     */
+                    profilePic: string;
+                    /**
+                     * @default ""
+                     */
+                    displayName: string;
+                    /**
+                     * @default ""
+                     */
+                    uuid: string;
+                };
+                load(playerId: string): null;
+            };
             "vanilla.playermessagingservice": {
                 data: {
                     messages: CoherentArrayProxy<{
+                        /**
+                         * @todo Make the type an enum.
+                         */
                         style: number;
                         /**
                          * @default null
                          */
-                        gamedrop: unknown | null;
+                        gamedrop: unknown | null; // TODO
+                        /**
+                         * This property may or may not have existed in older versions.
+                         *
+                         * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                         * @deprecated Newer versions use the `body` and `header` properties instead.
+                         *
+                         * @todo Figure out if this ever actually existed.
+                         */
+                        additionalProperties?: CoherentArrayProxy<{ key: LooseAutocomplete<"header" | "body">; value: string }>;
                         buttons: CoherentArrayProxy<{
+                            /**
+                             * @todo Make the type an enum.
+                             */
                             action: number;
                             link: string;
                             description: string;
@@ -4368,10 +4509,37 @@ declare global {
                             id: string;
                             // REVIEW: Verify the return type of this method.
                             openExternalLink(): null;
+                            /**
+                             * This property may or may not have existed in older versions.
+                             *
+                             * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                             * @deprecated Newer versions use the `openExternalLink` property instead.
+                             *
+                             * @todo Figure out if this ever actually existed.
+                             */
+                            reportClick?(): null;
+                            /**
+                             * This property may or may not have existed in older versions.
+                             *
+                             * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                             * @deprecated Newer versions use the `description` property instead.
+                             *
+                             * @todo Figure out if this ever actually existed.
+                             */
+                            additionalProperties?: CoherentArrayProxy<unknown>;
                         }>;
                         images: CoherentArrayProxy<{
                             isLoaded: boolean;
-                            imageSize: null | { height: number; width: number };
+                            /**
+                             * This property may or may not have existed in older versions.
+                             *
+                             * @deprecated This property does not exist in newer versions. It is unknown what version this property was removed in.
+                             * @deprecated Newer versions use the `nonAnimatedUrl` and `animatedUrl` properties instead.
+                             *
+                             * @todo Figure out if this ever actually existed.
+                             */
+                            url?: string;
+                            imageSize: { height: number; width: number } | null;
                             nonAnimatedUrl: string;
                             animatedUrl: string;
                             id: string;
@@ -4428,7 +4596,7 @@ declare global {
                 playerPermissionLevel: PlayerPermissionLevel<"values"> | null;
                 /**
                  * Loads the permissions for a player into the {@link playerPermissionList} and {@link playerPermissionLevel} fields.
-                 * 
+                 *
                  * @param playerId The world UUID of the player to load the permissions for.
                  * @returns `null`
                  */
@@ -5390,6 +5558,9 @@ declare global {
                            * @see {@link WorldPingStatus}
                            */
                           pingStatus: WorldPingStatus<"values">;
+                          /**
+                           * @default "-1"
+                           */
                           ping: string;
                           description: string;
                           name: string;
@@ -5409,6 +5580,9 @@ declare global {
                            * @see {@link WorldPingStatus}
                            */
                           pingStatus: WorldPingStatus<"values">;
+                          /**
+                           * @default "-1"
+                           */
                           ping: string;
                           description: string;
                           name: string;
@@ -5428,6 +5602,9 @@ declare global {
                            * @see {@link WorldPingStatus}
                            */
                           pingStatus: WorldPingStatus<"values">;
+                          /**
+                           * @default "-1"
+                           */
                           ping: string;
                           description: string;
                           name: string;
@@ -7903,10 +8080,14 @@ declare global {
             hash: string;
             /**
              * The path component of the route.
+             *
+             * Unlike with URL, this does not have a leading `#`.
              */
             pathname: string;
             /**
              * The search component of the route.
+             *
+             * Unlike with URL, this does not have a leading `?`.
              */
             search: string;
         }

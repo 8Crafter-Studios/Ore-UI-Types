@@ -1,3 +1,7 @@
+# v1.8.0
+
+## Changelog Pending
+
 # v1.7.0
 
 ## Changelog Pending
